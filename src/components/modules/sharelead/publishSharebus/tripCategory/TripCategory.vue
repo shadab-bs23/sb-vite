@@ -32,6 +32,21 @@
             )
           "
         >
+          <img
+            :src="
+              getIconPath.find(
+                (icon) => Object.keys(icon)[0] === Object.keys(category)[0]
+              )?.[Object.keys(category)[0]]
+            "
+            :alt="
+              getIconAlt.find(
+                (alt) => Object.keys(alt)[0] === Object.keys(category)[0]
+              )?.[Object.keys(category)[0]]
+            "
+            class="category-icon me-3"
+            width="20"
+            height="20"
+          />
           <p class="mb-0">
             {{ Object.values(category)[0] }}
           </p>
@@ -48,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import BaseRadio from "@busgroup/vue3-base-radio";
 import { TRIP_CATEGORY, tripCategoryClickSchema } from "./tripCategoryEnums";
 import { useConfigStore } from "@/store";
@@ -85,6 +100,25 @@ const categories = computed(() => {
   return tripEvents.split(",").map((value) => {
     return { [value]: t(`sharebus.publish.category.${value}`) };
   });
+});
+
+const getIconPath = computed(() => {
+  const tripEvents = config.getSharebusSetupConfig.TripEventCategoryString;
+  return tripEvents.split(",").map((value) => {
+    return { [value]: `/img/icons/category/${value}.svg` };
+  });
+});
+
+const getIconAlt = computed(() => {
+  const tripEvents = config.getSharebusSetupConfig.TripEventCategoryString;
+  return tripEvents.split(",").map((value) => {
+    return { [value]: `${value} icon` };
+  });
+});
+
+onMounted(() => {
+  console.log(getIconPath.value);
+  console.log(getIconAlt.value);
 });
 
 const chosenTripCategory = ref(
@@ -195,6 +229,14 @@ const handleRadioParentClick = (
 
 .active {
   background: #0c1026;
-  color: #a5f2c4;
+  color: white;
+
+  .category-icon {
+    filter: brightness(0) invert(1);
+  }
+}
+
+.trip-category:hover .category-icon {
+  filter: brightness(0) invert(1);
 }
 </style>

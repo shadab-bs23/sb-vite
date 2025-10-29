@@ -8,6 +8,8 @@ export default class ShareBusSetUpController {
     three: false,
   });
 
+  private static _fetchPrice = ref(false);
+
   static setSubmitState(stepName: string, state = true): void {
     this._submitState.value[stepName] = state;
   }
@@ -16,14 +18,27 @@ export default class ShareBusSetUpController {
     return this._submitState.value[stepName];
   }
 
+  static setFetchPrice(value): void {
+    this._fetchPrice.value = value;
+  }
+
+  static getFetchPrice(): boolean {
+    return this._fetchPrice.value;
+  }
+
   static getPassengerGoalLimit = computed(() => ({
-    MIN: useConfigStore().getSharebusSetupConfig.MinimumPassengerGoal,
-    MAX: useConfigStore().getSharebusSetupConfig.BusCapacity,
+    MIN: 1,
+    MAX: 999,
     DEFAULT: useConfigStore().getSharebusSetupConfig.DefaultPassengerGoal,
   }));
 
   static getTicketNumberLimit = computed(() => ({
     MIN: 1,
     MAX: useConfigStore().getSharebusSetupConfig.BusCapacity,
+  }));
+
+  static getBusCapacityLimit = computed(() => ({
+    MIN: 1,
+    MAX: 999,
   }));
 }

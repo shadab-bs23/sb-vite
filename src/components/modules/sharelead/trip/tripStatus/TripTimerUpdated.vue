@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { removeZforISOString, setLeadingZero } from "@/utils";
+import { setLeadingZero } from "@/utils";
 import { intervalToDuration, isAfter } from "date-fns";
 import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -52,7 +52,7 @@ const { t } = useI18n();
 const interval = ref();
 const setTimer = () => {
   const start = new Date();
-  const end = new Date(removeZforISOString(props.deadline));
+  const end = new Date(props.deadline);
   if (isAfter(start, end)) {
     return {
       days: 0,

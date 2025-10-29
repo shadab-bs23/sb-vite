@@ -1,7 +1,7 @@
 import { StoreDefinition } from "pinia";
-import { User, UserSignIn } from "././types/auth/user.type";
-import { UserSignUp } from "././types/auth/user.type";
-// import { GeneralError } from "././types/errors/errors.type";
+import { User, UserSignIn } from "types/auth/user.type";
+import { UserSignUp } from "types/auth/user.type";
+// import { GeneralError } from "types/errors/errors.type";
 export interface State {
   data: User;
   isAuthenticated: boolean;
@@ -39,6 +39,7 @@ interface Actions {
   handleForgotPasswordCode(userName: string): Promise<object>;
   handleForgotPasswordSubmit(payload: ForgotPassword);
   fetchUserById(userId: string): Promise<void>;
+  deleteUser(): void;
 }
 /*
  * store context define as summarize of store

@@ -32,9 +32,9 @@ const props = defineProps({
 const sharebus = useSharebusStore();
 
 const isDecisionTaken = computed({
-  get: () => sharebus.getStepThreeData[props.decisionFor],
+  get: () => sharebus.getPassengerGoalAndPriceStepData[props.decisionFor],
   set: (value) => {
-    sharebus.setStep3DataSpecific(props.decisionFor, value);
+    sharebus.setPassengerGoalAndPriceStepDataSpecific(props.decisionFor, value);
   },
 });
 </script>

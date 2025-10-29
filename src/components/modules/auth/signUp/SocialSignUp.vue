@@ -82,10 +82,11 @@ import { routePushTag } from "@/utils";
 import TermAccept from "./TermsAcceptComponent.vue";
 import { useLoaderStore } from "@/store/index";
 import BaseButton from "@busgroup/vue3-base-button";
-import { User } from "./types/auth/user.type";
+import { User } from "types/auth/user.type";
 import AuthController from "../controller/AuthController";
-import { GeneralError } from "./types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 import { phoneNumberRule } from "@/utils/validation.utils";
+import BaseInput from "@busgroup/vue3-base-input";
 
 const loader = useLoaderStore();
 

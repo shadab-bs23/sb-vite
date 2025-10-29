@@ -7,9 +7,8 @@ import {
   ConfirmTripStatus,
   CopyTripStatus,
   GetPassengersResponse,
-  SalesEditGroup,
+  SaleTripEditAttributes,
   StoreContext,
-  TripSetType,
   UnpublishTripStatus,
   salesConsoleEditTrip,
 } from "./types";
@@ -27,27 +26,30 @@ export default {
    * @param this
    * @param payload
    */
-  setSalesConsoleTripChangeRequest(this: StoreContext, payload: TripSetType) {
-    const tripId = Object.keys(payload)[0];
-    const payloadValue = Object.values(payload)[0];
-    const isTripKeyExist = Object.keys(this.$state.salesEditTrip).includes(
-      tripId
-    );
+  setSalesConsoleTripChangeRequest(
+    this: StoreContext,
+    payload: Partial<SaleTripEditAttributes> & { trip_id: string }
+  ) {
+    const tripId = payload.trip_id;
     const defaultValue = { ...Object.values(salesMockData)[0] };
-    const existTripValue = isTripKeyExist
-      ? this.$state.salesEditTrip[tripId]
-      : defaultValue;
-    this.$state.salesEditTrip = { [tripId]: existTripValue };
-    for (const [key, value] of Object.entries(payloadValue)) {
-      if (key == SalesEditGroup.UPDATE_HISTORY) {
-        this.$state.salesEditTrip[tripId][key] = {
-          ...this.$state.salesEditTrip[tripId][key],
-          ...value,
+
+    // Ensure the trip exists in the state
+    this.$state.salesEditTrip[tripId] =
+      this.$state.salesEditTrip[tripId] || defaultValue;
+
+    // Update the trip with the payload values
+    Object.entries(payload).forEach(([key, value]) => {
+      if (key !== "trip_id") {
+        this.$state.salesEditTrip[tripId] = {
+          ...this.$state.salesEditTrip[tripId],
+          [key]: value,
+          update_history: {
+            ...this.$state.salesEditTrip[tripId].update_history,
+            [key]: new Date(),
+          },
         };
-      } else {
-        this.$state.salesEditTrip[tripId][key] = value;
       }
-    }
+    });
   },
   /**
    *
@@ -187,7 +189,6 @@ export default {
       })
       .catch((err) => {
         loader.changeLoadingStatus({ isLoading: false });
-        console.log(err);
         return err;
       });
   },

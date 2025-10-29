@@ -254,10 +254,10 @@ export const calculateDistanceAndTimeWithMapAPI = (
             const pauseTimeValue = pauseTime * 60000,
               legDuration = legs[index - 1].duration.value * 1000,
               legDurationWithLegPercent =
-                legDuration + (legDuration * legPercent) / 100,
-              previousDepartureValue = (
-                tempLastCalculatedPoint.planned_departure_time as Date
-              ).valueOf();
+                legDuration + (legDuration * legPercent) / 100;
+            let previousDepartureValue = (
+              tempLastCalculatedPoint.planned_departure_time as Date
+            ).valueOf();
             let departureDateTime;
             if (index < lastIndex) {
               departureDateTime = new Date(
@@ -269,6 +269,19 @@ export const calculateDistanceAndTimeWithMapAPI = (
               departureDateTime = new Date(
                 previousDepartureValue + legDurationWithLegPercent
               );
+            }
+            if (departureDateTime.toString() === "Invalid Date") {
+              departureDateTime = new Date();
+            }
+
+            if (
+              (previousDepartureValue &&
+                typeof previousDepartureValue !== "number") ||
+              isNaN(previousDepartureValue)
+            ) {
+              previousDepartureValue = new Date(
+                previousDepartureValue
+              ).valueOf();
             }
             tempLastCalculatedPoint = {
               ...item,
@@ -354,10 +367,10 @@ export const vpCalculateDistanceAndTimeWithMapAPI = (
               duration = legs[vpIndex + index - 1]?.duration,
               legDuration = (duration ? duration.value : 0) * 1000,
               legDurationWithLegPercent =
-                legDuration + (legDuration * legPercent) / 100,
-              previousDepartureValue = (
-                tempLastCalculatedPoint.planned_departure_time as Date
-              ).valueOf();
+                legDuration + (legDuration * legPercent) / 100;
+            let previousDepartureValue = (
+              tempLastCalculatedPoint.planned_departure_time as Date
+            ).valueOf();
             let departureDateTime;
             if (index < lastIndex) {
               departureDateTime = new Date(
@@ -369,6 +382,19 @@ export const vpCalculateDistanceAndTimeWithMapAPI = (
               departureDateTime = new Date(
                 previousDepartureValue + legDurationWithLegPercent
               );
+            }
+            if (departureDateTime.toString() === "Invalid Date") {
+              departureDateTime = new Date();
+            }
+
+            if (
+              (previousDepartureValue &&
+                typeof previousDepartureValue !== "number") ||
+              isNaN(previousDepartureValue)
+            ) {
+              previousDepartureValue = new Date(
+                previousDepartureValue
+              ).valueOf();
             }
             tempLastCalculatedPoint = {
               ...item,

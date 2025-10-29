@@ -1,41 +1,57 @@
 import { StoreDefinition } from "pinia";
 import { TripFilterUpdate } from "../privateTrip/types";
+import { PickTripFields } from "../baseTrip";
 import { TripList } from "../types";
 
 /**
- * Public trip
+ * PublicTrip represents the fields returned by the GET_PUBLIC_TRIP query
+ * This is specifically for public-facing trip data with joiner-relevant fields
  */
-export interface PublicTrip extends TripList {
-  outbound_timezone: string;
-  return_timezone: string;
-  passenger_goal: number;
-  booking_reference: string;
-  embedded_link: string;
-  total_regular_tickets: number;
-  available_regular_tickets: number;
-  total_earlybird_tickets: number;
-  available_earlybird_tickets: number;
-  total_cancelled_tickets: number;
-  deadline_ticket_selling: string;
-  category: string;
-  trip_organizer: string;
-  info_to_travellers: string;
-  website_url: string;
-  max_pax: number;
-  discount_scheme: string;
-  vat_percent: number;
-  outbound_from: string;
-  outbound_to: string;
-  outbound_from_datetime: string;
-  outbound_to_datetime: string;
-  return_from: string;
-  return_to: string;
-  return_from_datetime: string;
-  return_to_datetime: string;
-  route_points: string;
-  deadline_passenger_goal: string;
-  updated_at: string;
-}
+export type PublicTrip = PickTripFields<
+  | "id"
+  | "name"
+  | "outbound_from"
+  | "outbound_to"
+  | "country"
+  | "outbound_from_datetime"
+  | "outbound_to_datetime"
+  | "outbound_timezone"
+  | "return_from"
+  | "return_to"
+  | "return_from_datetime"
+  | "return_to_datetime"
+  | "return_timezone"
+  | "route_points"
+  | "passenger_goal"
+  | "booking_reference"
+  | "embedded_link"
+  | "trip_type"
+  | "max_pax"
+  | "discount_scheme"
+  | "category"
+  | "regular_ticket_price"
+  | "earlybird_ticket_price"
+  | "available_earlybird_tickets"
+  | "available_regular_tickets"
+  | "total_regular_tickets"
+  | "total_earlybird_tickets"
+  | "total_cancelled_tickets"
+  | "trip_status"
+  | "deadline_ticket_selling"
+  | "info_to_travellers"
+  | "image_url"
+  | "is_published"
+  | "website_url"
+  | "trip_organizer"
+  | "vat_percent"
+  | "deadline_passenger_goal"
+  | "updated_at"
+  | "minimum_possible_ticket_price"
+  | "ticket_pricing"
+  | "ticket_discounts"
+  | "show_available_seats"
+>;
+
 /*
 /**
  * State type
@@ -54,6 +70,16 @@ export interface JoinerTicket {
 export type CountryFilter = {
   country: string;
 };
+
+export type SupportRequestInput = {
+  trip_id: string;
+  subject: string;
+  description: string;
+  attachment_urls: string[];
+  support_type: string;
+  country?: string;
+};
+
 export interface State {
   trip: PublicTrip;
   currentStep: number;
@@ -77,12 +103,12 @@ interface Actions {
     cb?: () => void
   ) => Promise<PublicTrip>;
   setCurrentStep: (step: number) => void;
-  fetchPublicTripListForJoiner: (
-    filter: CountryFilter,
-    nextToken: string | null
-  ) => Promise<object>;
   getTripListForJoinerBySearch: (filter: TripFilterUpdate) => Promise<void>;
   cancelTickets: (tripID: string) => void;
+  submitSupportRequest: (
+    this: StoreContext,
+    payload: SupportRequestInput
+  ) => void;
 }
 /*
  * store context define as summarize of store

@@ -26,7 +26,9 @@ export const removeUnusedStorage = (routeName: string) => {
   if (
     routeName !== "trip-sales-page" &&
     routeName !== "trip-sales-dit-published" &&
-    routeName !== "sales-edit-itinerary"
+    routeName !== "sales-edit-itinerary" &&
+    routeName !== "sales-edit-ticket-prices" &&
+    routeName !== "sales-edit-discount"
   ) {
     deleteFromLocalStorage("sales");
   }

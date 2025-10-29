@@ -1,10 +1,15 @@
 import router from "@/router";
 import { DateTimeFormatOptions } from "@intlify/core-base";
-import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
+import {
+  AllowedFormats,
+  convertDateIntoCompanyTimezone,
+} from "@/utils/companyTimeFormat";
 import { CTA, ROLE } from "./components/common/enums/enums";
 import { ROUTE } from "./router/enum/routeEnums";
 import { useSharebusStore, useTripStore, useUserStore } from "./store";
 import { RouteRecordName } from "vue-router";
+import { nanoid } from "nanoid";
 
 /**
  * should return a redirect path based on deployed mode
@@ -122,7 +127,7 @@ export const replaceBeforeGivenIndex = (
  * @param splittedBy  - Character to split the string.
  * @returns           - First element.
  */
-export const splitAndGetFirstElement = (str: string, splittedBy: string) => {
+export const splitAndGetFirstElement = (str: string, splittedBy = ",") => {
   return str?.split(splittedBy)[0];
 };
 
@@ -193,13 +198,13 @@ export const addSlashes = (str: string): string => {
  * @param {string} url - URL to validate.
  * @returns {boolean}
  */
-export const isValidURL = (url) => {
+export const isValidURL = (url: string): boolean => {
   if (!url) return true;
 
   const pattern =
-    /^((http|https):\/\/)(www.|[a-zA-Z]{2,256}.)?[a-zA-Z0-9\-_$]+\.[a-zA-Z]{2,5}/;
+    /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
 
-  return url.match(pattern);
+  return pattern.test(url);
 };
 const defaultOptions: DateTimeFormatOptions = {
   year: "numeric",
@@ -211,21 +216,32 @@ const defaultOptions: DateTimeFormatOptions = {
  * @param {string} dateTime -date time string format
  * @param {string} currentLocale - current chosen language
  * @param options - date format option
- * @returns {string} -formated date time in readable format
+ * @param dateFormat - specific date format string
+ * @returns {string} -formated date time in readable format using company timezone
  */
 export const getReadableDateFormat = (
   dateString: string,
   currentLocale = "en-US",
   options = defaultOptions,
-  dateFormat = ""
+  dateFormat: AllowedFormats = "dd.MM.yyyy"
 ) => {
   if (dateString) {
-    const isoFormat = isoFormatDateTime(dateString);
-    const dateTime = isoFormat.replace("Z", "");
+    // Default to Europe/Oslo timezone if no specific company timezone is available
+    const companyTimezone = "Europe/Oslo";
+
     if (dateFormat) {
-      return format(new Date(dateTime), dateFormat);
+      // Use company timezone formatting with the specified format
+      return convertDateIntoCompanyTimezone(
+        dateString,
+        dateFormat,
+        companyTimezone
+      );
     }
-    return new Date(dateTime).toLocaleDateString(currentLocale, options);
+
+    // For locale-based formatting, first convert to company timezone then format
+    const utcDate = new Date(dateString);
+    const companyDate = utcToZonedTime(utcDate, companyTimezone);
+    return companyDate.toLocaleDateString(currentLocale, options);
   }
   return "";
 };
@@ -246,22 +262,6 @@ export const subtractDaysFromDate = (
     return isoFormatDateTime(newDate);
   }
   return getReadableDateFormat(newDate, currentLocale, options);
-};
-
-/**
- *
- * @param {string} dateString -date time string format
- */
-export const formatDateUsingDateFns = (
-  dateString: string,
-  formatType = "dd.MM.yyyy"
-) => {
-  if (dateString) {
-    const date = removeZforISOString(dateString);
-
-    return format(new Date(date), formatType);
-  }
-  return "";
 };
 /**
  *pagination function may be will be use later on
@@ -399,10 +399,6 @@ export const placeShortName = (placeName: string) => {
   } else return shortName[0];
 };
 
-export const redirect = () => {
-  window.open(CTA.CONTACT, "_blank", "noreferrer");
-};
-
 export const categoryIcon = {
   music: "music",
   other: "other",
@@ -454,17 +450,13 @@ export const serverTime = (timezone = "Europe/Oslo") => {
 
 /**
  * Limits a float to two decimal points.
- * @param {Number} number The float/number to limit.
- * @returns {Number} Returns the float/number limited to two decimal points.
+ * @param {number} number The float/number to limit.
+ * @returns {number} Returns the float/number limited to two decimal points.
  */
-export const limitDecimals = (number: number) => {
-  const stringRep = number.toString();
-  const splitUp = stringRep.split(".");
-  if (splitUp[1] && splitUp[1].length > 2) {
-    return Number(number.toFixed(2));
-  } else {
-    return number;
-  }
+export const limitDecimals = (number: number): number => {
+  if (!number) return 0;
+
+  return Number.isInteger(number) ? number : Number(number.toFixed(2));
 };
 /**
  * This function replaces the query on the current route with a new query supplied by the argument.
@@ -623,6 +615,38 @@ export const countryDialCodeMap = {
 export const regexPasswordValidation =
   /(.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?].*)/;
 
+export const redirectToContact = (tripId: string, bookingReference: string) => {
+  routePushTagQuery(CTA.CONTACT, tripId as string, {
+    bookingReference,
+  });
+};
+
+/**
+ * Generates a unique key by combining a timestamp and a random substring.
+ *
+ * @returns {string} A unique key.
+ * @example
+ * const uniqueKey = generateUniqueKey();
+ * console.log(uniqueKey);
+ */
+export const generateUniqueKey = () => {
+  /**
+   * @type {string} timestamp - Current timestamp converted to base36.
+   */
+  const timestamp = new Date().getTime().toString(36);
+
+  /**
+   * @type {string} randomPart - Random alphanumeric substring.
+   */
+  const randomPart = Math.random().toString(36).substring(2, 7);
+
+  /**
+   * @type {string} uniqueKey - The unique key formed by concatenating the timestamp and randomPart.
+   */
+  const uniqueKey = `${timestamp}${randomPart}`;
+
+  return uniqueKey;
+};
 export const countryAccepted = [
   "BD", // Bangladesh
   "NO", // Norway
@@ -678,3 +702,143 @@ export const countryAccepted = [
   "GB", // United Kingdom
   "VA", // Vatican City
 ];
+
+/**
+ * Creates a deep clone of an object or array without using structuredClone
+ * @param obj The object to clone
+ * @returns A deep copy of the input object
+ */
+export function deepClone<T>(obj: T): T {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item)) as unknown as T;
+  }
+
+  if (obj instanceof Date) {
+    return new Date(obj.getTime()) as unknown as T;
+  }
+
+  if (obj instanceof RegExp) {
+    return new RegExp(obj) as unknown as T;
+  }
+
+  if (obj instanceof Map) {
+    return new Map(
+      Array.from(obj.entries()).map(([key, value]) => [key, deepClone(value)])
+    ) as unknown as T;
+  }
+
+  if (obj instanceof Set) {
+    return new Set(
+      Array.from(obj).map((value) => deepClone(value))
+    ) as unknown as T;
+  }
+
+  const clonedObj = {} as T;
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      clonedObj[key] = deepClone(obj[key]);
+    }
+  }
+  return clonedObj;
+}
+
+export const getUniqueIntId = (length = 6): number => {
+  //  using nanoid npm package to generate a unique ID
+  const uniqueId = nanoid(length);
+  const parsed = parseInt(uniqueId, 36);
+  // Ensure we always return a positive integer
+  return Math.abs(parsed) || Math.abs(parseInt(nanoid(length), 36));
+};
+
+/**
+ * Performs a deep equality check between two objects using JSON.stringify.
+ * Note: Only works for plain objects and arrays, not for objects with functions, Dates, Maps, Sets, etc.
+ *
+ * @param obj1 - First object to compare
+ * @param obj2 - Second object to compare
+ * @returns {boolean} - True if deeply equal, false otherwise
+ */
+export function deepEqual(
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>
+): boolean {
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+export const deleteTypeNameKeyRecursively = (obj: any) => {
+  if (Array.isArray(obj)) {
+    return obj.map(deleteTypeNameKeyRecursively);
+  } else if (typeof obj === "object" && obj !== null) {
+    const newObj: Record<string, any> = {};
+    for (const k in obj) {
+      if (k !== "__typename") {
+        newObj[k] = deleteTypeNameKeyRecursively(obj[k]);
+      }
+    }
+    return newObj;
+  }
+  return obj;
+};
+
+/**
+ * Converts a given date (Date object, string, or null) to an ISO string format.
+ * If the input is invalid or cannot be parsed as a date, returns an empty string.
+ * The returned ISO string **OMITS MILLISECONDS**.
+ *
+ * @param date - The date to convert, which can be a Date object, a string, or null.
+ * @returns The ISO string representation of the date without milliseconds, or an empty string if invalid.
+ */
+export const convertDateToISOString = (
+  date: Date | string | null
+): string | null => {
+  if (!date) {
+    console.log("Invalid date");
+    return null;
+  }
+  const dateObj = new Date(date);
+  if (dateObj.getTime()) {
+    return dateObj.toISOString().replace(/\.\d{3}Z$/, "Z");
+  }
+  console.log("Invalid date");
+  return null;
+};
+
+/**
+ * Formats route points with sequence numbers and ISO datetime conversion
+ *
+ * @param routePoints - The route points object with oneway and return arrays
+ * @returns Formatted route points with sequence and converted datetime fields
+ */
+export const formatRoutePointsForAPI = (routePoints: {
+  oneway: Array<any>;
+  return: Array<any>;
+}) => {
+  const formatRoutePointArray = (points: Array<any>) => {
+    return points.map((item, index) => ({
+      ...item,
+      sequence: index,
+      planned_departure_time: item.planned_departure_time
+        ? convertDateToISOString(item.planned_departure_time) || ""
+        : "",
+      actual_departure_time: item.actual_departure_time
+        ? convertDateToISOString(item.actual_departure_time) || ""
+        : "",
+      planned_arrival_time: item.planned_arrival_time
+        ? convertDateToISOString(item.planned_arrival_time) || ""
+        : "",
+    }));
+  };
+
+  const formattedRoutePoints = {
+    oneway: formatRoutePointArray(routePoints.oneway),
+    return: formatRoutePointArray(routePoints.return),
+  };
+  return formattedRoutePoints;
+};
+
+export function random5Digit() {
+  return Math.floor(10000 + Math.random() * 90000);
+}

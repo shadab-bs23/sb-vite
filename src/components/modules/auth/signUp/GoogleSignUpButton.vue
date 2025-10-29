@@ -1,7 +1,7 @@
 <template>
   <div>
     <BaseButton
-      button-class="rounded-pill custom-class-google-button sb-btn-primary-alt sb-btn-lg  fw-bold"
+      button-class="rounded-pill custom-class-google-button sb-btn-primary-alt sb-btn-lg fw-bold"
       :button-text="title"
       @click="handleGoogleSignUp"
     />

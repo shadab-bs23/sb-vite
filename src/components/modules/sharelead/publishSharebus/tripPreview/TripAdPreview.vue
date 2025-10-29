@@ -4,25 +4,23 @@
       <div class="row justify-content-between">
         <div class="row col-sm-12 col-md-8">
           <h4 class="ms-2 fw-bold fs-4 ship-gray text-start">
-            <img src="/img/trip-info/bus-icon.svg" /> {{ tripData.tripName }}
+            <img src="/img/trip-info/bus-icon.svg" /> {{ tripData.name }}
           </h4>
           <div class="d-flex">
             <div>
               <img
                 class="banner-picture rounded"
-                src="/img/dummy.jpg"
+                :src="getPhotoUrl"
                 alt="trip photo"
-                v-show="!tripData.photo.length"
+                v-show="!tripData.image_url?.length"
               />
               <img
                 class="banner-picture rounded"
-                :src="tripData.photo"
-                alt="trip
-          photo"
-                v-show="tripData.photo.length"
-                :onError="(e) => { 
-            (e.target as HTMLImageElement).onerror = null;
-            (e.target as HTMLImageElement).src = '/img/dummy.jpg' }"
+                :src="getPhotoUrl"
+                alt="trip photo"
+                v-show="tripData.image_url?.length"
+                :onError="(e) => { (e.target as HTMLImageElement).onerror = null;
+              (e.target as HTMLImageElement).src = '/img/dummy.jpg' }"
               />
             </div>
             <div class="d-flex flex-wrap flex-grow-1">
@@ -49,12 +47,8 @@
           >
             <p class="ship-gray">{{ t("sharebus.publish.tickets_from") }}</p>
             <p class="fw-bold ship-gray">
-              {{
-                tripData.available_earlybird_tickets
-                  ? tripData.earlybird_ticket_price
-                  : tripData.regular_ticket_price
-              }}
-              Kr
+              {{ roundPriceWithDecimals(tripData.price) || "N/A" }}
+              <template v-if="tripData.price">Kr</template>
             </p>
           </div>
           <BaseButton
@@ -83,17 +77,22 @@
 import { useI18n } from "vue-i18n";
 import BaseButton from "@busgroup/vue3-base-button";
 import TripInfoDetails from "../../setupSharebus/TripInfo/TripInfoDetails.vue";
-import { routePushTag } from "@/utils";
+import { generatePhotoUrlBasedOnEnv, routePushTag } from "@/utils";
 import { useUserStore } from "@/store";
-import { computed } from "vue";
+import { computed, h } from "vue";
 import { showToast } from "@/services/toast/toast.service";
 import { useRoute } from "vue-router";
 import BaseCard from "@busgroup/vue3-base-card";
 import { ROLE } from "@/components/common/enums/enums";
+import { TripInfoData } from "@/store/sharebus/types";
+import { roundPriceWithDecimals } from "@/store/cart/cart.utils";
 
 const props = defineProps({
   tripData: {
-    type: Object,
+    type: Object as () => Pick<TripInfoData, "name" | "image_url"> & {
+      id: string;
+      price: number;
+    },
     required: true,
   },
   departureInfo: {
@@ -119,6 +118,24 @@ const disableViewAndBook = computed(
     userDetails.value.currentRole !== ROLE.JOINER &&
     userDetails.value.isAuthenticated
 );
+
+const getPhotoUrl = computed(() => {
+  if (props.tripData.image_url) {
+    if (typeof props.tripData.image_url === "object") {
+      if ((props.tripData.image_url as { name: string }).name) {
+        return URL.createObjectURL(
+          new Blob([props.tripData.image_url], { type: "image/jpeg" })
+        );
+      } else {
+        return "/img/dummy.jpg";
+      }
+    } else {
+      return generatePhotoUrlBasedOnEnv(props.tripData.image_url);
+    }
+  }
+  // Fallback to the trip image URL or a default image
+  return "/img/dummy.jpg";
+});
 
 const redirectToBookingPage = () => {
   if (props.tripData.id) {

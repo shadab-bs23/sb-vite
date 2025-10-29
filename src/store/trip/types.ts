@@ -1,36 +1,37 @@
-import {
-  Trip,
-  TicketCancelled,
-  CanceledTicketTransaction,
-} from "./privateTrip/types";
+import { BaseTrip, PickTripFields } from "./baseTrip";
 
-export interface TripList {
-  name: string;
-  id: string;
-  outbound_from: string;
-  trip_status: string;
-  outbound_to: string;
-  outbound_from_datetime: string;
-  outbound_to_datetime: string;
-  return_from: string;
-  return_from_datetime: string;
-  return_to_datetime: string;
-  return_to: string;
-  trip_type: string;
-  available_earlybird_tickets: number;
-  regular_ticket_price: number;
-  earlybird_ticket_price: number;
-  is_published: boolean;
-  image_url: string;
-  sharelead_payment_status?: string;
-  is_unpublished_by_sales?: boolean;
-  canceled_tickets?: TicketCancelled[];
-  canceled_tickets_transactions?: CanceledTicketTransaction[];
-}
+/**
+ * TripList represents the fields typically shown in trip listings
+ * Based on commonly used fields across different trip list queries
+ */
+export type TripList = PickTripFields<
+  | "id"
+  | "name"
+  | "outbound_from"
+  | "outbound_to"
+  | "outbound_from_datetime"
+  | "outbound_to_datetime"
+  | "return_from"
+  | "return_from_datetime"
+  | "return_to_datetime"
+  | "return_to"
+  | "trip_type"
+  | "trip_status"
+  | "available_earlybird_tickets"
+  | "regular_ticket_price"
+  | "earlybird_ticket_price"
+  | "is_published"
+  | "image_url"
+  | "sharelead_payment_status"
+  | "is_unpublished_by_sales"
+  | "canceled_tickets"
+  | "canceled_tickets_transactions"
+  | "minimum_possible_ticket_price"
+>;
 
 export interface Trips {
   nextToken: string;
-  items: Trip[];
+  items: BaseTrip[];
   total: number;
 }
 

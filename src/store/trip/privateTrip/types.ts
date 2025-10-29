@@ -1,24 +1,19 @@
-import { TripEditor, UpdateHistory } from "@/store/salesConsole/types";
 import { StoreDefinition } from "pinia";
-import { OrganizationType } from "types/organization/organization.type";
-import { Coordinate } from "../../../.././types/sharebus/map.type";
-import { CountryFilter, TripList, Trips } from "../types";
+import { BaseTrip, Trips } from "../baseTrip";
+import { CountryFilter } from "../types";
+import { TripEditor } from "@/store/salesConsole/types";
 
 /**
- * Trip types
+ * Trip represents the complete trip data returned by GET_TRIP query
+ * This includes all fields available for trip management and editing
  */
-export type MonetaryValue = {
-  amount: number;
-  currency: string;
-};
+export type Trip = BaseTrip;
 
-export type TripSubsidy = {
-  total_amount: MonetaryValue;
-  balance_amount: MonetaryValue;
-};
-
+/**
+ * Additional ticket-related types not in BaseTrip
+ */
 export type TicketPrice = {
-  monetary_value: MonetaryValue;
+  monetary_value: BaseTrip["monetary_value"];
   valid_from_datetime: Date;
   valid_to_datetime: Date;
 };
@@ -30,15 +25,9 @@ export type TicketPayment = {
   payment_status: string;
 };
 
-export type Ticket = {
-  trip_id: string;
-  ticket_id: string;
-  type: string;
-  ticket_price: number;
-  transaction_id: string;
-  download_url: string;
-  requester: string;
-};
+/**
+ * Additional trip filter and operation types
+ */
 export type TripFilterUpdate = {
   search_list: string;
   query_string: string | null;
@@ -54,65 +43,12 @@ export type TripFilterTypeController = {
   outbound_from_datetime_range: object[] | null;
 };
 
-export type TicketCancelled = {
-  ticket_id: string;
-  ticket_price: number;
-  status: string;
-  type: string;
-};
-
-export type CanceledTicketTransaction = {
-  id: string;
-  amount: number;
-  payment_with: string;
-  status: string;
-};
-export interface Trip extends TripList {
-  monetary_value: MonetaryValue;
-  requester: string;
-  outbound_from_lat_long?: Coordinate;
-  outbound_to;
-  outbound_to_lat_long?: Coordinate;
-  outbound_timezone: string;
-  return_from_lat_long?: Coordinate;
-  return_to_lat_long?: Coordinate;
-  return_timezone: string;
-  route_points: string;
-  country: string;
-  trip_type: string;
-  bus_availability: boolean;
-  max_pax: number;
-  max_pax_teq: number;
-  passenger_goal: number;
-  sales_channel: string;
-  minimum_pax: number;
-  organization: OrganizationType;
-  subsidy: TripSubsidy;
-  total_earlybird_tickets: number;
-  total_regular_tickets: number;
-  deadline_ticket_selling: string;
-  available_earlybird_tickets: number;
-  available_regular_tickets: number;
-  name: string;
-  category: string;
-  info_to_travellers: string;
-  website_url: string;
-  digital_sign: string;
-  discount_scheme: string;
-  year: number;
-  booking_reference: string;
-  club_share_per_extra_ticket: number;
-  is_published: boolean;
-  trip_organizer: string;
-  ticket: Ticket[];
-  sharelead_ticket_reserved_price: number;
-  sharelead_contributed_amount: number;
-  tickets_reserved: number;
-  embedded_link: string;
-  vat_percent: number;
-  deadline_passenger_goal: string;
-  update_history: UpdateHistory;
-  updated_at: string;
+export interface TripCheckoutInfo {
+  origin: string;
+  destination: string;
+  departureDateTime: string;
+  arrivalDateTime: string;
+  route_points: any[];
 }
 
 /**
@@ -122,10 +58,12 @@ export interface State {
   currentTrip: Trip;
   tripList: Trips;
 }
+
 export type TripFilterSharelead = {
   event_status: object;
   country: string | null;
 };
+
 export type TripFilter = {
   event_status?: object;
   category?: { contains: string };
@@ -133,47 +71,70 @@ export type TripFilter = {
   search_field: { contains: string };
 };
 
+/**
+ * Store context types
+ */
 interface Getters {
   getTripList: () => Trips;
   getTripListNextToken: () => string;
   getCurrentTrip: () => Trip;
 }
+
 interface Actions {
-  getTrip: (tripID: string, unitTestCB?: () => void, cb?: () => void) => void;
+  getTrip: (
+    tripID: string,
+    unitTestCB?: () => void,
+    cb?: () => void
+  ) => Promise<Trip>;
   getTripListShareLead: (
-    filter: TripFilterSharelead,
+    filter?: TripFilterSharelead,
     nextToken?: string | null
   ) => Promise<object>;
   getTripListJoiner: (
     filter: CountryFilter,
-    nextToken: string | null
+    nextToken?: string | null
   ) => Promise<object>;
   getTripListJoinerArchived: (
     filter: CountryFilter,
-    nextToken: string | null
+    nextToken?: string | null
   ) => Promise<object>;
-  getSalesActiveTrips(
+  getTripListJoinerBookingCancelled: (
     filter: CountryFilter,
-    nextToken: string | null
-  ): Promise<void>;
-  getSalesUnpublishTrips(
+    nextToken?: string | null
+  ) => Promise<object>;
+  getTripListSalesActive: (
+    filter: TripFilter,
+    nextToken?: string | null
+  ) => Promise<object>;
+  getTripListSalesArchived: (
+    filter: TripFilter,
+    nextToken?: string | null
+  ) => Promise<object>;
+  getTripListSalesUnpublish: (
+    filter: TripFilter,
+    nextToken?: string | null
+  ) => Promise<object>;
+  searchTrip: (filter: TripFilterUpdate) => Promise<object>;
+  getSalesActiveTrips: (
     filter: CountryFilter,
-    nextToken: string | null
-  ): Promise<void>;
-  getSalesArchivedTrips(
+    nextToken?: string | null
+  ) => Promise<void>;
+  getSalesUnpublishTrips: (
     filter: CountryFilter,
-    nextToken: string | null
-  ): Promise<void>;
-  getTripListJoinerCancelledBooking(
+    nextToken?: string | null
+  ) => Promise<void>;
+  getSalesArchivedTrips: (
     filter: CountryFilter,
-    nextToken: string | null
-  ): Promise<void>;
-  getTripListForSalesBySearch(filter: TripFilterUpdate): Promise<void>;
+    nextToken?: string | null
+  ) => Promise<void>;
+  getTripListJoinerCancelledBooking: (
+    filter: CountryFilter,
+    nextToken?: string | null
+  ) => Promise<void>;
+  getTripListForSalesBySearch: (filter: TripFilterUpdate) => Promise<void>;
   setEditor: (editor: TripEditor) => void;
 }
-/*
- * store context define as summarize of store
- */
+
 export type StoreContext = ReturnType<
   StoreDefinition<"trip", State, Getters, Actions>
 >;

@@ -7,8 +7,12 @@ export default {
    * Get the sharebus configuration from backend endpoint.
    * @param {StoreContext} this
    */
-  fetchSetupSharebusConfig(this: StoreContext, unitTestCB?: () => void) {
-    const { onResult } = useQuery(SETUP_SHAREBUS_CONFIG, null, {
+  fetchSetupSharebusConfig(
+    this: StoreContext,
+    configId: string,
+    unitTestCB?: () => void
+  ) {
+    const { onResult } = useQuery(SETUP_SHAREBUS_CONFIG(configId), null, {
       errorPolicy: "all",
       clientId: "api_key",
     });

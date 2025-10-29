@@ -1,6 +1,6 @@
 <template>
   <div class="row" v-if="isEndedVpLoading">
-    <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8">
+    <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 mb-5">
       <div class="mb-3 text-start">
         <SelectButton
           v-model="order_type"
@@ -8,27 +8,29 @@
           optionLabel="label"
           optionValue="key"
           :unselectable="true"
+          :disabled="isDisabledTripTypeSelection"
         />
       </div>
       <OneWay
         :trySubmit="trySubmit"
         :company-info="companyInfo"
         :translations="translations"
-        @on-vp-point-missing="setVpPointMissing"
-        @on-ready-vp-list="handleEmitVpList"
+        :is-round-trip="isRoundTrip"
+        @onVpPointMissing="setVpPointMissing"
+        @onReadyVpList="handleEmitVpList"
+        @onViaPointsChange="handleViaPointsChange"
       />
       <div class="row mt-4" v-if="isRoundTrip">
-        <div class="toggle-button col-sm-12 col-md-4 text-start">
+        <div class="col-sm-12 col-md-4 text-start">
+          <h3 class="font-size-20 text-start mb-3">
+            ← {{ $t("viapoints.return") }}
+          </h3>
+
           <label class="form-label text-nowrap">{{
             translations.make_bus_availability
           }}</label>
           <div class="d-flex align-items-center">
-            <input
-              v-model="busAvailabilityComp"
-              type="checkbox"
-              id="returnTripswitch"
-            />
-            <label class="label" for="returnTripswitch"> </label>
+            <InputSwitch v-model="busAvailabilityComp" :disabled="isEditMode" />
           </div>
           <FormError
             v-if="busAvailabilityErrorMsg"
@@ -57,6 +59,8 @@
         :bus-waiting="busAvailabilityComp"
         :trySubmit="trySubmit"
         :company-info="companyInfo"
+        :disable-location-change="true"
+        :disable-add-remove-viapoints="true"
         :translations="translations"
         @on-vp-point-missing="setVpPointMissing"
         @on-ready-vp-list="handleEmitVpList"
@@ -69,18 +73,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed, watch, PropType } from "vue";
+import { intervalToDuration } from "date-fns";
+import InputSwitch from "primevue/inputswitch";
+import SelectButton from "primevue/selectbutton";
+import { computed, PropType, ref, watch } from "vue";
+import { getLoading } from "../composables/useLocationInput";
+import ViaPointController from "../controllers/ViaPointController";
+import { TRIP_TYPE } from "../enums/enums";
+import { removeDirectionResultReturn } from "../services/googleMap/map.service";
+import { RoutePoints } from "../types/types";
 import OneWay from "./OneWay.vue";
 import ReturnTrip from "./ReturnTrip.vue";
 import ViaPointMap from "./ViaPointMap.vue";
 import FormError from "./common/FormError.vue";
-import { TRIP_TYPE } from "../enums/enums";
-import ViaPointController from "../controllers/ViaPointController";
-import { intervalToDuration } from "date-fns";
-import SelectButton from "primevue/selectbutton";
-import { removeDirectionResultReturn } from "../services/googleMap/map.service";
-import { RoutePoints } from "../types/types";
-import { getLoading } from "../composables/useLocationInput";
 
 const props = defineProps({
   initValues: {
@@ -131,23 +136,29 @@ const vpPointMissing = ref({
 });
 
 const tripTypes = computed(() => {
-  const trip_types = [];
+  const trip_types: {
+    label: string;
+    key: string;
+  }[] = [];
 
-  if (!props.isEditMode || (props.isEditMode && !props.isRoundTrip)) {
-    trip_types.push({
-      label: props.translations.one_way,
-      key: "SINGLE",
-    });
-  }
+  // Always show One-way button
+  trip_types.push({
+    label: props.translations.one_way,
+    key: "SINGLE",
+  });
 
-  if (!props.isEditMode || (props.isEditMode && props.isRoundTrip)) {
-    trip_types.push({
-      label: props.translations.return_trip,
-      key: "ROUND",
-    });
-  }
+  // Always show Return trip button
+  trip_types.push({
+    label: props.translations.return_trip,
+    key: "ROUND",
+  });
 
   return trip_types;
+});
+
+// Create a new computed property for when to disable the SelectButton
+const isDisabledTripTypeSelection = computed(() => {
+  return props.isEditMode || isDisabledTripType.value;
 });
 
 const order_type = ref("SINGLE");
@@ -183,8 +194,9 @@ const busAvailabilityComp = computed({
 const oneWay = computed(() => ViaPointController.getTravelPointListOneWay());
 const roundTrip = computed(() => ViaPointController.getTravelPointListRound());
 const waitingTime = computed(() => {
+  //TODO: Calling 3 times need to be optimized @sanibs23
   const start = oneWay.value[oneWay.value.length - 1]
-    .planned_arrival_time as Date;
+    ?.planned_arrival_time as Date;
   const end = roundTrip.value[0]?.planned_departure_time as Date;
 
   if (!start || !end) return { minutes: 0 };
@@ -192,6 +204,14 @@ const waitingTime = computed(() => {
     start: new Date(start),
     end: new Date(end),
   });
+});
+
+const isDisabledTripType = computed(() => {
+  return (
+    oneWay.value.length === 0 ||
+    !oneWay.value[0].point ||
+    !oneWay.value[oneWay.value.length - 1].point
+  );
 });
 
 const setVpPointMissing = (tripType: string, isPointMissing: boolean) => {
@@ -203,12 +223,26 @@ const handleEmitVpList = () => {
   emit("onReadyVpList", ViaPointController.getFormattedViaPointLists());
 };
 
+/**
+ * Unified handler for all via point changes in the one-way trip
+ * that affect the return trip. This simplifies the logic by centralizing
+ * all return trip update operations in one place.
+ *
+ * @param {Object} payload - Contains all necessary data for updates
+ */
+const handleViaPointsChange = () => {
+  if (!isRoundTrip.value) return;
+
+  // Just sync - no need for complex switching
+  ViaPointController.syncReturnTrip();
+};
+
 const isEndedVpLoading = ref(false);
 
 watch(
   () => props.initValues,
   (route_points) => {
-    if (route_points.oneway.length > 0) {
+    if (route_points && route_points.oneway.length > 0) {
       ViaPointController.setTravelPointListOneWay(route_points.oneway);
       ViaPointController.setTravelPointListRound(route_points.return);
       if (route_points.return.length) order_type.value = "ROUND";
@@ -256,47 +290,14 @@ watch(
   border-color: #138340 !important;
 }
 
-.toggle-button {
-  input[type="checkbox"] {
-    height: 0;
-    width: 0;
-    visibility: hidden;
-    background: #d5d6d5;
-  }
+.el-date-picker__header {
+  display: contents !important;
+}
 
-  .label {
-    cursor: pointer;
-    text-indent: -9999px;
-    width: 69px;
-    height: 32px;
-    background: #d5d6d5;
-    border-radius: 16px;
-    position: relative;
-  }
-
-  /* toggle button style */
-  .label:after {
-    content: "";
-    position: absolute;
-    background: #0c1026;
-    left: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 90px;
-    transition: 0.3s;
-  }
-
-  input:checked + label {
-    background: #a5f2c4;
-  }
-
-  input:checked + label:after {
-    left: 100%;
-    transform: translateX(-100%);
-  }
-
-  .label:active:after {
-    width: 130px;
-  }
+.p-inputswitch .p-inputswitch-slider {
+  border-radius: 30px;
+}
+.p-inputswitch .p-inputswitch-slider::before {
+  border-radius: 50%;
 }
 </style>

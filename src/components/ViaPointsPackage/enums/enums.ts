@@ -7,3 +7,9 @@ export enum TRIP_TYPE {
   ONEWAY = "oneway",
   RETURN = "return",
 }
+
+export enum ACTIONS {
+  ADD = "add",
+  REMOVE = "remove",
+  DRAG_DROP = "drag_drop",
+}

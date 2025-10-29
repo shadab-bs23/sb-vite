@@ -1,8 +1,8 @@
 <template>
-  <p>
+  <p v-if="shouldShow" class="text-start">
     {{
       t("sales.status.last_changed", {
-        date_time: format(new Date(dateString), "dd:MM:yyyy, hh:mm"),
+        date_time: formatInCompanyTimezone(dateString, "dd.MM.yyyy HH:mm"),
         status,
         name: publishedBy,
       })
@@ -10,23 +10,62 @@
   </p>
 </template>
 <script lang="ts" setup>
-import { format } from "date-fns";
+import { computed, PropType } from "vue";
 import { useI18n } from "vue-i18n";
+import { useSalesStore, useUserStore } from "@/store";
+import { SalesEditGroup, UpdateHistory } from "@/store/salesConsole/types";
+import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
 
 const { t } = useI18n();
 
-defineProps({
-  dateString: {
-    type: String,
+const props = defineProps({
+  tripId: {
+    type: [String, Number],
     required: true,
   },
-  status: {
-    type: String,
+  changeKey: {
+    type: String as PropType<SalesEditGroup>,
     required: true,
   },
-  publishedBy: {
-    type: String,
-    default: "",
+  updateHistory: {
+    type: Object as PropType<UpdateHistory>,
+    required: true,
   },
+});
+
+const salesStore = useSalesStore();
+const userStore = useUserStore();
+const formatInCompanyTimezone = useCompanyTimeFormat();
+
+const salesHistory = computed(() => {
+  return salesStore.$state.salesEditTrip[props.tripId];
+});
+
+const editingMode = computed(() => salesStore.$state.editing_mode);
+
+const dateString = computed(() => {
+  const salesData = salesHistory.value?.update_history?.[props.changeKey];
+  const propsData = props.updateHistory?.[props.changeKey];
+  return salesData || propsData || "";
+});
+
+const status = computed(() => {
+  const hasUnpublishedChanges =
+    salesHistory.value?.update_history?.[props.changeKey];
+  return hasUnpublishedChanges
+    ? t("common.not_published")
+    : t("common.published");
+});
+
+const publishedBy = computed(() => {
+  if (!salesHistory.value) {
+    const updatedBy = props.updateHistory.updated_by_ferdia_sales;
+    return typeof updatedBy === "string" ? "" : updatedBy?.name || "";
+  }
+  return userStore.data.attributes.name;
+});
+
+const shouldShow = computed(() => {
+  return editingMode.value && !!dateString.value;
 });
 </script>

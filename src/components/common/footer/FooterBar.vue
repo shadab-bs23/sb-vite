@@ -36,13 +36,6 @@
             </li>
           </ul>
         </div>
-        <button
-          @click="redirect"
-          class="footer-contact-us-button sb-btn-secondary sb-btn-md badge rounded-pill px-2 d-flex justify-content-center align-items-center"
-        >
-          <span class="me-2">{{ t("footer.contact_us") }}</span>
-          <i class="fi fi-box-arrow-up-right green-jewel"></i>
-        </button>
       </div>
       <div
         class="border-top d-flex flex-wrap justify-content-between align-items-center pt-3"
@@ -57,7 +50,7 @@
 </template>
 <script setup lang="ts">
 import { CTA } from "@/components/common/enums/enums";
-import { redirect, routePush } from "@/utils";
+import { routePush } from "@/utils";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n({ useScope: "global" });
 </script>

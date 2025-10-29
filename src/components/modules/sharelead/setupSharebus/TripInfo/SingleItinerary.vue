@@ -28,11 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  getFormattedTime,
-  replaceBeforeGivenIndex,
-  splitAndGetFirstElement,
-} from "@/utils";
+import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
+import { replaceBeforeGivenIndex, splitAndGetFirstElement } from "@/utils";
 
 defineProps({
   viaPoint: {
@@ -55,4 +52,10 @@ defineProps({
     default: false,
   },
 });
+
+const formatInCompanyTz = useCompanyTimeFormat();
+
+const getFormattedTime = (dateStr: string) => {
+  return formatInCompanyTz(dateStr, "HH:mm");
+};
 </script>

@@ -35,7 +35,7 @@ const countryParam = computed(() => `?country=${country?.value.countryISO}`);
 const linkCopiedText = ref(t("sharebus.trip_page.copy_booking_link"));
 const linkToShare = computed(
   () =>
-    `${environmentLink[import.meta.env.NODE_ENV as string]}/social-share/${
+    `${environmentLink[process.env.NODE_ENV as string]}/social-share/${
       props.tripId
     }${countryParam.value}`
 );

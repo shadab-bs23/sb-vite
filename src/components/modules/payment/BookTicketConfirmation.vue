@@ -4,17 +4,21 @@
       {{ t("sharebus.booking.thank_you_booking") }}!
     </h2>
     <BookingSummary
-      v-if="ticketsCalculation"
+      v-if="cartTickets.length > 0"
       :current-trip="tripInfo"
-      :total="ticketsCalculation.total"
-      :tickets="ticketsCalculation.tickets"
+      :total="totalPrice"
+      :tickets="cartTickets"
       :not-guest-show="true"
     >
       <template v-slot:title>
         <ul>
-          <li class="d-flex justify-content-between">
-            <span> {{ t("sharebus.booking.booking_number") }}</span>
-            <span class="fw-bold">{{ tripInfo.booking_reference }}</span>
+          <li class="d-flex justify-content-between align-items-center py-2">
+            <span class="fs-18">{{
+              t("sharebus.booking.booking_number")
+            }}</span>
+            <span class="fw-bold fs-18 text-dark">{{
+              tripInfo.booking_reference
+            }}</span>
           </li>
         </ul>
         <hr />
@@ -39,7 +43,13 @@
         </ul>
         <hr />
         <ul>
-          <li class="rounded" v-if="remainingPassGoal > 0">
+          <li
+            class="rounded"
+            v-if="
+              tripInfo.trip_status === TRIP_STATUS.UNCONFIRMED &&
+              remainingPassGoal > 0
+            "
+          >
             <div class="info-yellow-bg p-3 mb-0">
               <span><img src="/img/trip-info/info-icon-green.svg" /></span>
               <span class="ms-2">{{
@@ -56,7 +66,7 @@
             <div class="extended-light-green-bg p-3 text-start">
               <span> <img src="/img/trip-info/check-sign.svg" /></span>
               <span class="fw-bold ms-2">
-                {{ t("sharebus.booking.confirmed_bus") }}
+                {{ t("sharebus.joiner.booking.confirmed_bus") }}
               </span>
             </div>
           </li>
@@ -90,6 +100,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 
 import { computed, onBeforeUnmount, PropType } from "vue";
 import { useI18n } from "vue-i18n";
+import { TRIP_STATUS } from "../sharelead/trip/tripStatus/tripStatusEnum";
 
 const cartStore = useCartStore();
 const props = defineProps({
@@ -114,22 +125,16 @@ const remainingPassGoal = computed(() => {
 
 const { t } = useI18n();
 
-const ticketsCalculation = computed(() => {
-  const tickets = cartStore.getJoinerTickets(props.tripInfo);
+const cartTickets = computed(() => {
+  return cartStore.getTickets();
+});
 
-  const early =
-    tickets.earlyBirdTickets.count >= 1 ? tickets.earlyBirdTickets.price : 0;
-  const regular =
-    tickets.regularTickets.count >= 1 ? tickets.regularTickets.price : 0;
-
-  return {
-    tickets,
-    total: early + regular,
-  };
+const totalPrice = computed(() => {
+  return cartStore.getTotalPrice();
 });
 
 onBeforeUnmount(() => {
-  cartStore.removeJoinerTickets(props.tripInfo.id);
+  cartStore.clearCart();
 });
 
 /*

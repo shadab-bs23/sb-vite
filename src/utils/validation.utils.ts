@@ -3,5 +3,9 @@ import { t } from "@/locales";
 
 export const phoneNumberRule = (isPhoneValid: boolean) =>
   string()
-    .required("This field is required.")
+    .required(
+      t("form.validation.field_required", {
+        field_name: t("auth.common.phone_number"),
+      })
+    )
     .test("valid", "Phone number is not valid.", () => isPhoneValid);

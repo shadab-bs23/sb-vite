@@ -12,15 +12,20 @@ import {
   forgotPasswordSubmit,
   getAuthenticatedUser,
 } from "@/services/auth/auth.service";
-import { UserSignUp } from "././types/auth/user.type";
+import { UserSignUp } from "types/auth/user.type";
 import { showToast } from "@/services/toast/toast.service";
-import { UserSignIn } from "././types/auth/user.type";
-import { GeneralError } from "././types/errors/errors.type";
+import { UserSignIn } from "types/auth/user.type";
+import { GeneralError } from "types/errors/errors.type";
 import useLoaderStore from "../loader/loader.store";
 import { ForgotPassword, StoreContext } from "./types";
-import { RESET_PASSWORD, getUserInfo } from "@/services/graphql/query";
+import {
+  DELETE_USER_INFO,
+  RESET_PASSWORD,
+  getUserInfo,
+} from "@/services/graphql/query";
 import { useApolloQueryAsync } from "@/composables/useApolloQueryAsync";
 import { ROLE } from "@/components/common/enums/enums";
+import { useMutation } from "@vue/apollo-composable";
 
 export default {
   /**
@@ -305,5 +310,19 @@ export default {
         console.log(err);
         return err;
       });
+  },
+
+  /**
+   * Delete user action
+   *
+   */
+  deleteUser(this: StoreContext) {
+    const loader = useLoaderStore();
+    loader.changeLoadingStatus({ isLoading: true });
+    const { mutate: sendData } = useMutation(DELETE_USER_INFO);
+    return sendData().then((result) => {
+      loader.changeLoadingStatus({ isLoading: false });
+      return result;
+    });
   },
 };

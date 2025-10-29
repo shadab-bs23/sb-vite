@@ -8,70 +8,118 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import {
   CreateShareBus,
   publishSharebus,
-} from "./types/sharebus/ShareBusCreationProcess";
+} from "types/sharebus/ShareBusCreationProcess";
 import useLoaderStore from "../loader/loader.store";
 import {
-  SharebusStepOne,
-  SharebusStepThree,
-  SharebusStepTwo,
+  RouteStepData,
+  OrganizationStepData,
+  PassengerGoalAndPriceStepData,
+  TripInfoData,
+  PublishStepData,
   StoreContext,
+  TicketPricing,
+  TicketDiscount,
 } from "./types";
 
 export default {
   /**
-   * Set trip details step 1 form data
-   * @param {SharebusStepOne} stepOnePayload
+   * Set route step data
+   * @param {RouteStepData} routeStepData
    */
-  setStepOneData(this: StoreContext, stepOnePayload: SharebusStepOne) {
+  setRouteStepData(this: StoreContext, routeStepData: RouteStepData) {
     this.$state = {
       ...this.$state,
       setup: {
         ...this.$state.setup,
-        stepOne: { ...stepOnePayload },
+        routeStep: { ...routeStepData },
       },
     };
   },
 
   /**
-   * Set trip details step 2 form data
-   * @param {SharebusStepTwo} stepTwoPayload
+   * Set organization step data
+   * @param {OrganizationStepData} organizationStepData
    */
-  setStepTwoData(this: StoreContext, stepTwoPayload: SharebusStepTwo) {
+  setOrganizationStepData(
+    this: StoreContext,
+    organizationStepData: OrganizationStepData
+  ) {
     this.$state = {
       ...this.$state,
       setup: {
         ...this.$state.setup,
-        stepTwo: { ...stepTwoPayload },
+        organizationStep: { ...organizationStepData },
       },
     };
   },
 
   /**
-   * Set trip details step 3 form data
-   * @param {SharebusStepThree} stepThreePayload
+   * Set passenger goal and price step data
+   * @param {PassengerGoalAndPriceStepData} passengerGoalAndPriceStepData
    */
-  setStepThreeData(this: StoreContext, stepThreePayload: SharebusStepThree) {
+  setPassengerGoalAndPriceStepData(
+    this: StoreContext,
+    passengerGoalAndPriceStepData: PassengerGoalAndPriceStepData
+  ) {
     this.$state = {
       ...this.$state,
       setup: {
         ...this.$state.setup,
-        stepThree: { ...this.$state.setup.stepThree, ...stepThreePayload },
+        passengerGoalAndPriceStep: {
+          ...this.$state.setup.passengerGoalAndPriceStep,
+          ...passengerGoalAndPriceStepData,
+        },
       },
     };
   },
+
   /**
-   * Set trip details step 3 form data
+   * Set trip info data
+   * @param {TripInfoData} tripInfoData
+   */
+  setTripInfoData(this: StoreContext, tripInfoData: TripInfoData) {
+    this.$state = {
+      ...this.$state,
+      setup: {
+        ...this.$state.setup,
+        tripInfoStep: {
+          ...this.$state.setup.tripInfoStep,
+          ...tripInfoData,
+        },
+      },
+    };
+  },
+
+  /**
+   * Set publish step data
+   * @param {PublishStepData} publishStepData
+   */
+  setPublishStepData(this: StoreContext, publishStepData: PublishStepData) {
+    this.$state = {
+      ...this.$state,
+      setup: {
+        ...this.$state.setup,
+        publishStep: {
+          ...this.$state.setup.publishStep,
+          ...publishStepData,
+        },
+      },
+    };
+  },
+
+  /**
+   * Set specific data for passenger goal and price step
    * @param {string} key - where in obj where need to set specific value
-   * @param {string|number} value - where in obj need to set specific value
+   * @param {string|number|unknown} value - where in obj need to set specific value
    *
    * @returns{void} -returning void
    */
-  setStep3DataSpecific(
+  setPassengerGoalAndPriceStepDataSpecific(
     this: StoreContext,
-    key: string,
-    value: string | number
+    key: keyof PassengerGoalAndPriceStepData,
+    value: string | number | unknown
   ): void {
-    this.$state.setup.stepThree[key] = value;
+    this.$state.setup.passengerGoalAndPriceStep[key as string] = value;
   },
 
   async createSharebus(this: StoreContext, payload: CreateShareBus) {
@@ -129,5 +177,85 @@ export default {
     );
 
     return { error, loading, onResult };
+  },
+
+  /**
+   * Generate API payload from current step data
+   */
+  generateApiPayload(this: StoreContext): {
+    suggested_ticket_price: number;
+    ticket_pricing: TicketPricing;
+    discounts: Record<string, { value: number }>;
+  } {
+    const stepData = this.$state.setup.passengerGoalAndPriceStep;
+
+    return {
+      suggested_ticket_price:
+        stepData.suggested_ticket_price || stepData.ticketPrice || 0,
+      ticket_pricing: {
+        categories: stepData.ticket_pricing?.categories || [
+          { name: "Adult", enabled: true },
+          { name: "Child", enabled: true },
+          { name: "Senior", enabled: false },
+        ],
+        via_points: stepData.ticket_pricing?.via_points || [],
+      },
+      discounts: stepData.discounts || {},
+    };
+  },
+
+  /**
+   * Update ticket pricing categories
+   */
+  updateTicketPricingCategories(
+    this: StoreContext,
+    categories: TicketPricing["categories"]
+  ): void {
+    if (!this.$state.setup.passengerGoalAndPriceStep.ticket_pricing) {
+      this.$state.setup.passengerGoalAndPriceStep.ticket_pricing = {
+        categories: [],
+        via_points: [],
+      };
+    }
+    this.$state.setup.passengerGoalAndPriceStep.ticket_pricing.categories =
+      categories;
+  },
+
+  /**
+   * Update via points pricing
+   */
+  updateViaPointsPricing(
+    this: StoreContext,
+    viaPoints: TicketPricing["via_points"]
+  ): void {
+    if (!this.$state.setup.passengerGoalAndPriceStep.ticket_pricing) {
+      this.$state.setup.passengerGoalAndPriceStep.ticket_pricing = {
+        categories: [],
+        via_points: [],
+      };
+    }
+    this.$state.setup.passengerGoalAndPriceStep.ticket_pricing.via_points =
+      viaPoints;
+  },
+
+  /**
+   * Update discounts
+   */
+  updateDiscounts(
+    this: StoreContext,
+    discounts: Record<string, { value: number }>
+  ): void {
+    this.$state.setup.passengerGoalAndPriceStep.discounts = discounts;
+  },
+
+  /**
+   * Update ticket discounts
+   */
+  updateTicketDiscounts(
+    this: StoreContext,
+    ticketDiscounts: TicketDiscount[]
+  ): void {
+    this.$state.setup.passengerGoalAndPriceStep.ticket_discounts =
+      ticketDiscounts;
   },
 };

@@ -1,9 +1,10 @@
-import { TRIP_TYPE } from "../enums/enums";
 import { showToast } from "@/services/toast/toast.service";
-import { TDistanceWithTime, TViaPoints, FromToError } from "../types/types";
-import { isAfter } from "date-fns";
+import { isAfter, isEqual } from "date-fns";
 import { ref, toRaw } from "vue";
+import { TRIP_TYPE } from "../enums/enums";
+import { FromToError, TDistanceWithTime, TViaPoints } from "../types/types";
 import { formatVPPayload } from "../utils/time.utils";
+// import { getUniqueIntId } from "@/utils";
 
 export const fromToErrInitValue: FromToError = {
   fromPoint: "",
@@ -145,23 +146,69 @@ export default class ViaPointController {
       tripType === TRIP_TYPE.ONEWAY
         ? this._travelOneWayPointList.value
         : this._travelRoundTripPointList.value;
-    const currentArrivalTime = new Date(
-      vpList[vpIndex]?.planned_arrival_time as Date
-    );
-    const currentDepartureTime = new Date(
-      vpList[vpIndex]?.planned_departure_time as Date
-    );
 
-    if (currentArrivalTime && currentDepartureTime) {
-      if (isAfter(currentArrivalTime, currentDepartureTime)) {
-        showToast(
-          "error",
-          "Departure time should be less than the arrival time."
-        );
-        return true;
+    // First check: arrival vs departure for the same point
+    const arrivalTime = vpList[vpIndex]?.planned_arrival_time;
+    const departureTime = vpList[vpIndex]?.planned_departure_time;
+
+    // Only proceed if both times exist and are valid
+    if (!arrivalTime || !departureTime) {
+      return false;
+    }
+
+    const currentArrivalTime = new Date(arrivalTime as Date);
+    const currentDepartureTime = new Date(departureTime as Date);
+
+    // Check if dates are valid
+    if (
+      isNaN(currentArrivalTime.getTime()) ||
+      isNaN(currentDepartureTime.getTime())
+    ) {
+      return false;
+    }
+
+    // Check if arrival > departure for same point
+    if (isAfter(currentArrivalTime, currentDepartureTime)) {
+      showToast(
+        "error",
+        "Departure time should be greater than the arrival time."
+      );
+      return true;
+    }
+
+    // Second check: cumulative sequence validation
+    // Check if current departure is after previous point's departure
+    if (vpIndex > 0) {
+      const previousPoint = vpList[vpIndex - 1];
+      const prevDepartureTime = previousPoint?.planned_departure_time;
+
+      if (
+        prevDepartureTime &&
+        ViaPointController.isValidDate(prevDepartureTime)
+      ) {
+        const prevDeparture = new Date(prevDepartureTime as Date);
+
+        if (
+          isAfter(prevDeparture, currentDepartureTime) ||
+          isEqual(prevDeparture, currentDepartureTime)
+        ) {
+          showToast(
+            "error",
+            "Departure time must be later than the previous viapoint's departure time."
+          );
+          return true;
+        }
       }
     }
+
     return false;
+  };
+
+  // Helper method to validate date
+  static isValidDate = (dateValue) => {
+    if (!dateValue) return false;
+    const date = new Date(dateValue);
+    return !isNaN(date.getTime());
   };
 
   /**
@@ -171,6 +218,12 @@ export default class ViaPointController {
    */
   static isDatetimeErr = (index, tripType) => {
     const finalError = {};
+    const vpList =
+      tripType === TRIP_TYPE.ONEWAY
+        ? this._travelOneWayPointList.value
+        : this._travelRoundTripPointList.value;
+
+    // Check current point
     const currentIndexError = this.compareArrivalAndDeparture(index, tripType);
     if (currentIndexError) finalError[index] = currentIndexError;
     else {
@@ -180,15 +233,12 @@ export default class ViaPointController {
         : delete this._returnTripErrors.value[index];
     }
 
-    const vpList =
-      tripType === TRIP_TYPE.ONEWAY
-        ? this._travelOneWayPointList.value
-        : this._travelRoundTripPointList.value;
-
-    let nextIndexError = false;
-
+    // Check next point (if exists)
     if (index < vpList.length - 2) {
-      nextIndexError = this.compareArrivalAndDeparture(index + 1, tripType);
+      const nextIndexError = this.compareArrivalAndDeparture(
+        index + 1,
+        tripType
+      );
       if (nextIndexError) finalError[index + 1] = nextIndexError;
       else {
         delete finalError[index + 1];
@@ -197,6 +247,22 @@ export default class ViaPointController {
           : delete this._returnTripErrors.value[index + 1];
       }
     }
+
+    // Check previous point (if exists) - this ensures sequence validation
+    if (index > 0) {
+      const prevIndexError = this.compareArrivalAndDeparture(
+        index - 1,
+        tripType
+      );
+      if (prevIndexError) finalError[index - 1] = prevIndexError;
+      else {
+        delete finalError[index - 1];
+        tripType === TRIP_TYPE.ONEWAY
+          ? delete this._onewayErrors.value[index - 1]
+          : delete this._returnTripErrors.value[index - 1];
+      }
+    }
+
     tripType === TRIP_TYPE.ONEWAY
       ? this.setOnewayErrors(finalError)
       : this.setReturnTripErrors(finalError);
@@ -269,11 +335,115 @@ export default class ViaPointController {
     };
   };
 
+  /**
+   * Simple sync: reverse oneway points to create return trip
+   * Preserves return start departure time and existing via point times when updating
+   */
+  static syncReturnTrip() {
+    const onewayPoints = this.getTravelPointListOneWay();
+    const existingReturnTrip = this.getTravelPointListRound();
+
+    if (onewayPoints.length === 0) {
+      this.setTravelPointListRound([]);
+      return;
+    }
+
+    // Get existing return departure time if available
+    const existingReturnDepartureTime =
+      existingReturnTrip.length > 0
+        ? existingReturnTrip[0]?.planned_departure_time
+        : null;
+
+    // Create a map of existing return trip points by their location (point property)
+    // to preserve timing data when syncing
+    const existingReturnPointsMap = new Map();
+    existingReturnTrip.forEach((point) => {
+      if (point.point) {
+        existingReturnPointsMap.set(point.point, {
+          planned_departure_time: point.planned_departure_time,
+          planned_arrival_time: point.planned_arrival_time,
+          actual_departure_time: point.actual_departure_time,
+        });
+      }
+    });
+
+    // Create reversed return trip
+    const reversedPoints: TViaPoints[] = [];
+
+    // Return trip starts where oneway ends (last becomes first)
+    const returnStart = { ...onewayPoints[onewayPoints.length - 1] };
+    // returnStart.id = getUniqueIntId();
+    returnStart.type = "from";
+    returnStart.sequence = 0;
+
+    // Preserve existing departure time or use oneway end arrival time
+    returnStart.planned_departure_time =
+      existingReturnDepartureTime ||
+      onewayPoints[onewayPoints.length - 1]?.planned_arrival_time ||
+      null;
+    returnStart.planned_arrival_time = null;
+    returnStart.actual_departure_time = null;
+    reversedPoints.push(returnStart);
+
+    // Add via points in reverse order
+    const viaPoints = onewayPoints.slice(1, -1);
+    viaPoints.reverse().forEach((point, index) => {
+      const reversePoint = { ...point };
+      // reversePoint.id = getUniqueIntId();
+      reversePoint.type = "via";
+      reversePoint.sequence = index + 1;
+
+      // Preserve existing times for this location if they exist
+      // const existingTimes = existingReturnPointsMap.get(point.point);
+      // if (existingTimes) {
+      //   reversePoint.planned_departure_time =
+      //     existingTimes.planned_departure_time;
+      //   // reversePoint.planned_arrival_time = existingTimes.planned_arrival_time;
+      //   reversePoint.actual_departure_time =
+      //     existingTimes.actual_departure_time;
+      // } else {
+      //   reversePoint.planned_departure_time = null;
+      //   reversePoint.planned_arrival_time = null;
+      //   reversePoint.actual_departure_time = null;
+      // }
+      reversePoint.planned_departure_time = null;
+      reversePoint.planned_arrival_time = null;
+      reversePoint.actual_departure_time = null;
+      reversedPoints.push(reversePoint);
+    });
+
+    // Return trip ends where oneway starts (first becomes last)
+    const returnEnd = { ...onewayPoints[0] };
+    // returnEnd.id = getUniqueIntId();
+    returnEnd.type = "to";
+    returnEnd.sequence = reversedPoints.length;
+
+    // Preserve existing times for the end point if they exist
+    const existingEndTimes = existingReturnPointsMap.get(onewayPoints[0].point);
+    if (existingEndTimes) {
+      returnEnd.planned_departure_time =
+        existingEndTimes.planned_departure_time;
+      returnEnd.planned_arrival_time = existingEndTimes.planned_arrival_time;
+      returnEnd.actual_departure_time = existingEndTimes.actual_departure_time;
+    } else {
+      returnEnd.planned_departure_time = null;
+      returnEnd.planned_arrival_time = null;
+      returnEnd.actual_departure_time = null;
+    }
+
+    reversedPoints.push(returnEnd);
+    this.setTravelPointListRound(reversedPoints);
+  }
+
+  /**
+   * Checks if there are any errors in the via points.
+   */
   static hasViapointErrors = () => {
     const onewayFromToError = this.getFromToError("oneway");
     const returnFromToError = this.getFromToError("returnTrip");
     const onewayError = this.getOnewayErrors();
     const returnTripError = this.getReturnTripErrors();
+
     return (
       !onewayFromToError.fromDepartureTime ||
       !onewayFromToError.fromPoint ||

@@ -84,6 +84,10 @@ See here: https://stackoverflow.com/questions/70483510/bootstrap5-icons-font-wei
   line-height: 1.3;
 }
 
+.text-stroke-1 {
+  -webkit-text-stroke: 1px;
+}
+
 .text-stroke-2 {
   -webkit-text-stroke: 2px;
 }
@@ -174,7 +178,6 @@ input[type="number"] {
 .Vue-Toastification__close-button {
   opacity: 1;
   font-size: 20px !important;
-  background-color: orange;
   color: white;
   border-radius: 50%;
   height: 35px;

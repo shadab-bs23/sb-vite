@@ -11,5 +11,11 @@
 .banner-picture {
   height: 85px;
   width: 85px;
-  object-fit: cover;
+  object-fit: contain;
+}
+.badge-gray {
+  border-radius: 5px;
+  background: #f4f5f4;
+  padding: 2px 4px;
+  font-size: 14px;
 }

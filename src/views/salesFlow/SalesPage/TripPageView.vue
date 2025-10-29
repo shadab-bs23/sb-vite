@@ -3,14 +3,15 @@
     <BaseBreadcrumbs
       modifier-class="divider p-0"
       crumb-class="crumb fw-bold"
-      :current-crumb-label="tripInfo.name"
+      :current-crumb-label="tripInfo.name + ' ' + tripInfo.booking_reference"
       label-class="crumb-label"
       crumb-link-class="crumb-link ship-gray"
     />
-    <h3 class="text-start ms-2 mb-4">
+    <h3 class="text-start ms-2 mb-2">
       <span class="me-2"><img src="/img/my-busses/bus-logo.svg" /></span
       >{{ tripInfo.name }}
     </h3>
+
     <div v-if="tripInfo.id">
       <div class="text-start mb-3">
         <div>
@@ -55,45 +56,53 @@
           >
         </div>
       </div>
-      <TabsWrapper
-        :tab-index="tabIndex"
-        wrapper-class="col-sm-6 col-md-4 col-xl-2"
-      >
-        <TabComponent :title="t('common.status')">
-          <TripStatusSection
-            v-if="
-              tripInfo.trip_status === TRIP_STATUS.UNCONFIRMED ||
-              tripInfo.trip_status === TRIP_STATUS.CONFIRMED
-            "
-            :trip-info="tripInfo"
-          />
+      <div class="row">
+        <TabsWrapper
+          :tab-index="tabIndex"
+          wrapper-class="col-sm-12 col-md-4"
+          tab-btn-class="col-12"
+        >
+          <TabComponent :title="t('common.status')">
+            <div class="row">
+              <TripStatusSection
+                v-if="
+                  tripInfo.trip_status === TRIP_STATUS.UNCONFIRMED ||
+                  tripInfo.trip_status === TRIP_STATUS.CONFIRMED
+                "
+                :trip-info="tripInfo"
+                :sold-tickets="totalSoldTickets"
+              />
+            </div>
 
-          <div
-            class="text-center"
-            v-if="
-              tripInfo.trip_status !== TRIP_STATUS.UNCONFIRMED &&
-              tripInfo.trip_status !== TRIP_STATUS.CONFIRMED
-            "
-          >
-            <TripStatus
-              :trip-status="tripStatus"
-              :departure-info="departureInfo"
-              :return-info="returnInfo"
+            <div
+              class="text-center"
+              v-if="
+                tripInfo.trip_status !== TRIP_STATUS.UNCONFIRMED &&
+                tripInfo.trip_status !== TRIP_STATUS.CONFIRMED
+              "
+            >
+              <TripStatus
+                :trip-status="tripStatus"
+                :departure-info="departureInfo"
+                :return-info="returnInfo"
+                :total-sold-tickets="totalSoldTickets"
+                :max-pax="tripInfo.max_pax"
+              />
+            </div>
+          </TabComponent>
+          <TabComponent :title="t('common.details')">
+            <TripDetailsSection
+              :trip-info="tripInfo"
+              :update-history="tripInfo.update_history"
             />
-          </div>
-        </TabComponent>
-        <TabComponent :title="t('common.details')">
-          <TripDetailsSection
-            :trip-info="tripInfo"
-            :update-history="tripInfo.update_history"
-          />
-        </TabComponent>
-      </TabsWrapper>
+          </TabComponent>
+        </TabsWrapper>
+      </div>
     </div>
   </div>
   <div
     v-if="editingMode"
-    class="gray-white-bg col-sm-12 position-fixed bottom-0 end-0 col-md-3 col-xl-5 col-xxl-3 p-4 shadow d-flex flex-column justify-content-center align-content-center rounded"
+    class="changesListPanel gray-white-bg col-sm-12 position-fixed bottom-0 end-0 col-md-3 col-xl-5 col-xxl-3 p-4 shadow d-flex flex-column justify-content-center align-content-center rounded"
   >
     <div v-if="!loading">
       <div class="d-flex justify-content-between">
@@ -214,6 +223,7 @@ import TabComponent from "../../../components/common/tabs/tabComponent.vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import {
+  useConfigStore,
   useLoaderStore,
   useSalesStore,
   useTripStore,
@@ -225,6 +235,7 @@ import TripDetailsSection from "@/components/modules/sales/tripDetails/edit/Trip
 import BaseModal from "@busgroup/vue3-base-modal";
 import { TRIP_STATUS } from "@/components/modules/sharelead/trip/tripStatus/tripStatusEnum";
 import { useToggle } from "@/composables/useToggle";
+import { renameFile, s3FileUpload } from "@/composables/useS3Bucket";
 import {
   Passenger,
   SalesEditGroup,
@@ -232,9 +243,10 @@ import {
 } from "@/store/salesConsole/types";
 import {
   isoFormatDateTime,
-  removeZforISOString,
   routePush,
   setRouteQuery,
+  getUniqueIntId,
+  deleteTypeNameKeyRecursively,
 } from "@/utils";
 import TripController from "@/components/modules/sharelead/controllers/TripController";
 import TripStatus from "@/components/modules/sharelead/trip/tripStatus/TripStatus.vue";
@@ -242,20 +254,22 @@ import ConfirmTripDialog from "./ConfirmTripDialog.vue";
 import { showToast, toastWithActionable } from "@/services/toast/toast.service";
 import { countryType } from "@/core/plugin/countryPlugin";
 import { useRedirect } from "@/services/auth/redirect.service";
-import { isBefore } from "date-fns";
 import { ROLE } from "@/components/common/enums/enums";
+import { SHAREBUS_CONFIG } from "@/services/graphql/enums/sharebus-config";
+import { handleUnauthorizedError } from "@/core/http/graphql/handleResponse";
 
 const { t } = useI18n();
 const route = useRoute();
 const user = useUserStore();
 const tripStore = useTripStore();
 const salesStore = useSalesStore();
+const config = useConfigStore();
 const confirmationModal = useToggle();
 const toggled = useToggle();
 const country = inject<ComputedRef<countryType>>("country");
 
 const tabIndex = ref(route.query.tabindex ? Number(route.query.tabindex) : 0);
-
+const loading = ref(false);
 const departureInfo = TripController.getTripDeparture();
 const returnInfo = TripController.getTripReturn();
 
@@ -293,17 +307,7 @@ const isConfirmable = computed(() => {
   );
 });
 
-onMounted(() => {
-  tripStore.getTrip(route.params.tag as string).then((trip) => {
-    if (trip.getTrip.country !== country?.value.countryISO) {
-      showToast("error", "Sorry, permission denied");
-      useRedirect().redirect();
-    }
-    if (trip.getTrip.update_history !== null) {
-      fetchAndSetEditor(trip.getTrip.update_history.updated_by_ferdia_sales);
-    }
-  });
-});
+const configuration = computed(() => config.getSharebusSetupConfig);
 
 const changesList = computed(() => {
   const list = salesStore.getSalesConsoleTrip()[tripInfo.value.id];
@@ -328,22 +332,6 @@ const changesList = computed(() => {
   }
 });
 
-/**
- * Returns passenger goal deadline from update history or if no updates then from the trip info itself.
- */
-const passengerGoalDeadline = computed(() => {
-  const history = salesStore.getSalesConsoleTrip()[tripInfo.value.id];
-  return history &&
-    typeof history.trip_deadline_passenger_goal?.deadline_passenger_goal !==
-      "undefined"
-    ? new Date(
-        removeZforISOString(
-          history.trip_deadline_passenger_goal?.deadline_passenger_goal
-        )
-      )
-    : new Date(tripInfo.value.deadline_passenger_goal);
-});
-
 const handleTabChange = (id) => {
   setRouteQuery({ tabindex: id });
   tabIndex.value = id;
@@ -351,17 +339,19 @@ const handleTabChange = (id) => {
 
 const fetchAndSetEditor = (salesPerson: string | TripEditor) => {
   const salesPersonId =
-    typeof salesPerson === "string" ? salesPerson : salesPerson.id;
+    typeof salesPerson === "string" ? salesPerson : salesPerson?.id;
 
-  useUserStore()
-    .fetchUserById(salesPersonId)
-    .then((res) => {
-      const editor = JSON.parse(res.data.getUserInfo);
-      if (editor) {
-        tripStore.setEditor({ id: salesPersonId, name: editor.name });
-      }
-    })
-    .catch((err) => console.log(err));
+  if (salesPersonId) {
+    useUserStore()
+      .fetchUserById(salesPersonId)
+      .then((res) => {
+        const editor = JSON.parse(res.data.getUserInfo);
+        if (editor) {
+          tripStore.setEditor({ id: salesPersonId, name: editor.name });
+        }
+      })
+      .catch((err) => console.log(err));
+  }
 };
 
 const unpublishEdit = () => {
@@ -410,8 +400,9 @@ const exportPoc = () => {
  */
 function capitalizeAndSpace(header: string): string {
   return header
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/^./, (str) => str.toUpperCase());
+    .replace(/_/g, " ") // Replace underscores with spaces
+    .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before uppercase letters
+    .replace(/\b\w/g, (str) => str.toUpperCase()); // Capitalize each word
 }
 
 /**
@@ -489,18 +480,50 @@ const downloadCSV = (passengers: Passenger[], fileName: string) => {
   }
 };
 
-provide("handleTabChange", handleTabChange);
-const loading = ref(false);
-const publishChanges = (isLeavePage = false) => {
-  if (isBefore(passengerGoalDeadline.value, new Date())) {
-    showToast("error", t("sales.pass_goal_deadline_invalid"));
-    return;
-  }
+const prepareNewFlowPayload = (payload: Record<string, any>) => {
+  return deleteTypeNameKeyRecursively(payload);
+};
+
+const publishChanges = async (isLeavePage = false) => {
   loading.value = true;
   const changes = changesList.value;
+
+  // Handle S3 file upload if image_url is a File object
+  if (
+    changes.trip_general_info &&
+    typeof changes.trip_general_info === "object" &&
+    "image_url" in changes.trip_general_info &&
+    (changes.trip_general_info as any).image_url instanceof File
+  ) {
+    try {
+      const imageFile = (changes.trip_general_info as any).image_url as File;
+      const ext = imageFile.name.split(".").pop();
+      const renamedFile = renameFile(
+        imageFile,
+        `${getUniqueIntId()}--${tripInfo.value.id}.${ext}`
+      );
+
+      const uploadedUrl = await s3FileUpload(renamedFile, {
+        uploadedBy: user.data.attributes.email,
+        userId: user.data.id,
+        tripId: tripInfo.value.id,
+      });
+
+      // Replace File object with uploaded URL
+      (changes.trip_general_info as any).image_url = uploadedUrl;
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      showToast("error", t("sales.upload_image_failed"));
+      loading.value = false;
+      return;
+    }
+  }
+
   if (changes.trip_location_time) {
-    changes.trip_location_time.route_points = JSON.stringify({
-      oneway: changes.trip_location_time.route_points.oneway.map(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (changes.trip_location_time as any).route_points = JSON.stringify({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      oneway: (changes.trip_location_time as any).route_points.oneway.map(
         (item, index) => {
           return { ...item, sequence: index };
         }
@@ -513,23 +536,36 @@ const publishChanges = (isLeavePage = false) => {
     });
     delete changes.trip_location_time.bus_signage;
   }
+
+  const newPayload = prepareNewFlowPayload(changes);
+  console.log("Changes to be published:", {
+    trip_id: tripInfo.value.id,
+    ...newPayload,
+    ...changes,
+  });
+
   salesStore
     .updateTripAttribute({
       trip_id: tripInfo.value.id,
       ...changes,
+      ...newPayload,
       trip_republish: {
         is_published: true,
       },
     })
     .then(() => {
+      salesStore.$reset();
       if (isLeavePage) {
         routePush("sales-buses");
       }
-      salesStore.$reset();
       loading.value = false;
       tripStore.getTrip(tripInfo.value.id);
+
+      showToast("success", t("sales.trip_changes_published"));
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error("Failed to publish changes:", error);
+      showToast("error", t("sales.publish_changes_failed"));
       loading.value = false;
     });
 };
@@ -546,9 +582,12 @@ const textMapChangesList = {
   [SalesEditGroup.MAX_PAX]: "Edited max pax",
   [SalesEditGroup.PASSENGER_GOAL]: "Edited passenger goal",
   [SalesEditGroup.TRIP_GOAL_DEADLINE]: "Edited passenger goal deadline",
-  [SalesEditGroup.TRIP_PRICING]: "Edited pricing",
+  [SalesEditGroup.TRIP_TICKET_PRICING]: "Edited pricing",
   [SalesEditGroup.TRIP_LOCATION_TYPE]: "Edited trip itinerary",
   [SalesEditGroup.TRIP_GENERAL_INFO]: "Trip Published Info",
+  [SalesEditGroup.TRIP_TICKET_DISCOUNTS]: "Edited ticket discounts",
+  [SalesEditGroup.SHOW_TRIP_AVAILABLE_SEATS]:
+    "Edited trip available seats show status",
 };
 
 const confirmTripDialogAction = () => {
@@ -562,10 +601,35 @@ const confirmTripDialogAction = () => {
   };
   toastWithActionable(content);
 };
+
+onMounted(() => {
+  config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
+  config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
+  tripStore.getTrip(route.params.tag as string).then((trip) => {
+    const errors = trip.errors;
+    if (errors) {
+      handleUnauthorizedError(errors);
+    }
+
+    if (trip.getTrip.country !== country?.value.countryISO) {
+      showToast("error", t("sales.permission_denied"));
+      useRedirect().redirect();
+    }
+
+    if (trip.getTrip.update_history !== null) {
+      fetchAndSetEditor(trip.getTrip.update_history.updated_by_ferdia_sales);
+    }
+  });
+});
+
+provide("handleTabChange", handleTabChange);
 </script>
 
 <style>
 .editing-mode {
   background: #e5f8fa;
+}
+.changesListPanel {
+  z-index: 999;
 }
 </style>

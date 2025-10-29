@@ -33,7 +33,7 @@
           v-if="!salesUpdateUnpublished && trip.trip_status == TRIP_STATUS.NEW"
           button-class="sb-btn-danger sb-btn-md fw-bold  ms-1"
           @click="cancelShareBus"
-          :button-text="t('sharebus.my_busses.cancel_sharebus')"
+          :button-text="t('sharebus.my_buses.cancel_sharebus')"
         />
       </template>
     </ShareleadTripUpdated>
@@ -84,13 +84,13 @@ const salesUpdateUnpublished = computed(() => {
 const shareLeadActionText = computed(() =>
   props.trip.sharelead_payment_status === SHARE_LEAD_PAYMENT_STATUS.REQUIRED &&
   !isCancelledOrTerminated.value
-    ? t("sharebus.my_busses.make_payment")
+    ? t("sharebus.my_buses.make_payment")
     : isCancelledOrTerminated.value
     ? "view"
     : !props.trip.is_published &&
       (props.trip.trip_status === TRIP_STATUS.NEW ||
         props.trip.trip_status === TRIP_STATUS.UNCONFIRMED)
-    ? t("sharebus.my_busses.publish_sharebus")
+    ? t("sharebus.my_buses.publish_sharebus")
     : "view"
 );
 

@@ -41,7 +41,7 @@ import { useI18n } from "vue-i18n";
 import { isValidEmail, routePushTag } from "@/utils";
 import { useSignUpStore, useUserStore } from "@/store";
 import { computed, ref } from "vue";
-import { GeneralError } from "././types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 import FormError from "@/components/common/error/FormError.vue";
 const { t } = useI18n();
 const signUpStore = useSignUpStore();

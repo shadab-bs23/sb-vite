@@ -56,6 +56,7 @@
                       :trip-info="departureInfo"
                       :is-one-liner="true"
                     />
+
                     <TripInfoDetails
                       v-if="
                         returnInfo.departureDateTime &&
@@ -103,12 +104,8 @@
           >
             <div class="">
               <div v-if="trip.canceled_tickets_transactions">
-                <span
-                  >{{
-                    isRefunded
-                      ? t("transaction_Status.refunded")
-                      : t("transaction_Status.refunded_in_progress")
-                  }}
+                <span>
+                  {{ getRefundStatus }}
                   | {{ trip.booking_reference }} | {{ totalCancelledTicket }}
                   {{ t("common.ticket") }}</span
                 >
@@ -214,11 +211,16 @@
                 badge-class="warning-c7-bg rounded-pill fs-14 fw-normal w-fit-content ms-auto p-2"
               >
                 <template v-slot:label>
-                  <span class="fw-600 me-1"
+                  <Span class="fw-600 me-1"
                     ><i class="fi fi-stopwatch me-2"></i
-                    >{{ t("sales.pass_goal_deadline") }}:</span
+                    >{{ t("sales.pass_goal_deadline") }}:</Span
                   >
-                  {{ formatDateUsingDateFns(trip.deadline_passenger_goal) }}
+                  {{
+                    formatInCompanyTimezone(
+                      trip.deadline_passenger_goal,
+                      "dd.MM.yyyy"
+                    )
+                  }}
                 </template>
               </BaseBadge>
             </p>
@@ -231,7 +233,7 @@
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
 import BaseCard from "@busgroup/vue3-base-card";
-import { categoryIcon, formatDateUsingDateFns } from "@/utils";
+import { categoryIcon } from "@/utils";
 import TripInfoDetails from "@/components/modules/sharelead/setupSharebus/TripInfo/TripInfoDetails.vue";
 import { computed, PropType, ref } from "vue";
 import { Trip } from "@/store/trip/privateTrip/types";
@@ -245,6 +247,7 @@ import {
   ROLE,
   TRANSACTION_STATUS,
 } from "@/components/common/enums/enums";
+import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -269,6 +272,7 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["userAction"]);
+const formatInCompanyTimezone = useCompanyTimeFormat();
 
 const footerBg = computed(() => {
   if (newTripNotPublished.value) {
@@ -366,19 +370,37 @@ const userButtonAction = (buttonAction = "") => {
 };
 
 const departureInfo = computed(() => {
+  const onewayReturnPoints = JSON.parse(props.trip.route_points)?.oneway;
   return {
-    origin: props.trip.outbound_from,
-    destination: props.trip.outbound_to,
-    departureDateTime: props.trip.outbound_from_datetime,
-    arrivalDateTime: props.trip.outbound_to_datetime,
+    origin: onewayReturnPoints
+      ? onewayReturnPoints[0]?.point
+      : props.trip.outbound_from,
+    destination: onewayReturnPoints
+      ? onewayReturnPoints[onewayReturnPoints.length - 1]?.point
+      : props.trip.outbound_to,
+    departureDateTime: onewayReturnPoints
+      ? onewayReturnPoints[0]?.planned_departure_time
+      : props.trip.outbound_from_datetime,
+    arrivalDateTime: onewayReturnPoints
+      ? onewayReturnPoints[onewayReturnPoints.length - 1]?.planned_arrival_time
+      : props.trip.outbound_to_datetime,
   };
 });
 const returnInfo = computed(() => {
+  const returnReturnPoints = JSON.parse(props.trip.route_points)?.return;
   return {
-    origin: props.trip.return_from,
-    destination: props.trip.return_to,
-    departureDateTime: props.trip.return_from_datetime,
-    arrivalDateTime: props.trip.return_to_datetime,
+    origin: returnReturnPoints
+      ? returnReturnPoints[0]?.point
+      : props.trip.outbound_from,
+    destination: returnReturnPoints
+      ? returnReturnPoints[returnReturnPoints.length - 1]?.point
+      : props.trip.outbound_to,
+    departureDateTime: returnReturnPoints
+      ? returnReturnPoints[0]?.planned_departure_time
+      : props.trip.outbound_from_datetime,
+    arrivalDateTime: returnReturnPoints
+      ? returnReturnPoints[returnReturnPoints.length - 1]?.planned_arrival_time
+      : props.trip.outbound_to_datetime,
   };
 });
 
@@ -391,9 +413,16 @@ const totalSoldTickets = computed(() => {
 /**
  * checking is all ticket get refunded or not
  */
-const isRefunded = props.trip.canceled_tickets_transactions?.every(
-  (data) => data.status === TRANSACTION_STATUS.REFUNDED
-);
+const getRefundStatus = computed(() => {
+  return props.trip.canceled_tickets_transactions?.map((data) => {
+    if (data.status === TRANSACTION_STATUS.REFUND_IN_PROGRESS) {
+      return t("transaction_Status.refunded_in_progress");
+    } else if (data.status === TRANSACTION_STATUS.REFUNDED) {
+      return t("transaction_Status.refunded");
+    }
+    return t("status.cancelled");
+  })[0];
+});
 /**
  * calculating total cancelled ticket
  */

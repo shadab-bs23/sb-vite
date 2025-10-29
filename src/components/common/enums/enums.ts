@@ -1,7 +1,8 @@
 export enum STEPS {
-  ONE = "one",
-  TWO = "two",
-  THREE = "three",
+  ROUTE_PAGE = "one",
+  PASSENGER_GOAL_AND_PRICES = "two",
+  TRIP_INFO = "three",
+  PUBLISH = "four",
 }
 
 export enum CTA {
@@ -9,7 +10,7 @@ export enum CTA {
   ABOUT_SHARE_BUS = "https://www.sharebus.no/om-sharebus#OmOss",
   ABOUT_FERDIA = " https://www.ferdia.no/om-oss",
   HELP = "https://sharebus.zendesk.com/hc/no",
-  CONTACT = "https://sharebus.zendesk.com/hc/no/requests/new",
+  CONTACT = "contact-us",
 }
 
 export enum ROLE {
@@ -42,9 +43,16 @@ export enum LOCAL_VAR {
 
 export enum TRANSACTION_STATUS {
   REFUNDED = "REFUNDED",
+  REFUND_IN_PROGRESS = "REFUND_IN_PROGRESS",
+  CANCELED = "CANCELED",
 }
 
 export enum ACTION {
   COPY = "copy",
   DETAILS = "details",
+}
+
+export enum SUPPORTED_REQUEST {
+  TRIP = "TRIP",
+  ACCOUNT_RESTORE = "ACCOUNT_RESTORE",
 }

@@ -41,12 +41,11 @@
           </p>
           <p>
             {{
-              getReadableDateFormat(passengerGoalDeadline, currentLocale, {
-                weekday: "long",
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })
+              formatInCompanyTz(
+                passengerGoalDeadline,
+                "EEEE, MMMM d, yyyy",
+                currentLocale.value
+              )
             }}
           </p>
         </div>
@@ -79,13 +78,14 @@
 </template>
 
 <script setup lang="ts">
-import { Trip } from "@/store/trip/privateTrip/types";
 import { reactive, PropType, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { getReadableDateFormat, subtractDaysFromDate } from "@/utils";
+import { subtractDaysFromDate } from "@/utils";
 import { SetupSharebusConfig } from "@/store/config/types";
 import { useConfigStore } from "@/store";
 import { locales } from "@/locales";
+import { PublicTrip } from "@/store/trip/joiner/types";
+import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
 
 const props = defineProps({
   ticketsCount: {
@@ -93,7 +93,7 @@ const props = defineProps({
     required: true,
   },
   tripInfo: {
-    type: Object as PropType<Trip>,
+    type: Object as PropType<PublicTrip>,
     required: true,
   },
 });
@@ -101,6 +101,7 @@ const props = defineProps({
 const { locale, t } = useI18n();
 
 const currentLocale = computed(() => locales[locale.value]);
+const formatInCompanyTz = useCompanyTimeFormat();
 
 const qnAState = reactive({
   how_works: false,

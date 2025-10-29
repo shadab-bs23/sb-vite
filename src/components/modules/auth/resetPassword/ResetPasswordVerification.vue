@@ -9,11 +9,7 @@
         {{ t("auth.verify.type_code_from_email") }}:
       </p>
       <div>
-        <BaseInput
-          input-group-class="verify-input"
-          type="text"
-          v-model="forgotPasswordInfo.code"
-        />
+        <InputOtp v-model="otpValue" :length="6" />
       </div>
     </div>
 
@@ -37,10 +33,14 @@
 </template>
 <script lang="ts" setup>
 import { useSignUpStore, useUserStore } from "@/store";
-import { GeneralError } from "././types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import BaseButton from "@busgroup/vue3-base-button";
+import { defineAsyncComponent } from "vue";
+const InputOtp = defineAsyncComponent(
+  () => import("@/components/common/reusable/InputOtp.vue")
+);
 const { t } = useI18n();
 const signUpStore = useSignUpStore();
 const userStore = useUserStore();
@@ -52,6 +52,12 @@ const forgotPasswordInfo = computed({
 });
 
 const error = ref<GeneralError>({ message: "", type: "" });
+
+// bridge value to ensure string for InputOtp
+const otpValue = computed({
+  get: () => (forgotPasswordInfo.value.code as string) || "",
+  set: (val: string) => signUpStore.handleForGotPasswordInfo({ code: val }),
+});
 
 /*
  * watching is otp digit 4 or not
@@ -76,6 +82,9 @@ const sendOtpToReset = () => {
         type: code,
         message: message,
       };
+    })
+    .finally(() => {
+      otpValue.value = "";
     });
 };
 

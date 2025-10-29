@@ -30,14 +30,14 @@
         {{ t("sharebus.trip_page.bus_can_be_cancelled_until") }}
       </p>
       <BaseButton
-        :button-text="t('sharebus.my_busses.cancel_sharebus')"
+        :button-text="t('sharebus.my_buses.cancel_sharebus')"
         @click="cancelShareBus"
         button-class="rounded-pill sb-btn-danger sb-btn-lg col-sm-12 col-md-4"
       />
     </div>
     <hr class="mt-4" />
   </div>
-  <CancelationNotPossibleVue v-else />
+  <CancelationNotPossibleVue v-else :booking-reference="bookingReference" />
 </template>
 
 <script setup lang="ts">
@@ -60,6 +60,10 @@ const props = defineProps({
     required: true,
   },
   tripId: {
+    type: String,
+    required: true,
+  },
+  bookingReference: {
     type: String,
     required: true,
   },

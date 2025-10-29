@@ -8,7 +8,7 @@
         :disabled="stripeInfo.submitBtn || stripeInfo.status"
         id="submit"
         :button-text="t('sharebus.booking.pay')"
-        button-class="sb-btn-primary sb-btn-md w-100 fw-600"
+        button-class="sb-btn-primary sb-btn-md w-30 fw-600"
       >
       </BaseButton>
     </div>
@@ -18,7 +18,7 @@
     </div>
   </form>
   <BaseButton
-    button-class="sb-btn-md medium-gray-border mt-3 w-100 fw-600"
+    button-class="sb-btn-md medium-gray-border mt-3 w-30 fw-600"
     @click="cancelProcess"
     >{{ t("button.cancel") }}</BaseButton
   >
@@ -98,13 +98,13 @@ const initiateView = () => {
  */
 const shareBusStore = useSharebusStore();
 const grandTotal = computed(() => {
-  return shareBusStore.getStepThreeData.grandTotalPrice;
+  return shareBusStore.getPassengerGoalAndPriceStepData.grandTotalPrice;
 });
 const loader = useLoaderStore();
 const user = useUserStore();
 const payment = usePaymentInfoStore();
 
-let stripe = window.Stripe(import.meta.env.VITE_APP_STRIPE_PUBLIC_KEY);
+let stripe = window.Stripe(process.env.VITE_APP_STRIPE_PUBLIC_KEY);
 
 const paymentByRole = {
   [ROLE.SHARELEAD]: {
@@ -144,9 +144,7 @@ const paymentSubmit = () => {
         clientSecret:
           result?.data[paymentByRole[user.currentRole].gqlKey].client_secret,
         confirmParams: {
-          return_url: `${
-            import.meta.env.VITE_APP_DOMAIN_URL
-          }/payment-confirmation/${props.stripePayload.trip_id}`,
+          return_url: `${process.env.VITE_APP_DOMAIN_URL}/payment-confirmation/${props.stripePayload.trip_id}`,
           payment_method_data: {
             billing_details: {
               name: user.data.attributes.name,

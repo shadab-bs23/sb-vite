@@ -23,7 +23,7 @@ const salesRoutes: Array<RouteRecordRaw> = [
         parent: [
           {
             url: "/sales-console-buses",
-            label: "sales Trip Page",
+            label: "Sales Trip Page",
           },
         ],
       },
@@ -53,6 +53,44 @@ const salesRoutes: Array<RouteRecordRaw> = [
     //     ],
     //   },
     // },
+  },
+  {
+    path: "/sales-edit-ticket-prices/:tag",
+    name: "sales-edit-ticket-prices",
+    beforeEnter: [isAuthenticated, isSalesOrPartnerSharelead],
+    component: () =>
+      import("../../views/salesFlow/SalesPage/EditTicketPrices.vue"),
+    meta: {
+      breadcrumb: {
+        label: "Edit Ticket Prices",
+        parent: [
+          {
+            url: "/sales-console-buses",
+            label: "Sales Trip Page",
+          },
+        ],
+      },
+    },
+  },
+  {
+    path: "/sales-edit-discount/:tag",
+    name: "sales-edit-discount",
+    beforeEnter: [isAuthenticated, isSalesOrPartnerSharelead],
+    component: () =>
+      import(
+        "../../components/modules/sales/tripDetails/edit/TripDiscountDetailSection.vue"
+      ),
+    meta: {
+      breadcrumb: {
+        label: "Edit Discount",
+        parent: [
+          {
+            url: "/sales-console-buses",
+            label: "Sales Trip Page",
+          },
+        ],
+      },
+    },
   },
 ];
 export default salesRoutes;

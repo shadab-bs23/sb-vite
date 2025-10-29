@@ -8,6 +8,7 @@ import { routePushTag } from "./utils";
 import { showToast } from "@/services/toast/toast.service";
 import { initAmplify, refreshToken } from "./services/auth/auth.service";
 import UriController from "./components/controller/UriController";
+import { SHAREBUS_CONFIG } from "./services/graphql/enums/sharebus-config";
 
 const storeUser = useUserStore();
 const config = useConfigStore();
@@ -19,7 +20,7 @@ watchEffect(() => {
 });
 
 onMounted(async () => {
-  config.fetchSetupSharebusConfig();
+  config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SETUP);
   await storeUser.fetchingUserInfo().catch(() => {
     refreshToken()
       .then(() => {

@@ -35,6 +35,7 @@ export const getPublicTripList = gql`
         website_url
         image_url
         trip_organizer
+        route_points
       }
     }
   }
@@ -72,6 +73,7 @@ const joinerTripListGetParams = `
     website_url
     image_url
     trip_organizer
+    route_points
   }
   nextToken
 `;
@@ -148,5 +150,14 @@ export const GET_JOINER_TRIP_LIST_BOOKING_CANCELLED = gql`
 export const CANCEL_TICKETS = gql`
   mutation CancelTicketsMutation($input: TripId!) {
     cancelTicket(input: $input)
+  }
+`;
+
+export const CONTACT_SUPPORT = gql`
+  mutation submitSupportRequestMutation($input: SupportRequestInput!) {
+    submitSupportRequest(input: $input) {
+      support_request_id
+      message
+    }
   }
 `;

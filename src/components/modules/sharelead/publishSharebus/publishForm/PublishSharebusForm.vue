@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2 class="fw-bold" v-if="isEditingMode">Edit published trip info</h2>
+    <h2 class="fw-bold" v-if="isEditingMode">
+      {{ t("sales.details.edit_published_trip_info") }}
+    </h2>
     <BaseSaveChanges
       v-if="isEditingMode"
       @saveChanges="changesAction"
@@ -15,8 +17,8 @@
       </h4>
       <p class="ship-gray">{{ t("sharebus.publish.trip_name_desc") }}</p>
       <BaseInput
-        v-model="publishSharebusForm.values.tripName"
-        id="tripName"
+        v-model="publishSharebusForm.values.name"
+        id="name"
         :modifier-class="`rounded ${tripNameErrMsg ? 'is-invalid' : ''}`"
       />
       <p
@@ -31,7 +33,7 @@
         {{ t("common.category") }}*
       </h4>
       <TripCategory
-        :selected-category="formValue.tripCategory"
+        :selected-category="formValue.category"
         @on-select-trip-category="handleTripCategorySelection"
       />
       <p
@@ -44,8 +46,8 @@
     <div class="my-2 col-sm-12 col-md-5 ship-gray my-3">
       <p>{{ t("sharebus.publish.who_organizes") }}</p>
       <BaseInput
-        v-model="publishSharebusForm.values.organizer"
-        id="organizer"
+        v-model="publishSharebusForm.values.trip_organizer"
+        id="trip_organizer"
         modifier-class="rounded"
       />
       <p
@@ -69,7 +71,7 @@
             :class="`border-light w-100 rounded ${
               travelerInfoErrMsg ? 'border-error' : 'ship-gray'
             }`"
-            v-model="publishSharebusForm.values.infoToTravelers"
+            v-model="publishSharebusForm.values.info_to_travellers"
           ></textarea>
           <p
             class="text-start ship-gray py-3 ps-2 fw-600 auth-error fs-6 rounded"
@@ -82,8 +84,8 @@
       <div class="my-2 col-sm-12 col-md-8 ship-gray">
         <p>{{ t("sharebus.publish.link_to_event") }}</p>
         <BaseInput
-          v-model="publishSharebusForm.values.eventLink"
-          id="eventLink"
+          v-model="publishSharebusForm.values.website_url"
+          id="website_url"
           modifier-class="rounded"
         />
         <p
@@ -94,7 +96,7 @@
         </p>
       </div>
       <div class="my-2">
-        <p>Upload photo or logo</p>
+        <p>{{ t("common.upload_photo_logo") }}</p>
         <!-- upload div -->
         <FileDropZone
           @on-select-file="handleFileSelection"
@@ -118,6 +120,8 @@
       </p>
       <BaseButton
         button-class="sb-btn-primary sb-btn-lg px-4  rounded-pill d-flex align-items-center fw-bold ms-auto"
+        type="button"
+        @click="previewModal.toggleShow"
       >
         <template v-slot:default>
           <span>{{
@@ -133,37 +137,36 @@
   <PreviewModal
     v-model="previewModal.show.value"
     :toggle-modal="() => previewModal.toggleShow()"
-    :publish-data="{ ...publishSharebusForm.values, photo: previewImag }"
+    :publish-data="publishInfoData"
     :is-editing-mode="isEditingMode"
     @publish="handlePublish"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import * as yup from "yup";
-import { useField, useForm } from "vee-validate";
-import { useI18n } from "vue-i18n";
-import BaseInput from "@busgroup/vue3-base-input";
-import BaseButton from "@busgroup/vue3-base-button";
-import TripCategory from "@/components/modules/sharelead/publishSharebus/tripCategory/TripCategory.vue";
-import FileDropZone from "@/components/modules/sharelead/publishSharebus/fileUpload/FileDropZone.vue";
-import { TRIP_CATEGORY } from "@/components/modules/sharelead/publishSharebus/tripCategory/tripCategoryEnums";
-import { useToggle } from "@/composables/useToggle";
-import {
-  getLocalImageUrl,
-  isValidURL,
-  routePushTag,
-  routePushTagQuery,
-} from "@/utils";
-import { useUserStore } from "@/store";
-import PreviewModal from "../tripPreview/PreviewModal.vue";
-import { useSharebusStore, useTripStore } from "@/store";
-import { Trip } from "@/store/trip/privateTrip/types";
-import { showToast } from "@/services/toast/toast.service";
 import { ROLE } from "@/components/common/enums/enums";
+import FileDropZone from "@/components/modules/sharelead/publishSharebus/fileUpload/FileDropZone.vue";
+import TripCategory from "@/components/modules/sharelead/publishSharebus/tripCategory/TripCategory.vue";
 import { renameFile, s3FileUpload } from "@/composables/useS3Bucket";
+import { useToggle } from "@/composables/useToggle";
 import { ROUTE } from "@/router/enum/routeEnums";
+import { showToast } from "@/services/toast/toast.service";
+import {
+  useSalesStore,
+  useSharebusStore,
+  useTripStore,
+  useUserStore,
+} from "@/store";
+import { Trip } from "@/store/trip/privateTrip/types";
+import { isValidURL, routePushTag, routePushTagQuery } from "@/utils";
+import BaseButton from "@busgroup/vue3-base-button";
+import BaseInput from "@busgroup/vue3-base-input";
+import { useField, useForm } from "vee-validate";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import * as yup from "yup";
+import PreviewModal from "../tripPreview/PreviewModal.vue";
+import { TripInfoData } from "@/store/sharebus/types";
 const user = useUserStore();
 const props = defineProps({
   tripId: {
@@ -182,6 +185,7 @@ const props = defineProps({
 const emit = defineEmits(["changeValue"]);
 const sharebusStore = useSharebusStore();
 const shareLeadTripStore = useTripStore();
+const salesStore = useSalesStore();
 
 const { t } = useI18n();
 const previewModal = useToggle();
@@ -197,62 +201,43 @@ const userDetails = computed(() => user);
  * @param {string} selectedTripCategory - Selected trip category.
  */
 const handleTripCategorySelection = (selectedTripCategory: string) => {
-  publishSharebusForm.setFieldValue("tripCategory", selectedTripCategory);
+  publishSharebusForm.setFieldValue("category", selectedTripCategory);
 };
 
 const handleFileSelection = (file: File | null = null) => {
-  publishSharebusForm.setFieldValue("photo", file);
+  publishSharebusForm.setFieldValue("image_url", file as unknown as string);
   publishSharebusPhotoUrl.value = "";
 };
-
-// /**
-//  * Rename file
-//  * @param {File} originalFile
-//  * @param {String} newName
-//  */
-// function renameFile(originalFile, newName) {
-//   return new File([originalFile], newName, {
-//     ...originalFile,
-//     type: originalFile.type,
-//   });
-// }
-const previewImag = computed(() => {
-  const imag =
-    props.formValue.photo &&
-    props.formValue.photo.length &&
-    !publishSharebusForm.values.photo
-      ? props.formValue.photo
-      : publishSharebusForm.values.photo;
-  return getLocalImageUrl(imag);
-});
 
 /*
  * validation schema for email form
  */
 const publishSharebusFormSchema = computed(() =>
   yup.object({
-    tripName: yup
+    name: yup
       .string()
       .required(t("sharebus.publish.trip_name_missing"))
       .max(100, t("form.validation.max_length", { max: 100 })),
-    tripCategory: yup
+    category: yup
       .string()
       .required(t("sharebus.publish.trip_category_missing")),
-    organizer: yup.string().required(),
-    infoToTravelers: yup
+    trip_organizer: yup.string().required(),
+    info_to_travellers: yup
       .string()
       .max(300, t("form.validation.max_length", { max: 300 })),
-    eventLink: yup
+    website_url: yup
       .string()
       .test("link", t("form.validation.invalid_link"), (value) =>
-        isValidURL(value)
+        value ? isValidURL(value) : true
       ),
-    photo: yup
+    image_url: yup
       .mixed()
       .test("fileType", "", (file) => checkFileType(file))
       .test(
         "fileSize",
-        `${t("form.image.large_size")} ${t("form.image.valid_size")}`,
+        `${t("form.image.large_size")} ${t("form.image.valid_size", {
+          count: 5,
+        })}`,
         (file) => checkFileSize(file)
       )
       .test(
@@ -266,13 +251,13 @@ const publishSharebusFormSchema = computed(() =>
   })
 );
 
-const initialValue = {
-  tripName: "",
-  tripCategory: "",
-  organizer: user.getUserInfo.attributes.name,
-  infoToTravelers: "",
-  eventLink: "",
-  photo: null,
+const initialValue: TripInfoData = {
+  name: props.formValue.name || "",
+  category: props.formValue.category || "",
+  image_url: props.formValue.image_url || "",
+  website_url: props.formValue.website_url || "",
+  trip_organizer: user.getUserInfo.attributes.name,
+  info_to_travellers: props.formValue.info_to_travellers || "",
 };
 
 /*
@@ -285,20 +270,21 @@ const publishSharebusForm = useForm({
   initialValues: initialValue,
 });
 
-const { errorMessage: tripNameErrMsg } = useField("tripName");
+const { errorMessage: tripNameErrMsg } = useField("name");
 const { errorMessage: tripCategoryErrMsg, setErrors: setTripCategoryErrors } =
-  useField("tripCategory");
-const { errorMessage: travelerInfoErrMsg } = useField("infoToTravelers");
-const { errorMessage: eventLinkErrMsg } = useField("eventLink");
-const { errorMessage: organizerErrMsg } = useField("organizer");
-const { errorMessage: photoErrMsg, setErrors: setPhotoErr } = useField("photo");
+  useField("category");
+const { errorMessage: travelerInfoErrMsg } = useField("info_to_travellers");
+const { errorMessage: eventLinkErrMsg } = useField("website_url");
+const { errorMessage: organizerErrMsg } = useField("trip_organizer");
+const { errorMessage: photoErrMsg, setErrors: setPhotoErr } =
+  useField("image_url");
 
 watch(
   () => props.formValue,
   (value) => {
     if (Object.keys(value).length) {
       let temp = { ...value };
-      temp.photo = null;
+      temp.image_url = null;
       publishSharebusForm.setValues(temp);
     }
   },
@@ -413,15 +399,19 @@ const onSubmit = publishSharebusForm.handleSubmit(() => {
 const changesAction = (value) => {
   if (!value) {
     routePushTagQuery("trip-sales-page", props.tripId, { tabindex: 1 });
-  }
-  if (publishSharebusForm.meta.value.valid) {
+    // publishSharebusForm.resetForm();
+    // return;
+  } else if (value && publishSharebusForm.meta.value.valid) {
     emit("changeValue", publishSharebusForm.values);
   }
 };
 
 const handleFormSubmission = () => {
   submitBtnClicked.value = true;
-  if (publishSharebusForm.values.tripCategory === TRIP_CATEGORY.none) {
+  if (
+    !publishSharebusForm.values.category ||
+    publishSharebusForm.values.category === ""
+  ) {
     setTripCategoryErrors(t("sharebus.publish.select_trip_category"));
     return;
   }
@@ -439,33 +429,31 @@ const tripInfo = computed<Trip>(() => {
 
 const handlePublish = () => {
   if (
-    publishSharebusForm.values.photo &&
+    publishSharebusForm.values.image_url &&
     !publishSharebusPhotoUrl.value &&
     !photoErrMsg.value
   ) {
     let renamedFile: File | null = null;
     //rename the file using trip id
-    const ext = publishSharebusForm.values.photo.name.split(".")[1];
-    renamedFile = renameFile(
-      publishSharebusForm.values.photo,
-      `${props.tripId}.${ext}`
-    );
+    const file = publishSharebusForm.values.image_url as unknown as File;
+    const ext = file.name.split(".")[1];
+    renamedFile = renameFile(file, `${props.tripId}.${ext}`);
     // Upload the file in S3 and show preview modal.
     s3FileUpload(renamedFile, {
       uploadedBy: user.data.attributes.email,
       userId: user.data.id,
       tripId: props.tripId,
     }).then((res) => {
-      sharebusStore
+      (sharebusStore as any)
         .publishSharebus({
           id: tripInfo.value.id,
-          name: publishSharebusForm.values.tripName as string,
-          category: publishSharebusForm.values.tripCategory as string,
+          name: publishSharebusForm.values.name as string,
+          category: publishSharebusForm.values.category as string,
           info_to_travellers: publishSharebusForm.values
-            .infoToTravelers as string,
-          website_url: publishSharebusForm.values.eventLink as string,
+            .info_to_travellers as string,
+          website_url: publishSharebusForm.values.website_url as string,
           image_url: res,
-          trip_organizer: publishSharebusForm.values.organizer as string,
+          trip_organizer: publishSharebusForm.values.trip_organizer as string,
         })
         .then(() => {
           const tripPageRoute =
@@ -480,15 +468,16 @@ const handlePublish = () => {
     return;
   }
 
-  sharebusStore
+  (sharebusStore as any)
     .publishSharebus({
       id: tripInfo.value.id,
-      name: publishSharebusForm.values.tripName as string,
-      category: publishSharebusForm.values.tripCategory as string,
-      info_to_travellers: publishSharebusForm.values.infoToTravelers as string,
-      website_url: publishSharebusForm.values.eventLink as string,
+      name: publishSharebusForm.values.name as string,
+      category: publishSharebusForm.values.category as string,
+      info_to_travellers: publishSharebusForm.values
+        .info_to_travellers as string,
+      website_url: publishSharebusForm.values.website_url as string,
       image_url: publishSharebusPhotoUrl.value,
-      trip_organizer: publishSharebusForm.values.organizer as string,
+      trip_organizer: publishSharebusForm.values.trip_organizer as string,
     })
     .then(() => {
       const tripPageRoute =
@@ -496,8 +485,27 @@ const handlePublish = () => {
           ? ROUTE.PARTNER_SHARELEAD_TRIP_PAGE
           : ROUTE.SHARELEAD_TRIP_PAGE;
       routePushTag(tripPageRoute, props.tripId);
-    });
+    })
+    .catch((err) => console.log(err));
 
   previewModal.toggleShow();
 };
+
+const salesTrip = salesStore.$state.salesEditTrip[props.tripId];
+const data = (salesTrip?.trip_general_info || tripInfo.value) as Trip;
+
+const publishInfoData = computed(() => {
+  return {
+    name: publishSharebusForm.values.name,
+    category: publishSharebusForm.values.category,
+    info_to_travellers: publishSharebusForm.values.info_to_travellers,
+    website_url: publishSharebusForm.values.website_url,
+    image_url:
+      publishSharebusPhotoUrl.value ||
+      publishSharebusForm.values.image_url ||
+      data.image_url ||
+      tripInfo.value.image_url,
+    trip_organizer: publishSharebusForm.values.trip_organizer,
+  };
+});
 </script>

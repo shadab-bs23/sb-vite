@@ -5,7 +5,7 @@
         <div class="row">
           <div class="text-start col-sm-12 col-md-6">
             <h2 class="text-start fw-bold">
-              {{ t("sharebus.my_busses.my_busses") }}
+              {{ t("sharebus.my_buses.my_buses") }}
             </h2>
           </div>
           <div class="text-start text-md-end col-sm-12 col-md-6">
@@ -35,7 +35,7 @@
     <NoTripsBusses
       v-if="!shareLeadTripList.items.length"
       class="col-sm-12 col-md-4 rounded py-4"
-      :description="t('sharebus.my_busses.no_trip_description_sharelead')"
+      :description="t('sharebus.my_buses.no_trip_description_sharelead')"
       :trip-filter-type="filterMode"
     >
       <template v-slot:actionButton>
@@ -44,7 +44,7 @@
           class="px-4 py-1 my-2 rounded-pill sb-btn-lg sb-btn-primary-alt fw-400"
         >
           <div class="d-flex justify-content-center align-items-center">
-            <span v-text="t('sharebus.my_busses.start_setting_up')"></span>
+            <span v-text="t('sharebus.my_buses.start_setting_up')"></span>
           </div>
         </BaseButton>
       </template>

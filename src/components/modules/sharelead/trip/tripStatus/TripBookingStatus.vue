@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text-start">
     <div
       :class="`p-2 rounded ${
         isTicketsEqualRemainingPassGoal
@@ -8,17 +8,28 @@
       }`"
       v-if="remainingPassGoal"
     >
-      <div v-if="!isTicketsEqualRemainingPassGoal" class="p-2">
+      <div v-if="tripInfo.trip_status === TRIP_STATUS.CONFIRMED">
+        <div class="d-flex align-items-center w-90 mx-auto">
+          <span class="ship-gray fw-600 w-75">
+            {{ t("sharebus.joiner.booking.confirmed_bus") }}
+          </span>
+          <img src="/img/confirmed-bus.svg" />
+        </div>
+      </div>
+      <div v-else-if="!isTicketsEqualRemainingPassGoal" class="p-2">
         <div class="d-flex">
           <span class="ship-gray fw-600 w-75">
             {{
               t("sharebus.joiner.booking.waiting_for_bookings", {
-                count: remainingPassGoal,
+                count:
+                  remainingPassGoal - ticketsCount > 0
+                    ? remainingPassGoal - ticketsCount
+                    : 0,
               })
             }}
           </span>
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
           <TripTimerUpdated :deadline="passengerGoalDeadline" class="pt-4" />
           <img src="/img/trip-info/timer.svg" class="timer-img" />
         </div>
@@ -28,7 +39,10 @@
           <span class="ship-gray fw-600 w-75">
             {{
               t("sharebus.joiner.booking.if_you_book_selected_amount", {
-                count: remainingPassGoal,
+                count:
+                  remainingPassGoal - ticketsCount > 0
+                    ? remainingPassGoal - ticketsCount
+                    : 0,
               })
             }}
           </span>
@@ -54,22 +68,19 @@
 <script setup lang="ts">
 import { useConfigStore } from "@/store";
 import { SetupSharebusConfig } from "@/store/config/types";
-import { Trip } from "@/store/trip/privateTrip/types";
 import { subtractDaysFromDate } from "@/utils";
 import { computed, PropType } from "vue";
 import { useI18n } from "vue-i18n";
 import TripTimerUpdated from "./TripTimerUpdated.vue";
+import { PublicTrip } from "@/store/trip/joiner/types";
+import { TRIP_STATUS } from "./tripStatusEnum";
 const props = defineProps({
   ticketsCount: {
     type: Number,
     required: true,
   },
   tripInfo: {
-    type: Object as PropType<Trip>,
-    required: true,
-  },
-  earlyBirdCompleted: {
-    type: Boolean,
+    type: Object as PropType<PublicTrip>,
     required: true,
   },
 });

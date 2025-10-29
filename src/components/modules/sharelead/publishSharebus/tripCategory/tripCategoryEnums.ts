@@ -1,5 +1,4 @@
 export const TRIP_CATEGORY = {
-  none: "none",
   sport: "sport",
   music: "music",
   wellness: "wellness",

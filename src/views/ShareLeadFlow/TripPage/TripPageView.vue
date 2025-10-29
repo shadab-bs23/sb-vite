@@ -147,7 +147,7 @@ const tripStatus = computed(
 onMounted(() => {
   shareleadTripStore.getTrip(route.params.tag as string).then((trip) => {
     if (trip.getTrip.country !== country?.value.countryISO) {
-      showToast("error", "Sorry, permission denied");
+      showToast("error", t("sales.permission_denied"));
       useRedirect().redirect();
     }
   });

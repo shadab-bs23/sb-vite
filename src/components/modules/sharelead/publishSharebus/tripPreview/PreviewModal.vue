@@ -46,7 +46,7 @@
             }}</span>
           </div>
           <TripAdPreview
-            :trip-data="{ ...publishData, ...currentTrip }"
+            :trip-data="tripPreviewData"
             :departure-info="departureInfo"
             :return-info="returnInfo"
             :is-editing-mode="isEditingMode"
@@ -96,8 +96,8 @@ import TripAdPreview from "../tripPreview/TripAdPreview.vue";
 import TripBookingPage from "../tripPreview/TripBookingPage.vue";
 import { computed, PropType, provide, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { PublishFormType } from "../publishForm/types";
 import TripController from "../../controllers/TripController";
+import { TripInfoData } from "@/store/sharebus/types";
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -106,7 +106,7 @@ const props = defineProps({
     required: true,
   },
   publishData: {
-    type: Object as PropType<PublishFormType>,
+    type: Object as PropType<TripInfoData>,
     required: true,
   },
   isEditingMode: {
@@ -114,6 +114,10 @@ const props = defineProps({
     default: false,
   },
 });
+
+const currentTrip = TripController.getCurrentTrip;
+const departureInfo = TripController.getTripDeparture();
+const returnInfo = TripController.getTripReturn();
 
 const emit = defineEmits(["update:modelValue", "publish"]);
 
@@ -141,7 +145,12 @@ const computedVModel = computed({
   },
 });
 
-const currentTrip = TripController.getCurrentTrip;
-const departureInfo = TripController.getTripDeparture();
-const returnInfo = TripController.getTripReturn();
+const tripPreviewData = computed(() => {
+  return {
+    id: currentTrip.value.id,
+    name: props.publishData.name,
+    image_url: props.publishData.image_url,
+    price: currentTrip.value.minimum_possible_ticket_price,
+  };
+});
 </script>

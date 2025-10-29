@@ -34,24 +34,12 @@
           class="col-xs-10 col-sm-10 col-md-12 mx-auto"
           :trip-data="{
             id: trip.id,
-            tripName: trip.name,
-            photo: generatePhotoUrlBasedOnEnv(trip.image_url),
-            available_earlybird_tickets: trip.available_earlybird_tickets,
-            earlybird_ticket_price: trip.earlybird_ticket_price,
-            regular_ticket_price: trip.regular_ticket_price,
+            name: trip.name,
+            price: trip.minimum_possible_ticket_price,
+            image_url: trip.image_url,
           }"
-          :departure-info="{
-            origin: trip.outbound_from,
-            destination: trip.outbound_to,
-            departureDateTime: trip.outbound_from_datetime,
-            arrivalDateTime: trip.outbound_to_datetime,
-          }"
-          :return-info="{
-            origin: trip.outbound_to,
-            destination: trip.outbound_from,
-            departureDateTime: trip.return_from_datetime,
-            arrivalDateTime: trip.return_to_datetime,
-          }"
+          :departure-info="getDepartureInfo(trip as Trip)"
+          :return-info="getReturnInfo(trip as Trip)"
         />
         <div
           class="p-3 rounded bg-custom-yellow my-2 fw-600"
@@ -77,8 +65,11 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import TripAdPreview from "../sharelead/publishSharebus/tripPreview/TripAdPreview.vue";
 import BaseButton from "@busgroup/vue3-base-button";
-import { generatePhotoUrlBasedOnEnv, getReadableDateFormat } from "@/utils";
+import { getReadableDateFormat } from "@/utils";
 import TripFilterController from "../trip/controller/TripFilterController";
+import UriController from "@/components/controller/UriController";
+import { Trip } from "@/store/trip/privateTrip/types";
+import { useTripRouteInfo } from "@/composables/useTripRouteInfo";
 
 const props = defineProps({
   isFilterActive: {
@@ -96,6 +87,9 @@ const joinerTripStore = useJoinerTripStore();
 const showLoadingFinished = ref("");
 const publicTripList = computed(() => joinerTripStore.getPublicTripList);
 
+// Use shared trip route info composable
+const { getDepartureInfo, getReturnInfo } = useTripRouteInfo();
+
 const tripListBtnText = computed(() =>
   nextToken.value || (props.filterNextPage && props.filterNextPage > 1)
     ? t("button.load_more")
@@ -103,9 +97,14 @@ const tripListBtnText = computed(() =>
 );
 
 const handleBtnClick = () => {
-  nextToken.value || (props.filterNextPage && props.filterNextPage > 1)
-    ? handleLoadMorePublicTrips()
-    : emit("resetPublicSharebusList");
+  if (nextToken.value || (props.filterNextPage && props.filterNextPage > 1)) {
+    handleLoadMorePublicTrips();
+  } else {
+    UriController.setQuery({
+      search: "",
+    });
+    emit("resetPublicSharebusList");
+  }
 };
 
 const handleLoadMorePublicTrips = () => {

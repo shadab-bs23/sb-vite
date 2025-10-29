@@ -40,6 +40,7 @@ export const getShareLeadTripListQuery = gql`
         available_earlybird_tickets
         available_regular_tickets
         max_pax
+        route_points
       }
       nextToken
     }

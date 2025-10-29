@@ -9,8 +9,8 @@
 import BaseLoader from "@busgroup/vue3-base-loader";
 import { useUserStore } from "@/store";
 import { checkRolePermissions, routePushTag } from "@/utils";
-import { User } from "././types/auth/user.type";
-import { computed, watch } from "vue";
+import { User } from "types/auth/user.type";
+import { computed, onBeforeMount, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useRedirect } from "@/services/auth/redirect.service";
 import { showToast } from "@/services/toast/toast.service";
@@ -43,4 +43,10 @@ watch(
     }
   }
 );
+
+onBeforeMount(() => {
+  if (route.query && route.query.error_description) {
+    window.location.replace("/contact-us/user-deleted?support_type=auth");
+  }
+});
 </script>

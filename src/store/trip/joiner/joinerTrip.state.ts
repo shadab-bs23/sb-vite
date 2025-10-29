@@ -41,6 +41,8 @@ export default (): State => ({
     vat_percent: 0,
     deadline_passenger_goal: "",
     updated_at: "",
+    country: "",
+    minimum_possible_ticket_price: 0,
   },
   currentStep: 1,
   availablePublicTrips: {

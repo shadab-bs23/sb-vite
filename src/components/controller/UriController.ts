@@ -15,7 +15,7 @@ import { useConfigStore } from "@/store";
 export default class UriController {
   private static _is_in_mode_prod = import.meta.env.NODE_ENV === "production";
 
-  private static _validQueryParams = ["country", "tabindex"];
+  private static _validQueryParams = ["country", "tabindex", "search"];
   private static _country = ref<string>("");
   /*
    * default URI

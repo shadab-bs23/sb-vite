@@ -41,24 +41,63 @@
         </span>
       </div>
     </div>
-    <div class="col-md-6 col-lg-6 col-sm-12 mb-4 text-start ship-gray">
+    <div class="col-md-6 col-lg-6 col-sm-12 mb-4 text-start">
+      <BaseButton
+        :button-text="t('auth.profile.delete_profile')"
+        button-class="sb-btn-lg sb-btn-danger rounded-pill"
+        @click="confirmationModal.toggleShow"
+      />
+    </div>
+    <div class="col-md-6 col-lg-6 col-sm-12 mb-2 text-start ship-gray">
       <ReusableContactInfoVue
         v-for="(contactInfo, index) in profileContactInfo"
         :key="index"
         :contact-info="contactInfo"
       />
     </div>
+
+    <BaseConfirmationModal
+      modal-id="confirmResetModal"
+      v-model="confirmationModal.show.value"
+    >
+      <template v-slot:header>
+        <h3 title="Form modal">{{ t("auth.profile.delete_profile") }}</h3>
+      </template>
+      <template v-slot:content>
+        <p class="fw-600">{{ t("auth.profile.delete_user_description") }}</p>
+      </template>
+      <template v-slot:footer>
+        <BaseButton
+          button-class="sb-btn-lg sb-btn-primary rounded-pill"
+          button-text="Yes"
+          @click="handleDeleteUser"
+        />
+        <BaseButton
+          button-text="No"
+          button-class="sb-btn-lg sb-btn-danger rounded-pill"
+          @click="confirmationModal.toggleShow"
+        />
+      </template>
+    </BaseConfirmationModal>
   </div>
 </template>
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import BaseButton from "@busgroup/vue3-base-button";
+import BaseConfirmationModal from "@busgroup/vue3-base-confirmation-modal";
 import UpdatePasswordVue from "./UpdatePassword.vue";
 import { useUserStore } from "@/store/index";
 import ReusableContactInfoVue from "./ReusableContactInfo.vue";
+import { useToggle } from "@/composables/useToggle";
+import { showToast } from "@/services/toast/toast.service";
+import { routePush } from "@/utils";
+import { ROUTE } from "@/router/enum/routeEnums";
 
 const { t } = useI18n();
 const user = useUserStore();
+
+const confirmationModal = useToggle();
 
 const userInfo = computed(() => user.getUserInfo);
 const providerType = computed(() => {
@@ -79,18 +118,26 @@ const profileContactInfo = computed(() => [
     action_link: "https://sharebus.zendesk.com/hc/en-us/requests/new",
   },
   {
-    title: t("auth.profile.delete_user"),
-    description: t("auth.profile.delete_user_description"),
-    action_title: t("auth.profile.delete_user_action_text"),
-    action_link: "https://sharebus.zendesk.com/hc/en-us/requests/new",
-  },
-  {
     title: t("auth.profile.get_your_bonus_information"),
     description: t("auth.profile.get_your_bonus_information_description"),
     action_title: t("auth.profile.get_your_bonus_information_action_text"),
     action_link: "https://sharebus.zendesk.com/hc/en-us/requests/new",
   },
 ]);
+
+const handleDeleteUser = () => {
+  confirmationModal.toggleShow();
+
+  user.deleteUser().then((result) => {
+    const { status } = result?.data.deleteUserInfo;
+    if (status === 200) {
+      showToast("success", t("auth.common.account_deleted"));
+      user.signOutAction().then(() => routePush(ROUTE.HOME));
+    } else {
+      showToast("error", t("auth.common.fail_delete_account"));
+    }
+  });
+};
 </script>
 <style>
 .placeholder-custom::placeholder {

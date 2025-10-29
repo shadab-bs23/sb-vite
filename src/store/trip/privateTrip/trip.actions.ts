@@ -37,7 +37,7 @@ export default {
     const { apolloQuery } = useApolloQueryAsync(GET_TRIP(tripID), () => ({}));
 
     return apolloQuery()
-      .then((res) => {
+      .then(async (res) => {
         loader.changeLoadingStatus({ isLoading: false });
         this.$state.currentTrip = {
           ...this.$state.currentTrip,
@@ -46,11 +46,14 @@ export default {
         this.$state.currentTrip.ticket = res.data.listTickets.items;
         cb && cb();
         unitTestCB && unitTestCB();
+        //TODO:: WILL REVISIT HERE UNDER @link https://ferdia.atlassian.net/browse/SB-936
+        if (res.errors) {
+          return res;
+        }
         return res.data;
       })
       .catch((err) => {
         loader.changeLoadingStatus({ isLoading: false });
-        console.log(err);
         return err;
       });
   },

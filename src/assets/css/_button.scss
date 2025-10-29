@@ -61,6 +61,7 @@
   }
   &:disabled {
     /* Primary/Green Jewel */
+    cursor: not-allowed;
     background: #138340;
     opacity: 0.4;
     color: #fefffe !important;
@@ -198,9 +199,17 @@
 
 .sb-vipps-btn {
   background-color: #ec6539;
+  color: white;
   &:hover {
     background-color: #f9774b;
     border: 2px solid #f9774b;
+    color: white;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #f5beac;
+    border: 2px solid #f9774b;
+    color: white !important;
   }
 }
 

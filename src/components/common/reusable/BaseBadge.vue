@@ -13,57 +13,61 @@
     </span>
   </span>
 </template>
-<script setup lang="ts">
-const props = defineProps({
-  /**
-   * @property {string} label -  label is to show beside badge if required
-   */
-  label: {
-    type: String,
-    default: "",
-  },
-  /**
-   * @property {string} actionData -  action key is for set appropriate value on action based
-   */
-  actionData: {
-    type: String,
-    default: "",
-  },
+<script lang="ts">
+import { defineComponent } from "vue";
 
-  /**
-   * @property {string} badgeClass -  to pass desired classes for the badge
-   */
-  badgeClass: {
-    type: String,
-    default:
-      "d-flex text-primary border border-primary rounded rounded-pill  px-3 fs-5 pb-0 text-center align-items-center bg-light",
-  },
+export default defineComponent({
+  components: {},
+  props: {
+    /**
+     * @property {string} label -  label is to show beside badge if required
+     */
+    label: {
+      type: String,
+      default: "",
+    },
+    /**
+     * @property {string} actionData -  action key is for set appropriate value on action based
+     */
+    actionData: {
+      type: String,
+      default: "",
+    },
 
-  /**
-   * @property {string} labelTextColor -  to add classes to specifically to the label section of the badge
-   */
-  labelClass: {
-    type: String,
-    default: "",
-  },
+    /**
+     * @property {string} badgeClass -  to pass desired classes for the badge
+     */
+    badgeClass: {
+      type: String,
+      default:
+        "d-flex text-primary border border-primary rounded rounded-pill  px-3 fs-5 pb-0 text-center align-items-center bg-light",
+    },
 
-  /**
-   * @property {string} actionClass -  to add classes to the action icon
-   */
-  actionClass: {
-    type: String,
-    default: "  ",
+    /**
+     * @property {string} labelTextColor -  to add classes to specifically to the label section of the badge
+     */
+    labelClass: {
+      type: String,
+      default: "",
+    },
+
+    /**
+     * @property {string} actionClass -  to add classes to the action icon
+     */
+    actionClass: {
+      type: String,
+      default: "  ",
+    },
+    /**
+     * @property {boolean} removable -  if true, the close/x icon will be showed otherwise not
+     */
+    removable: {
+      type: Boolean,
+      default: false,
+    },
+    // border border-primary
+    // bg-primary text-white
   },
-  /**
-   * @property {boolean} removable -  if true, the close/x icon will be showed otherwise not
-   */
-  removable: {
-    type: Boolean,
-    default: false,
-  },
-  // border border-primary
-  // bg-primary text-white
+  emits: ["onRemove"],
 });
-
-const emits = defineEmits(["onRemove"]);
 </script>

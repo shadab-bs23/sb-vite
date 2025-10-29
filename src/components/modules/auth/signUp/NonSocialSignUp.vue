@@ -102,12 +102,14 @@ import AuthController from "../controller/AuthController";
 import BaseButton from "@busgroup/vue3-base-button";
 import TermAccept from "./TermsAcceptComponent.vue";
 import GoogleSignUp from "./GoogleSignUpButton.vue";
-import { GeneralError } from "./types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 import { useLoaderStore } from "@/store/index";
 import PasswordValidationError from "./PasswordValidationError.vue";
 import { useToggle } from "@/composables/useToggle";
 import { phoneNumberRule } from "@/utils/validation.utils";
 import FormError from "@/components/common/error/FormError.vue";
+import BaseInput from "@busgroup/vue3-base-input";
+
 const loader = useLoaderStore();
 
 const storeUser = useUserStore();

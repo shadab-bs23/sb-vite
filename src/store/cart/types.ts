@@ -1,31 +1,58 @@
 import { StoreDefinition } from "pinia";
-import { Trip } from "../trip/privateTrip/types";
 
-export interface JoinerTicket {
-  tripId: string;
-  earlyBirdTickets: {
-    count: number;
-    price: number;
-  };
-  regularTickets: {
-    count: number;
-    price: number;
-  };
+export interface TicketItem {
+  categoryName: string;
+  quantity: number;
+  price: number;
 }
+
+export interface FormattedTicketHolder {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export interface FormattedTicket {
+  via_point_id: number;
+  category: string;
+  quantity: number;
+  ticket_holders: FormattedTicketHolder[];
+}
+
 export interface State {
-  tickets: JoinerTicket[];
+  tripId: string;
+  selectedViaPointId: number | null;
+  tickets: TicketItem[];
+  totalPayablePrice: number;
+  eligibleDiscountPercent: number;
+  formattedTickets: FormattedTicket[];
 }
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Getters {}
+
 interface Actions {
-  setJoinerTickets: (tickets: JoinerTicket, isSave?: boolean) => void;
-  setJoinerTicketsByTripId: (ticket: JoinerTicket, trip: Trip) => void;
-  getJoinerTickets: (trip: Trip) => JoinerTicket;
-  getJoinerTotalTickets: (trip: Trip) => number;
-  getJoinerTotalTicketPrice: (trip: Trip) => number;
-  getJoinerTicketsExist: () => object | undefined;
-  removeJoinerTickets: (tripId: string) => void;
+  // Simple cart actions
+  setTripId: (tripId: string) => void;
+  setSelectedViaPointId: (viaPointId: number) => void;
+  addTicket: (ticket: TicketItem) => void;
+  updateTicket: (categoryName: string, quantity: number) => void;
+  removeTicket: (categoryName: string) => void;
+  setEligibleDiscount: (discount: number) => void;
+  clearCart: () => void;
+  calculateTotalPrice: () => void;
+
+  // Formatted tickets handling
+  setFormattedTickets: (tickets: FormattedTicket[]) => void;
+  getFormattedTickets: () => FormattedTicket[];
+
+  // Getters
+  getTotalPrice: () => number;
+  getTickets: () => TicketItem[];
+  hasItems: () => boolean;
+  getCartItemCount: () => number;
 }
+
 /*
  * store context define as summarize of store
  */

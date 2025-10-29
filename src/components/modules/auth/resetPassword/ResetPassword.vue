@@ -24,15 +24,15 @@
         />
         <p class="mt-2 text-start">{{ repeatPasswordErrMsg }}</p>
       </div>
-      <div class="mt-2 buttons">
+      <div class="mt-2 d-flex justify-content-between">
         <BaseButton
           @click="backToPreviousStage()"
           :button-text="t('button.back')"
-          button-class="col-sm-12 col-md-3 col-lg-3 me-auto sb-btn-secondary sb-btn-lg py-2 rounded-pill mt-2"
+          button-class="me-auto sb-btn-secondary sb-btn-lg py-2 rounded-pill mt-2"
         />
         <BaseButton
           type="submit"
-          button-class="col-sm-12 col-md-6 col-lg-6 offset-md-3 offset-lg-3 sb-btn-lg sb-btn-primary py-2 rounded-pill mt-2"
+          button-class="sb-btn-primary py-2 rounded-pill mt-2"
         >
           <div class="d-flex align-items-center justify-content-center">
             <span>{{ t("auth.common.reset_password") }}</span>
@@ -41,7 +41,11 @@
         </BaseButton>
       </div>
       <div class="mt-4 border rounded" v-if="passwordUpdateMsg.length > 0">
-        <p class="fw-bold green-jewel p-3" v-if="passwordUpdateMsg">
+        <p
+          class="fw-bold p-3"
+          :class="hasResetPasswordError ? 'text-danger' : 'green-jewel'"
+          v-if="passwordUpdateMsg"
+        >
           {{ passwordUpdateMsg }}
         </p>
       </div>
@@ -74,6 +78,7 @@ const userSignUp = computed(() => {
 });
 
 const passwordUpdateMsg = ref("");
+const hasResetPasswordError = ref(false);
 const loader = useLoaderStore();
 /*
  * validation schema for form define in here
@@ -110,13 +115,15 @@ const { handleSubmit, values, resetForm } = useForm({
 const onSubmit = handleSubmit((values) => {
   loader.changeLoadingStatus({ isLoading: true });
   passwordUpdateMsg.value = "";
+  hasResetPasswordError.value = false;
   userStore
     .handleForgotPasswordSubmit({
       username: userSignUp.value.userName as string,
       code: userSignUp.value.code as string,
       new_password: values.password,
     })
-    .then(() => {
+    .then((res) => {
+      console.log(res);
       loader.changeLoadingStatus({ isLoading: false });
       passwordUpdateMsg.value =
         "Password updated successfully, redirecting to login page...";
@@ -127,9 +134,11 @@ const onSubmit = handleSubmit((values) => {
       resetForm();
     })
     .catch((error) => {
+      console.log(error);
       loader.changeLoadingStatus({ isLoading: false });
       const { message } = error;
       passwordUpdateMsg.value = message;
+      hasResetPasswordError.value = true;
     });
 });
 const { errorMessage: repeatPasswordErrMsg } = useField("repeat_password");

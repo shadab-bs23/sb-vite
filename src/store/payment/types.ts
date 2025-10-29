@@ -4,12 +4,26 @@ import { PaymentIntentType } from "types/payment/payment.type";
 export type PaymentConfirmationPayload = {
   transaction_id: string;
 };
+export type TicketHolderInfo = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+export type TicketCategoryPayload = {
+  via_point_id: number;
+  category: string;
+  quantity: number;
+  ticket_holders: TicketHolderInfo[];
+};
+
 export type TicketBookedPayload = {
   trip_id: string;
   total_price: number;
   early_bird_tickets: number;
   regular_tickets: number;
-  last_updated_at: string;
+  last_updated_at: string | null;
+  tickets: TicketCategoryPayload[];
 };
 export interface State {
   paymentIntent: PaymentIntentType;

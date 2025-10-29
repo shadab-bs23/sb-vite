@@ -9,16 +9,16 @@
       <template v-slot:content>
         <h3 class="text-start ms-2 mb-4">
           <span class="me-2"><img src="/img/my-busses/bus-logo.svg" /></span
-          >{{ tripData.tripName }}
+          >{{ tripData.name }}
         </h3>
-        <p v-if="tripData.organizer">
+        <p v-if="tripData.trip_organizer">
           {{ t("sharebus.publish.organized_by") }}
-          <span class="fw-bold">{{ tripData.organizer }}</span>
+          <span class="fw-bold">{{ tripData.trip_organizer }}</span>
         </p>
-        <p>{{ tripData.infoToTravelers }}</p>
+        <p>{{ tripData.info_to_travellers }}</p>
         <a
-          v-if="tripData.eventLink"
-          :href="tripData.eventLink"
+          v-if="tripData.website_url"
+          :href="tripData.website_url"
           class="sb-tertiary"
           target="_blank"
         >
@@ -48,11 +48,11 @@ import { useI18n } from "vue-i18n";
 import BaseCard from "@busgroup/vue3-base-card";
 import TripInfoDetails from "../../setupSharebus/TripInfo/TripInfoDetails.vue";
 import { PropType } from "vue";
-import { PublishFormType } from "../publishForm/types";
+import { TripInfoData } from "@/store/sharebus/types";
 
 defineProps({
   tripData: {
-    type: Object as PropType<PublishFormType>,
+    type: Object as PropType<TripInfoData>,
     required: true,
   },
   departureInfo: {

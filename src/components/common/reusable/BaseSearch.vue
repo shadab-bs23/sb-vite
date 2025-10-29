@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import BaseInput from "@busgroup/vue3-base-input";
 import BaseButton from "@busgroup/vue3-base-button";
 
@@ -55,6 +55,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  querySearch: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 const emit = defineEmits(["onSearch"]);
@@ -62,11 +67,13 @@ const emit = defineEmits(["onSearch"]);
 const searchText = ref("");
 
 const handleSearch = () => {
-  // if (searchText.value) {
   const searchTxt = searchText.value;
   emit("onSearch", searchTxt);
-  // }
 };
+
+onMounted(() => {
+  if (props.querySearch) searchText.value = props.querySearch;
+});
 
 watch(
   () => props.clearInput,

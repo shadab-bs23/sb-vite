@@ -2,50 +2,23 @@
   <div class="rounded border joiner-booking-summary ship-gray text-start">
     <slot name="title"></slot>
     <ul>
-      <li v-if="tickets.earlyBirdTickets.price > 0">
-        <div
-          class="d-flex justify-content-between"
-          v-if="tickets.earlyBirdTickets.count > 0"
-        >
-          <span>
-            {{ tickets.earlyBirdTickets.count }} x
-            {{
-              splitAndGetFirstElement(currentTrip?.outbound_from as string, ",")
-            }}
-            -
-            {{
-              splitAndGetFirstElement(currentTrip?.outbound_to as string, ",")
-            }}
+      <li v-for="ticketGroup in groupedTickets" :key="ticketGroup.categoryName">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-normal fs-18">
+            {{ ticketGroup.totalQuantity }} x
+            <span class="fw-semibold fs-18">{{
+              ticketGroup.categoryName
+            }}</span>
+            <!-- <span> - {{ selectedPickupPointName }}</span> -->
           </span>
-          <span>{{ tickets.earlyBirdTickets.price }},- </span>
+          <span class="fw-bold fs-18">{{ ticketGroup.totalPrice }} kr</span>
         </div>
-        <div class="mt-2">
-          <span class="ms-3"
-            >{{ t("sharebus.price_summary.early_bird_tickets") }}
-          </span>
-        </div>
-      </li>
-      <li v-if="tickets.regularTickets.price > 0">
-        <div
-          class="d-flex justify-content-between"
-          v-if="tickets.regularTickets.count > 0"
-        >
-          <span>
-            {{ tickets.regularTickets.count }} x
-            {{
-              splitAndGetFirstElement(currentTrip?.outbound_from as string, ",")
-            }}
-            -
-            {{
-              splitAndGetFirstElement(currentTrip?.outbound_to as string, ",")
-            }}
-          </span>
-          <span>{{ tickets.regularTickets.price }},-</span>
-        </div>
-        <div class="mt-2">
-          <span class="ms-3"
-            >{{ t("sharebus.price_summary.regular_ticket") }}
-          </span>
+        <div class="mt-1">
+          <small class="ms-3">
+            {{ selectedPickupPointName }}
+            <span class="mx-2">⟷</span>
+            {{ finalDestination }}
+          </small>
         </div>
       </li>
     </ul>
@@ -73,15 +46,19 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { PropType } from "vue";
+import { computed, PropType } from "vue";
 import { PublicTrip } from "@/store/trip/joiner/types";
 import ToogleTripInfoWrapper from "@/components/modules/trip/ToogleTripInfoWrapper.vue";
 import { useI18n } from "vue-i18n";
 import { splitAndGetFirstElement } from "@/utils";
 import { Trip } from "@/store/trip/privateTrip/types";
+import { TicketItem } from "@/store/cart/types";
+import { useCartStore } from "@/store";
 
 const { t } = useI18n();
-defineProps({
+const cartStore = useCartStore();
+
+const props = defineProps({
   currentTrip: {
     type: Object as PropType<PublicTrip | Trip>,
     required: true,
@@ -91,12 +68,77 @@ defineProps({
     required: true,
   },
   tickets: {
-    type: Object,
+    type: Array as PropType<TicketItem[]>,
     required: true,
   },
   notGuestShow: {
     type: Boolean,
     default: false,
   },
+});
+
+const currentTripOnewayRoutePoints = computed(() => {
+  try {
+    return JSON.parse(props.currentTrip.route_points)?.oneway || [];
+  } catch (error) {
+    console.error("Error parsing route points:", error);
+    return [];
+  }
+});
+
+const selectedPickupPoint = computed(() => {
+  const selectedViaPointId = cartStore.$state.selectedViaPointId;
+  if (!selectedViaPointId || !currentTripOnewayRoutePoints.value.length) {
+    return null;
+  }
+
+  return currentTripOnewayRoutePoints.value.find(
+    (point: { id: number; point: string }) => point.id === selectedViaPointId
+  );
+});
+
+const selectedPickupPointName = computed(() => {
+  return splitAndGetFirstElement(
+    selectedPickupPoint.value?.point || "Oslo",
+    ","
+  );
+});
+
+const finalDestination = computed(() => {
+  const routePoints = currentTripOnewayRoutePoints.value;
+  if (!routePoints || routePoints.length === 0) {
+    return props.currentTrip?.outbound_to || "Lillehammer";
+  }
+
+  const lastPoint = routePoints[routePoints.length - 1];
+  return splitAndGetFirstElement(lastPoint?.point || "Lillehammer", ",");
+});
+
+const validTickets = computed(() => {
+  return props.tickets.filter((ticket) => ticket.quantity > 0);
+});
+
+const groupedTickets = computed(() => {
+  const grouped: {
+    [key: string]: {
+      categoryName: string;
+      totalQuantity: number;
+      totalPrice: number;
+    };
+  } = {};
+
+  validTickets.value.forEach((ticket) => {
+    if (!grouped[ticket.categoryName]) {
+      grouped[ticket.categoryName] = {
+        categoryName: ticket.categoryName,
+        totalQuantity: 0,
+        totalPrice: 0,
+      };
+    }
+    grouped[ticket.categoryName].totalQuantity += ticket.quantity;
+    grouped[ticket.categoryName].totalPrice += ticket.price * ticket.quantity;
+  });
+
+  return Object.values(grouped);
 });
 </script>

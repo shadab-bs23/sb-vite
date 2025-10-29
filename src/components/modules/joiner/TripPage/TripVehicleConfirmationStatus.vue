@@ -18,7 +18,7 @@
               class="fi fi-check-circle-fill green-jewel"
             ></i>
           </span>
-          <span class="ms-3 ship-gray">
+          <span class="ms-2 ship-gray">
             <span class="fw-600">{{
               remainingPassGoal
                 ? t("status.unconfirmed")
@@ -141,7 +141,9 @@
         </ul>
       </div>
       <div v-else>
-        <CencelNoLongerPossible />
+        <CencelNoLongerPossible
+          :booking-reference="tripInfo.booking_reference"
+        />
       </div>
     </div>
     <div class="col-md-6 col-sm-12">

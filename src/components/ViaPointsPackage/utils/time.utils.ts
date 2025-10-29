@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 /**
  * Removed GMT and beyond for make sure its not manipulating timezone while new Date
  * @param {string} dateString -string which need to be removed
@@ -49,43 +47,30 @@ export const removeTZforISOString = (dateTime: string): string => {
 
 /**
  * Removed T from string make sure its not manipulating timezone while new Date
- * @param {TViaPoints[]} viaPoints -string which need to be removed
+ * @param {TViaPoints[]} route_points -string which need to be removed
  * @returns {TViaPoints[]} formatted str
  */
-export const formatVPPayload = (viaPoints) => {
-  if (!viaPoints.length) return [];
+export const formatVPPayload = (route_points) => {
+  if (!route_points.length) return [];
 
-  return viaPoints.map((vp, index) => {
+  return route_points.map((vp, index) => {
     return {
       ...vp,
       point_latitude: vp.point_latitude.toString(),
       point_longitude: vp.point_longitude.toString(),
-      planned_departure_time: removeTZforISOString(
-        isoFormatDateTime(vp.planned_departure_time)
-      ),
-      actual_departure_time: removeTZforISOString(
-        isoFormatDateTime(vp.actual_departure_time)
-      ),
-      planned_arrival_time:
-        index > 0
-          ? removeTZforISOString(isoFormatDateTime(vp.planned_arrival_time))
-          : null,
+      // planned_departure_time: removeTZforISOString(
+      //   isoFormatDateTime(vp.planned_departure_time)
+      // ),
+      planned_departure_time: vp.planned_departure_time,
+
+      // actual_departure_time: removeTZforISOString(
+      //   isoFormatDateTime(vp.actual_departure_time)
+      // ),
+      actual_departure_time: vp.actual_departure_time,
+
+      planned_arrival_time: index > 0 ? vp.planned_arrival_time : null,
     };
   });
-};
-
-/**'
- * Convert date  to desired format
- * @param {Date} date
- * @param dateTimeFormat
- * @return {string} formatted date
- */
-export const formatDateTime = (
-  date: Date,
-  dateTimeFormat = "dd.MM.yyyy HH:mm"
-): string => {
-  if (!date) return "";
-  return format(date, dateTimeFormat);
 };
 
 export const minToTime = (totalMinutes: number) => {

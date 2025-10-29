@@ -1,5 +1,5 @@
 import { Auth, Amplify, Storage } from "aws-amplify";
-import { UserSignUp } from "././types/auth/user.type";
+import { UserSignUp } from "types/auth/user.type";
 import { showToast } from "../toast/toast.service";
 import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import { ForgotPassword } from "@/store/user/types";
@@ -130,7 +130,5 @@ export const forgotPasswordSubmit = async (payload: ForgotPassword) => {
     payload.username,
     payload.code,
     payload.new_password
-  )
-    .then((data) => console.log(data))
-    .catch((err) => console.log(err));
+  );
 };

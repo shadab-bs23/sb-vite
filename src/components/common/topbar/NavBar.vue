@@ -40,7 +40,7 @@
             aria-current="page"
             @click="routePush(ROUTE.SHARELEAD_BUSSES)"
           >
-            {{ t("navbar.my_busses") }}
+            {{ t("navbar.my_buses") }}
           </BaseButton>
         </li>
         <li
@@ -52,7 +52,7 @@
             aria-current="page"
             @click="routePush(ROUTE.PARTNER_SHARELEAD_TRIPS)"
           >
-            {{ t("navbar.my_busses") }}
+            {{ t("navbar.my_buses") }}
           </BaseButton>
         </li>
         <li
@@ -113,7 +113,8 @@
                 }`"
                 @click="setRole(ROLE.JOINER)"
               >
-                <img src="/img/joiner.svg" alt="Joiner" /> Joiner
+                <img src="/img/joiner.svg" alt="Joiner" />
+                {{ t("navbar.joiner") }}
               </BaseButton>
             </li>
             <li class="for-desk" v-if="hasShareleadPermission">
@@ -125,7 +126,8 @@
                 }`"
                 @click="setRole(ROLE.SHARELEAD)"
               >
-                <img src="/img/sharelead.svg" alt="sharelead" /> Sharelead
+                <img src="/img/sharelead.svg" alt="sharelead" />
+                {{ t("navbar.sharelead") }}
               </BaseButton>
             </li>
             <li class="for-desk" v-if="hasPartnerShareleadPermission">
@@ -137,7 +139,8 @@
                 }`"
                 @click="setRole(ROLE.PARTNER_SHARELEAD)"
               >
-                <img src="/img/sales.svg" alt="sales" /> Sharelead
+                <img src="/img/sales.svg" alt="sales" />
+                {{ t("navbar.sharelead") }}
               </BaseButton>
             </li>
             <li class="for-desk" v-if="hasSalesPermission">
@@ -147,7 +150,7 @@
                 }`"
                 @click="setRole(ROLE.FERDIA_SALES)"
               >
-                <img src="/img/sales.svg" alt="sales" /> Sales
+                <img src="/img/sales.svg" alt="sales" /> {{ t("navbar.sales") }}
               </BaseButton>
             </li>
             <li
@@ -157,7 +160,7 @@
             >
               <BaseButton button-class="dropdown-item joiner-item-hover">
                 <img src="/img/joiner.svg" alt="Joiner" />
-                <span class="text-dark"> Joiner</span>
+                <span class="text-dark"> {{ t("navbar.joiner") }}</span>
               </BaseButton>
               <ul class="inline-style-none">
                 <li class="for-mobile joiner-item-hover">
@@ -198,7 +201,7 @@
                       }
                     "
                   >
-                    {{ t("navbar.my_busses") }}
+                    {{ t("navbar.my_buses") }}
                   </BaseButton>
                 </li>
               </ul>
@@ -227,7 +230,7 @@
                       }
                     "
                   >
-                    My busses
+                    My buses
                   </BaseButton>
                 </li>
               </ul>

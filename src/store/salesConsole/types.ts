@@ -1,20 +1,38 @@
+import { RoutePoints } from "@/components/ViaPointsPackage/types/types";
 import { StoreDefinition } from "pinia";
+import { TicketDiscount, TicketPricing } from "../sharebus/types";
+import { PickTripFields } from "../trip/baseTrip";
 
+export type SaleTripEditAttributes = {
+  trip_location_time: TripLocationTime | object;
+  trip_goal: TripGoal | object;
+  trip_deadline_passenger_goal: TripGoalDeadline | object;
+  trip_ticket_pricing:
+    | {
+        ticket_pricing: TicketPricing;
+      }
+    | object;
+  max_pax: number;
+  update_history: UpdateHistory;
+  trip_general_info: object | TripGeneralInfo;
+  show_available_seats: boolean;
+  trip_ticket_discounts:
+    | {
+        ticket_discounts: TicketDiscount[];
+      }
+    | object;
+};
 export type salesConsoleEditTrip = {
-  [key: string]: {
-    trip_location_time: Itinerary | object;
-    trip_goal: TripGoal | object;
-    trip_deadline_passenger_goal: TripGoalDeadline | object;
-    trip_pricing: TripPricing | object;
-    update_history: UpdateHistory;
-    trip_general_info: object | TripGeneralInfo;
-  };
+  [key: string]: SaleTripEditAttributes;
 };
 
 export type UpdateHistory = {
   trip_location_time: string;
   trip_goal: string;
-  trip_pricing: string;
+  trip_ticket_pricing: string;
+  trip_ticket_discounts: string;
+  trip_pax: string;
+  show_trip_available_seats: string;
   trip_general_info: string;
   trip_deadline_passenger_goal: string;
   trip_republish: string;
@@ -22,39 +40,46 @@ export type UpdateHistory = {
   updated_by_sharelead: string;
 };
 
-export type Itinerary = {
-  outbound_from: string;
-  outbound_from_lat_long: string;
-  outbound_to: string;
-  outbound_to_lat_long: string;
-  outbound_from_datetime: string;
-  outbound_to_datetime: string;
-  return_from: string;
-  return_from_lat_long: string;
-  return_to: string;
-  return_to_lat_long: string;
-  return_from_datetime: string;
-  return_to_datetime: string;
+/**
+ * TripGeneralInfo represents basic trip information fields
+ * Reuses BaseTrip fields for consistency
+ */
+export type TripGeneralInfo = PickTripFields<
+  | "name"
+  | "category"
+  | "info_to_travellers"
+  | "website_url"
+  | "image_url"
+  | "trip_organizer"
+>;
+/**
+ * TripLocationTime represents bus and route information
+ * Partially reuses BaseTrip fields where applicable
+ */
+export type TripLocationTime = PickTripFields<"bus_availability"> & {
+  bus_signage: string;
+  route_points: RoutePoints;
 };
 
-export type TripGeneralInfo = {
-  name: string;
-  category: string;
-  info_to_travellers: string;
-  website_url: string;
-  image_url: string;
-  trip_organizer: string;
-};
-export type TripGoal = {
-  passenger_goal: number;
-};
-export type TripGoalDeadline = {
-  deadline_passenger_goal: string;
-};
-export type TripPricing = {
-  earlybird_ticket_price: number;
-  regular_ticket_price: number;
-};
+/**
+ * TripGoal represents passenger goal field
+ * Reuses BaseTrip field for consistency
+ */
+export type TripGoal = PickTripFields<"passenger_goal">;
+
+/**
+ * TripGoalDeadline represents deadline passenger goal field
+ * Reuses BaseTrip field for consistency
+ */
+export type TripGoalDeadline = PickTripFields<"deadline_passenger_goal">;
+
+/**
+ * TripPricing represents ticket pricing fields
+ * Reuses BaseTrip fields for consistency
+ */
+export type TripPricing = PickTripFields<
+  "earlybird_ticket_price" | "regular_ticket_price"
+>;
 export type TripSetType = {
   [key: string]: {
     [key: string]: object[];
@@ -82,10 +107,13 @@ export enum SalesEditGroup {
   MAX_PAX = "trip_pax",
   TRIP_LOCATION_TYPE = "trip_location_time",
   PASSENGER_GOAL = "trip_goal",
-  TRIP_PRICING = "trip_pricing",
   UPDATE_HISTORY = "update_history",
   TRIP_GOAL_DEADLINE = "trip_deadline_passenger_goal",
   TRIP_GENERAL_INFO = "trip_general_info",
+  // new payload keys for based on new sharelead flow
+  TRIP_TICKET_PRICING = "trip_ticket_pricing",
+  SHOW_TRIP_AVAILABLE_SEATS = "show_trip_available_seats",
+  TRIP_TICKET_DISCOUNTS = "trip_ticket_discounts",
 }
 
 export type CopyTrip = {
@@ -95,7 +123,10 @@ export type CopyTrip = {
 
 export type Passenger = {
   name: string;
-  phoneNumber: string;
+  phone: string;
+  email: string;
+  number_of_tickets: number;
+  ticket_type: string;
 };
 
 export type GetPassengersResponse = { getPassengersList: Passenger[] };

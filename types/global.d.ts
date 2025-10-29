@@ -12,6 +12,7 @@ declare interface Window {
   FERDIA_CUSTOM: FERDIA_CUSTOM & typeof FERDIA_CUSTOM;
   google: google & typeof google;
   Stripe: Stripe & typeof Stripe;
+  bootstrap: Bootstrap & typeof Bootstrap;
 }
 
 declare interface FERDIA_CUSTOM {
@@ -38,7 +39,7 @@ declare interface BUILD_INFO {
   LAST_COMMIT?: LAST_COMMIT & typeof LAST_COMMIT;
   VERSION: string; // version from package.json
   NAME: string; // name from package.json
-  /** corresponding to import.meta.env.NODE_ENV at build time */
+  /** corresponding to process.env.NODE_ENV at build time */
   BUILT_FOR_ENV: string;
 }
 

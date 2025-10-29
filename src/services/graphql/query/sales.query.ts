@@ -37,6 +37,7 @@ export const getSalesActiveTripList = gql`
         website_url
         image_url
         trip_organizer
+        route_points
       }
     }
   }
@@ -79,6 +80,7 @@ export const getSalesUnpublishTripList = gql`
         website_url
         image_url
         trip_organizer
+        route_points
       }
     }
   }
@@ -121,6 +123,7 @@ export const getSalesArchivedTripList = gql`
         website_url
         image_url
         trip_organizer
+        route_points
       }
     }
   }
@@ -155,12 +158,15 @@ export const getSearchTrip = gql`
         max_pax
         total_cancelled_tickets
         deadline_ticket_selling
+        deadline_passenger_goal
         name
         category
         info_to_travellers
         website_url
         image_url
         trip_organizer
+        route_points
+        minimum_possible_ticket_price
       }
     }
   }
@@ -189,7 +195,10 @@ export const GET_PASSENGERS_LIST = gql`
   query get_passengers_list($trip_id: ID!) {
     getPassengersList(trip_id: $trip_id) {
       name
-      phoneNumber
+      phone
+      email
+      number_of_tickets
+      ticket_type
     }
   }
 `;

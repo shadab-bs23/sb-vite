@@ -56,13 +56,9 @@ export const getCutPriceDiscountInfo = (
  * @param {TypeLogicCutPriceDiscount} data - payload that will come which will calculate No Discount pricing
  * @returns {jsonLogicResult}
  */
-export const getNoDiscountPriceInfo = (
-  data: TypeLogicNoDiscount
-): jsonLogicResult => {
+export const getNoDiscountPriceInfo = (data: TypeLogicBase): number => {
   const ticketPrice = getNoneTicketPrice(data);
-  const bonus = getBaseClubSharePerTicket(data);
-
-  return { ticketPrice, bonus };
+  return ticketPrice;
 };
 /*
  * below are ticket price calculation
@@ -75,7 +71,11 @@ export const getNoDiscountPriceInfo = (
  * @returns {number}
  */
 const getNoneTicketPrice = (data: TypeLogicBase): number => {
-  return jsonLogic.apply(ticketPriceLogic.value, data);
+  const result = jsonLogic.apply(ticketPriceLogic.value, {
+    ...data,
+    discount_scheme: "NONE",
+  });
+  return result;
 };
 /**
  * executing json logic for Early Bird tickets calculation

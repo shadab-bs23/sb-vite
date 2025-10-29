@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { GeneralError } from "././types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 import { PropType } from "vue";
 
 defineProps({

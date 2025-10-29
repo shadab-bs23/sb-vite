@@ -21,7 +21,7 @@
                 class="fi fi-check-circle-fill green-jewel"
               ></i>
             </span>
-            <span class="ms-3 ship-gray">
+            <span class="ms-2 ship-gray">
               <span class="fw-600">{{
                 remainingPassGoal
                   ? t("status.unconfirmed")
@@ -56,6 +56,7 @@
           :tripStatus="tripInfo.trip_status"
           :cancellable="!!remainingPassGoal"
           :trip-id="tripInfo.id"
+          :booking-reference="tripInfo.booking_reference"
         />
       </div>
     </div>

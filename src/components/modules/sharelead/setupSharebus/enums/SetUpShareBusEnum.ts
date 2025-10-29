@@ -9,8 +9,8 @@ export enum JSON_LOGIC {
   SUBSIDIZING,
 }
 export enum DECISION_TYPE {
-  YOUR_TICKET = "shareLeadTicketDecision",
-  ACTIVATE_DISCOUNT = "shareLeadDiscountDecision",
+  YOUR_TICKET = "tripCreationTicketDecision",
+  ACTIVATE_DISCOUNT = "tripCreationTtripCreationDiscountDecisioncketDecision",
 }
 export enum DECISION_RESULT {
   YES,

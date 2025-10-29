@@ -47,19 +47,19 @@ const sharebus = useSharebusStore();
 const { t } = useI18n();
 const TICKET_NUMBER = ShareBusSetUpController.getTicketNumberLimit;
 const submitBtnClicked = computed({
-  get: () => ShareBusSetUpController.getSubmitState(STEPS.THREE),
+  get: () => ShareBusSetUpController.getSubmitState(STEPS.TRIP_INFO),
   set: () => {
-    ShareBusSetUpController.setSubmitState(STEPS.THREE);
+    ShareBusSetUpController.setSubmitState(STEPS.TRIP_INFO);
   },
 });
 const ticketsCount = computed({
-  get: () => sharebus.getStepThreeData.tickets as number,
+  get: () => sharebus.getPassengerGoalAndPriceStepData.tickets as number,
   set: (value) => {
-    sharebus.setStep3DataSpecific("tickets", value as number);
+    sharebus.setPassengerGoalAndPriceStepDataSpecific("tickets", value as number);
   },
 });
 const decisionOnTicket = computed(
-  () => sharebus.getStepThreeData.shareLeadTicketDecision
+  () => sharebus.getPassengerGoalAndPriceStepData.tripCreationTicketDecision
 );
 const invalidTicketCountErr = ref("");
 watch(

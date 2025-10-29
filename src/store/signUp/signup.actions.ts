@@ -1,4 +1,4 @@
-import { UserSignUpProcess } from "././types/auth/user.type";
+import { UserSignUpProcess } from "types/auth/user.type";
 import { ForgotPassword, StoreContext } from "./types";
 
 export default {

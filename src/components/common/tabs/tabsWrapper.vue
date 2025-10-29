@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs mx-2">
+  <div :class="`tabs mx-2  ${tabBtnClass}`">
     <div
       :class="`d-flex justify-content-between mb-3 light-gray-bg rounded-pill px-0 ${wrapperClass}`"
     >
@@ -34,6 +34,11 @@ const props = defineProps({
   },
 
   wrapperClass: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  tabBtnClass: {
     type: String,
     required: false,
     default: "",

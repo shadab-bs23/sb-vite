@@ -1,36 +1,39 @@
 import UriController from "@/components/controller/UriController";
 import { computed } from "vue";
 
+// Map of country ISO codes to timezones
+const countryTimezoneMap: Record<string, string> = {
+  NO: "Europe/Oslo",
+  SE: "Europe/Oslo",
+  DK: "Europe/Oslo",
+  FI: "Europe/Helsinki",
+  GB: "Europe/London",
+  UK: "Europe/London",
+  // Add more as needed
+};
+
 export type countryType = {
   currency?: string;
   countryISO?: string;
+  timezone?: string;
 };
 const currencyPlugin = {
   install(app) {
-    /*
-     * computing the property here
-     */
     const country = computed<countryType>(() => {
       const countryMap = UriController.countryMap;
       const query = UriController.getQuery();
+      const countryISO = query.country;
       return {
-        currency: countryMap.value[query.country as string]
-          ? countryMap.value[query.country as string].currency
+        currency: countryMap.value[countryISO as string]
+          ? countryMap.value[countryISO as string].currency
           : null,
-        countryISO: query.country,
+        countryISO,
+        timezone: countryTimezoneMap[countryISO as string] || "Europe/Oslo",
       };
     });
-
-    /*
-     * Here GlobalProperties also defined country can be accessed by also global properties
-     */
     app.config.globalProperties.$country = {
       global: country,
     };
-
-    /*
-     * Providing countryName throughout the application
-     */
     app.provide("country", country);
   },
 };

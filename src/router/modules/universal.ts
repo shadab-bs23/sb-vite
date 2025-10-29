@@ -30,6 +30,23 @@ const universalRoutes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/contact-us/:tag",
+    name: "contact-us",
+    component: () => import("../../views/ContactUs.vue"),
+    props: (route) => ({ bookingReference: route.query.bookingReference }),
+    meta: {
+      breadcrumb: {
+        label: "Trip Page",
+        parent: [
+          {
+            url: "/my-trips",
+            label: "My trips",
+          },
+        ],
+      },
+    },
+  },
+  {
     path: "/error/:tag?/:id?",
     name: "error",
     component: () =>

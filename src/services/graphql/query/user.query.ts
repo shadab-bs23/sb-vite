@@ -21,3 +21,11 @@ export const RESET_PASSWORD = (variables) => gql`
     resetPassword(input: {email: \"${variables.email}\"})
   }
 `;
+
+export const DELETE_USER_INFO = gql`
+  mutation deleteUserInfo {
+    deleteUserInfo {
+      status
+    }
+  }
+`;

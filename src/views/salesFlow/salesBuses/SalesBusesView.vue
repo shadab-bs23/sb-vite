@@ -78,16 +78,17 @@
             class="sb-btn-md"
             :button-class="'sb-btn-primary fw-bold'"
             @click="publishSharebus(trip.id)"
-            :button-text="t('sharebus.my_busses.publish_sharebus')"
+            :button-text="t('sharebus.my_buses.publish_sharebus')"
           />
 
           <BaseButton
             button-class="sb-btn-danger sb-btn-md fw-bold  ms-1"
             @click="cancelShareBus(trip.id)"
-            :button-text="t('sharebus.my_busses.cancel_sharebus')"
+            :button-text="t('sharebus.my_buses.cancel_sharebus')"
           />
         </div>
         <BaseButton
+          :id="`copy-${trip.booking_reference}`"
           button-class="sb-btn-md sb-tertiary rounded-pill px-2 ms-2 d-flex p-1"
           @click="slotProps.userButtonAction(ACTION.COPY)"
         >
@@ -98,6 +99,7 @@
             !slotProps.newTripNotPublished &&
             trip.trip_status !== TRIP_STATUS.NEW
           "
+          :id="`details-${trip.booking_reference}`"
           button-class="sb-btn-md sb-tertiary rounded-pill px-2 ms-2 d-flex p-1"
           @click="slotProps.userButtonAction(ACTION.DETAILS)"
         >
@@ -111,7 +113,7 @@
   <NoTripsBusses
     v-if="!salesTripList.items.length && !nextToken"
     class="col-sm-12 col-md-11 col-lg-11 col-xl-10 col-xxl-9 text-start mx-auto mt-3 text-start"
-    :title="t('sharebus.my_busses.no_active_busses')"
+    :title="t('sharebus.my_buses.no_active_buses')"
     description=""
   />
 
@@ -319,11 +321,18 @@ const userActionCalling = (action) => {
 
 const showSearchResults = useToggle();
 
-const tripListBtnText = computed(() =>
-  nextToken.value || (nextPage.value != 1 && nextPage.value != null)
-    ? t("button.load_more")
-    : t("button.show_recent_sharebuses")
-);
+const tripListBtnText = computed(() => {
+  if (nextToken.value || (nextPage.value != 1 && nextPage.value != null)) {
+    return t("button.load_more");
+  }
+
+  if (filterMode.value === TRIP_FILTER.ACTIVE) {
+    return t("common.all_active_trips");
+  } else if (filterMode.value === TRIP_FILTER.UNPUBLISHED) {
+    return t("common.all_unpublished_trips");
+  }
+  return t("common.all_archived_trips");
+});
 
 const nextToken = computed(() => tripStore.getTripListNextToken);
 const handleBtnClick = () => {

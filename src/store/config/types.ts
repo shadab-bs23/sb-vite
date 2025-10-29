@@ -28,19 +28,39 @@ export type SetupSharebusConfig = {
   country_iso_codes: object;
 };
 
+export type ScheduledConfig = {
+  MinimumDaysBeforeBooking: number;
+  TripPublishReminderDays: number;
+  TripPublishReminderTimeOfDay: string;
+  TripPublishWeeklyReminderDayOfWeek: number;
+  TripPublishDeadlineDays: number;
+  TripPublishDeadlineTimeOfDay: string;
+  PassengerGoalDeadlineDays: number;
+  PassengerGoalDeadlineTimeOfDay: string;
+  PassengerGoalReminderDays: number;
+  PassengerGoalReminderTimeOfDay: string;
+  TripReminderDays: number;
+  TripReminderTimeOfDay: string;
+  TicketSalesDeadlineDays: number;
+  TicketSalesDeadlineTimeOfDay: string;
+  FerdiaSupportTripReminderDays: number;
+  FerdiaSupportTripReminderTimeOfDay: string;
+  FerdiaSupportEmail: string;
+};
+
 /**
  * State type
  */
 export interface State {
-  setupSharebus: SetupSharebusConfig;
+  setupSharebus: SetupSharebusConfig & ScheduledConfig;
   loading: boolean;
 }
 
 interface Getters {
-  getSharebusSetupConfig: () => SetupSharebusConfig;
+  getSharebusSetupConfig: () => SetupSharebusConfig & ScheduledConfig;
 }
 interface Actions {
-  fetchSetupSharebusConfig: () => void;
+  fetchSetupSharebusConfig: (configId: string) => void;
 }
 
 /*

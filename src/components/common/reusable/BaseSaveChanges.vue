@@ -1,17 +1,20 @@
 <template>
-  <div class="d-flex flex-wrap">
+  <div class="d-flex flex-wrap gap-1">
     <BaseButton
       button-class="sb-btn-md sb-btn-secondary me-2"
       @click="action(false)"
-      >Cancel</BaseButton
+      >{{ t("button.cancel") }}</BaseButton
     >
     <BaseButton button-class="sb-btn-md sb-btn-primary" @click="action(true)"
-      >Save Changes
+      >{{ t("button.save_changes") }}
     </BaseButton>
   </div>
 </template>
 <script lang="ts" setup>
 import BaseButton from "@busgroup/vue3-base-button";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const emit = defineEmits(["saveChanges"]);
 
 const action = (value: boolean) => {

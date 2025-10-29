@@ -1,14 +1,15 @@
 import {
   CANCEL_TICKETS,
-  getPublicTripList,
+  CONTACT_SUPPORT,
 } from "@/services/graphql/query/joiner.query";
-import { useLoaderStore } from "@/store";
+import { useLoaderStore, useUserStore } from "@/store";
 import { GET_PUBLIC_TRIP } from "@/services/graphql/query/sharebus/getPublicTrip.query";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { CountryFilter, PublicTrip, StoreContext } from "./types";
+import { PublicTrip, StoreContext, SupportRequestInput } from "./types";
 import { useApolloQueryAsync } from "@/composables/useApolloQueryAsync";
 import { TripFilterUpdate } from "../privateTrip/types";
 import { getSearchTrip } from "@/services/graphql/query/sales.query";
+import { SUPPORTED_REQUEST } from "@/components/common/enums/enums";
 
 export default {
   async getPublicTrip(
@@ -27,12 +28,12 @@ export default {
     return new Promise((resolve, reject) => {
       onResult((queryResult) => {
         this.$state.trip = {
-          ...queryResult.data.getPublicTrip.items[0],
+          ...queryResult.data.getPublicTrip,
         };
         loader.changeLoadingStatus({ isLoading: false });
         cb && cb();
         unitTestCB && unitTestCB();
-        resolve(queryResult.data.getPublicTrip.items[0]);
+        resolve(queryResult.data.getPublicTrip);
       });
       onError((error) => {
         reject(error);
@@ -42,58 +43,6 @@ export default {
 
   setCurrentStep(this: StoreContext, step: number) {
     this.currentStep = step;
-  },
-
-  /**
-   * Get the trip list for joiner homepage
-   * .
-   * @param {StoreContext} this - store context
-   */
-  async fetchPublicTripListForJoiner(
-    this: StoreContext,
-    filter: CountryFilter,
-    nextToken: string | null = null
-  ): Promise<object> {
-    const loader = useLoaderStore();
-    loader.changeLoadingStatus({ isLoading: true });
-    const variables = {
-      nextToken,
-      filter,
-    };
-
-    const { apolloQuery } = useApolloQueryAsync(
-      getPublicTripList,
-      () => variables,
-      {
-        errorPolicy: "all",
-        clientId: "api_key",
-      }
-    );
-
-    return apolloQuery()
-      .then((res) => {
-        loader.changeLoadingStatus({ isLoading: false });
-        this.$state.availablePublicTrips.nextToken =
-          res.data.listPublicTrips.nextToken;
-
-        if (nextToken) {
-          this.$state.availablePublicTrips.items = [
-            ...this.$state.availablePublicTrips.items,
-            ...res.data.listPublicTrips.items,
-          ];
-        } else {
-          this.$state.availablePublicTrips.items = [
-            ...res.data.listPublicTrips.items,
-          ];
-        }
-        return res;
-      })
-      .catch((err) => {
-        loader.changeLoadingStatus({ isLoading: false });
-        this.$reset();
-        console.log(err);
-        return err;
-      });
   },
 
   /**
@@ -167,5 +116,44 @@ export default {
         return queryResult.data.searchTrip;
       })
       .catch((err) => err);
+  },
+
+  /**
+   * Contact support.
+   *
+   * @param {StoreContext} this
+   * @param {SupportRequestInput} payload
+   *
+   */
+  async submitSupportRequest(this: StoreContext, payload: SupportRequestInput) {
+    const loader = useLoaderStore();
+    loader.changeLoadingStatus({ isLoading: true });
+
+    /**
+     * Import the user store to check if the user is logged in or not.
+     */
+    const user = useUserStore();
+
+    const { mutate: sendData } = useMutation(CONTACT_SUPPORT, {
+      errorPolicy: "all",
+      clientId:
+        payload.support_type === SUPPORTED_REQUEST.TRIP &&
+        user.getAuthenticationInfo
+          ? "default"
+          : "api_key",
+    });
+    return sendData({
+      input: payload,
+    })
+      .then((result) => {
+        console.log(result, "success here");
+        loader.changeLoadingStatus({ isLoading: false });
+        return result;
+      })
+      .catch((err: Error) => {
+        console.log(err, "error here");
+        loader.changeLoadingStatus({ isLoading: false });
+        throw err;
+      });
   },
 };

@@ -104,7 +104,7 @@ $gray-light: #f4f5f4;
   color: #a5f2c4;
 }
 .extended-light-green-bg {
-  background: #e5fbee;
+  background: #e5fbee !important;
 }
 .extended-light-green-bg-rgba {
   background-color: rgba(#e5fbee, 0.4);
@@ -163,8 +163,20 @@ $gray-light: #f4f5f4;
 .fs-14 {
   font-size: 14px;
 }
+.fs-18 {
+  font-size: 18px;
+}
 .fs-19 {
   font-size: 19px;
+}
+.fs-20 {
+  font-size: 20px;
+}
+.fs-22 {
+  font-size: 22px;
+}
+.fs-24 {
+  font-size: 24px;
 }
 .fs-26 {
   font-size: 26px;
@@ -260,4 +272,16 @@ $gray-light: #f4f5f4;
 
 .pe-16px {
   padding-right: 16px;
+}
+
+.neg-margin-top {
+  margin-top: -16px;
+}
+
+.fw-semibold {
+  font-weight: 600;
+}
+
+.anchor-align-center {
+  align-items: anchor-center;
 }

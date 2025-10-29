@@ -3,6 +3,12 @@
     <div class="col-sm-12 col-md-6">
       <div>
         <!-- Departure -->
+        <p class="warning-c6-bg text-start rounded p-2">
+          <span class="fs-1 fw-600">{{ totalSoldTickets }}</span>
+          {{ t("common.of") }}
+          <span class="fs-1 fw-600">{{ maxPax }}</span>
+          {{ t("sharebus.trip_page.possible_tickets_sold") }}
+        </p>
         <TripInfoDetails
           :trip-info="departureInfo"
           :trip-status="tripStatus"
@@ -92,6 +98,14 @@ const props = defineProps({
   },
   tripStatus: {
     type: String,
+    required: true,
+  },
+  totalSoldTickets: {
+    type: Number,
+    required: true,
+  },
+  maxPax: {
+    type: Number,
     required: true,
   },
 });

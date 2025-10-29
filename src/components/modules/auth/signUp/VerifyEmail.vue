@@ -10,11 +10,7 @@
       <p class="mt-3 text-start">
         {{ t("auth.verify.type_code_from_email") }}:
       </p>
-      <BaseInput
-        input-group-class="verify-input"
-        type="text"
-        v-model="verifyOtp"
-      />
+      <InputOtp v-model="verifyOtp" :length="6" />
 
       <div class="text-start pt-3">
         <BaseButton
@@ -36,8 +32,12 @@ import { ref, watch, computed } from "vue";
 import { useLoaderStore, useSignUpStore, useUserStore } from "@/store/index";
 import BaseButton from "@busgroup/vue3-base-button";
 import { getLastXDigit } from "@/utils";
-import { GeneralError } from "././types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 import { useRedirect } from "@/services/auth/redirect.service";
+import { defineAsyncComponent } from "vue";
+const InputOtp = defineAsyncComponent(
+  () => import("@/components/common/reusable/InputOtp.vue")
+);
 const error = ref<GeneralError>({ message: "", type: "" });
 
 const loader = useLoaderStore();

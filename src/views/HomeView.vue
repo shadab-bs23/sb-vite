@@ -10,7 +10,7 @@
       () => {
         resetCategory.toggleShowByValue(true);
         TripFilterController.resetTripFilter();
-        handleSearch();
+        filtering.toggleShowByValue(false);
       }
     "
   />
@@ -35,12 +35,14 @@ import { useToggle } from "@/composables/useToggle";
 import TripFilterController from "@/components/modules/trip/controller/TripFilterController";
 import { TripFilterUpdate } from "@/store/trip/privateTrip/types";
 import { countryType } from "@/core/plugin/countryPlugin";
+import { useRoute } from "vue-router";
 
 const joinerTripStore = useJoinerTripStore();
 const filtering = useToggle();
 const defaultPageLimit = 25;
 const country = inject<ComputedRef<countryType>>("country");
-
+const route = useRoute();
+// trip filter default state
 const tripFilter = ref<TripFilterUpdate>({
   search_list: "PublicList",
   query_string: null,
@@ -50,45 +52,38 @@ const tripFilter = ref<TripFilterUpdate>({
   page: 1,
   limit: defaultPageLimit,
 });
-const filterCountry = computed(() => {
-  return { country: country?.value.countryISO as string };
-});
-
+// toggle to reset category to clear the category filter
 const resetCategory = useToggle();
-
+// loading state, ensure to show loading state until data is fetched
 const isLoading = ref(true);
-
-/*
- * when country params will change this function will call
- */
-watch(
-  () => country?.value.countryISO,
-  (newValue, oldValue) => {
-    if (newValue != oldValue) {
-      tripFilter.value.country = newValue as string;
-      TripFilterController.resetTripFilter();
-      refetchTripList();
-    }
-  },
-  {
-    deep: true,
-  }
-);
-
-const refetchTripList = () => {
-  joinerTripStore.fetchPublicTripListForJoiner(filterCountry.value);
-};
+// on mounted check if search query is present in the url, if yes then set the search query in the filter
 onMounted(() => {
-  joinerTripStore
-    .fetchPublicTripListForJoiner(filterCountry.value)
-    .then((res) => {
-      isLoading.value = res.loading;
-    });
+  if (route.query.search) {
+    filtering.toggleShowByValue(true);
+    TripFilterController.setTripFilter(
+      "query_string",
+      route.query.search as string
+    );
+  } else {
+    handleTrips();
+  }
 });
+// handle search from input
+const handleSearch = () => {
+  filtering.toggleShowByValue(true);
+  handleTrips();
+};
+// reset category on unmounted
 onUnmounted(() => {
   TripFilterController.resetTripFilter();
 });
-
+// total page calculation based on elastic search total
+const totalPage = computed(() =>
+  Math.ceil(
+    joinerTripStore.$state.availablePublicTrips.total / tripFilter.value.limit
+  )
+);
+// next page calculation seeing is next page available or not
 const nextPage = computed({
   get: () => {
     if (
@@ -104,31 +99,32 @@ const nextPage = computed({
     joinerTripStore.$state.availablePublicTrips.total = 0;
   },
 });
-
-const handleSearch = () => {
-  const isFilterActive = TripFilterController.getFilterActive();
-  if (isFilterActive) {
-    tripFilter.value.page = (nextPage.value as number) || 1;
-    filtering.toggleShowByValue(true);
-    joinerTripStore.getTripListForJoinerBySearch(tripFilter.value);
-  } else {
-    filtering.toggleShowByValue(false);
-    joinerTripStore.$patch({ availablePublicTrips: { items: [], total: 0 } });
-    nextPage.value = null;
-    joinerTripStore.fetchPublicTripListForJoiner(filterCountry.value);
-  }
+// handle trips based on filter and also page load
+const handleTrips = async () => {
+  tripFilter.value.page = (nextPage.value as number) || 1;
+  await joinerTripStore.getTripListForJoinerBySearch(tripFilter.value);
+  isLoading.value = false;
 };
 
-const loadMorePublicTrips = () => {
-  const nextToken = joinerTripStore.getPublicTripListNextToken;
-  if (!filtering.show.value) {
-    joinerTripStore.fetchPublicTripListForJoiner(
-      filterCountry.value,
-      nextToken
-    );
-  } else {
-    handleSearch();
+/*
+ * when country params will change this function will call
+ */
+watch(
+  () => country?.value.countryISO,
+  (newValue, oldValue) => {
+    if (newValue != oldValue) {
+      tripFilter.value.country = newValue as string;
+      TripFilterController.resetTripFilter();
+      handleTrips();
+    }
+  },
+  {
+    deep: true,
   }
+);
+// load more trips if have paginated data
+const loadMorePublicTrips = () => {
+  handleTrips();
 };
 
 /**
@@ -146,32 +142,10 @@ watch(
       ...newFilter,
     };
     nextPage.value = null;
-    if (
-      !tripFilter.value.query_string &&
-      !tripFilter.value.outbound_from_datetime_range
-    ) {
-      TripFilterController.setFilterActive(false);
-      filtering.toggleShowByValue(false);
-      joinerTripStore
-        .fetchPublicTripListForJoiner({
-          country: country?.value.countryISO as string,
-        })
-        .then((res) => {
-          isLoading.value = res.loading;
-        });
-    } else {
-      handleSearch();
-    }
+    handleTrips();
   },
   {
-    immediate: true,
     deep: true,
   }
-);
-
-const totalPage = computed(() =>
-  Math.ceil(
-    joinerTripStore.$state.availablePublicTrips.total / tripFilter.value.limit
-  )
 );
 </script>

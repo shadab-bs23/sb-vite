@@ -1,4 +1,4 @@
-import { UserSignIn, UserSignUp } from "././types/auth/user.type";
+import { UserSignIn, UserSignUp } from "types/auth/user.type";
 
 /*
  * initially type defines here but it will be moved on appropriate position while got the api

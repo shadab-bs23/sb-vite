@@ -2,46 +2,56 @@ import { StoreDefinition } from "pinia";
 import {
   CreateShareBus,
   publishSharebus,
-} from "./types/sharebus/ShareBusCreationProcess";
-import {
-  Coordinate,
-  Distance,
-  Duration,
-} from "../../.././types/sharebus/map.type";
+} from "types/sharebus/ShareBusCreationProcess";
 import { TViaPoints } from "@/components/ViaPointsPackage/types/types";
+import { Trip } from "../trip/privateTrip/types";
 
 /**
  * Setup types
  */
-export type SharebusStepOne = {
-  origin?: string;
-  originLatLng?: Coordinate;
-  destination?: string;
-  destinationLatLng?: Coordinate;
-  departureDate?: string | null;
-  departureTime?: string | null;
-  departureArrivalDateTime: string | null;
-  returnDate?: string | null;
-  returnTime?: string | null;
-  departureDateTime?: string | null;
-  returnDateTime?: string | null;
-  returnArrivalDateTime: string | null;
+
+/**
+ * Reusable ticket pricing structure
+ */
+export type TicketPricing = {
+  categories: {
+    name: string;
+    enabled: boolean;
+  }[];
+  via_points: {
+    id: number;
+    category_prices: {
+      name: string;
+      price: number;
+    }[];
+  }[];
+};
+
+/**
+ * Ticket discount structure
+ */
+export type TicketDiscount = {
+  days: number;
+  percent: number;
+};
+
+export type RouteStepData = {
   busAvailability: boolean;
-  distance?: Distance | null;
-  duration?: Duration | null;
-  viaPoints: {
+  no_return_trip_needed?: boolean;
+  route_points: {
     oneway: TViaPoints[];
     return: TViaPoints[];
   };
 };
 
-export type SharebusStepTwo = {
+export type OrganizationStepData = {
   fromOrganization: number;
   clubOrTeam?: string;
   organizationId?: number | null;
 };
 
-export type SharebusStepThree = {
+export type PassengerGoalAndPriceStepData = {
+  // Legacy fields
   passengerGoal?: number;
   tickets?: number;
   discountScheme?: string;
@@ -52,8 +62,45 @@ export type SharebusStepThree = {
   bonus?: number;
   totalTicketPrice?: number;
   grandTotalPrice?: number;
-  shareLeadTicketDecision: number;
-  shareLeadDiscountDecision: number;
+  tripCreationTicketDecision: number;
+  tripCreationDiscountDecision: number;
+
+  // New API payload structure - simplified
+  suggested_ticket_price?: number;
+  ticket_pricing?: TicketPricing;
+  discounts?: Record<string, { value: number }>;
+  show_available_seats: boolean;
+  max_pax: number;
+
+  ticket_discounts?: TicketDiscount[];
+
+  // Legacy fields - kept for backward compatibility with existing components
+  categoryLabels?: {
+    categoryOne: string;
+    categoryTwo: string;
+    categoryThree: string;
+  };
+};
+
+/**
+ * Trip info type for step details
+ */
+export type TripInfoData = Pick<
+  Trip,
+  | "trip_organizer"
+  | "name"
+  | "website_url"
+  | "image_url"
+  | "category"
+  | "info_to_travellers"
+>;
+
+/**
+ * Publish step data
+ */
+export type PublishStepData = {
+  publishedAt?: string | Date;
+  status?: string;
 };
 
 /**
@@ -61,29 +108,54 @@ export type SharebusStepThree = {
  */
 export interface State {
   setup: {
+    createdTripId?: string;
     redirectLink: string;
     currentStep: number;
     completed: boolean;
-    stepOne: SharebusStepOne;
-    stepTwo: SharebusStepTwo;
-    stepThree: SharebusStepThree;
+    routeStep: RouteStepData;
+    organizationStep: OrganizationStepData;
+    passengerGoalAndPriceStep: PassengerGoalAndPriceStepData;
+    tripInfoStep?: TripInfoData;
+    publishStep?: PublishStepData;
   };
 }
 
 interface Getters {
-  getStepOneData: () => SharebusStepOne;
-  getStepTwoData: () => SharebusStepTwo;
-  getStepThreeData: () => SharebusStepThree;
+  getRouteStepData: () => RouteStepData;
+  getOrganizationStepData: () => OrganizationStepData;
+  getPassengerGoalAndPriceStepData: () => PassengerGoalAndPriceStepData;
+  getTripInfoData: () => TripInfoData | undefined;
+  getPublishStepData: () => PublishStepData | undefined;
 }
 interface Actions {
-  setStepOneData: (stepOnePayload: SharebusStepOne) => void;
-  setStepTwoData: (stepTwoPayload: SharebusStepTwo) => void;
-  setStepThreeData: (stepTwoPayload: SharebusStepThree) => void;
-  setStep3DataSpecific: (key: string, value: string | number) => void;
+  setRouteStepData: (routeStepData: RouteStepData) => void;
+  setOrganizationStepData: (organizationStepData: OrganizationStepData) => void;
+  setPassengerGoalAndPriceStepData: (
+    passengerGoalAndPriceStepData: PassengerGoalAndPriceStepData
+  ) => void;
+  setTripInfoData: (tripInfo: TripInfoData) => void;
+  setPublishStepData: (publishStepData: PublishStepData) => void;
+  setPassengerGoalAndPriceStepDataSpecific: (
+    key: string,
+    value: string | number | unknown
+  ) => void;
   createSharebus: (payload: CreateShareBus) => void;
   publishSharebus: (payload: publishSharebus) => void;
   cancelSharebus: (tripId: string, type: string) => void;
-  downLoadTickets: (tripId: string) => Promise<object>;
+  downLoadTickets: (tripId: string) => Promise<unknown>;
+
+  // New API payload related actions - simplified
+  generateApiPayload: () => {
+    suggested_ticket_price: number;
+    ticket_pricing: TicketPricing;
+    discounts: Record<string, { value: number }>;
+  };
+  updateTicketPricingCategories: (
+    categories: TicketPricing["categories"]
+  ) => void;
+  updateViaPointsPricing: (viaPoints: TicketPricing["via_points"]) => void;
+  updateDiscounts: (discounts: Record<string, { value: number }>) => void;
+  updateTicketDiscounts: (ticketDiscounts: TicketDiscount[]) => void;
 }
 
 /*

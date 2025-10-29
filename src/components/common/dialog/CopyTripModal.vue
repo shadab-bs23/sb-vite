@@ -58,7 +58,7 @@ import BaseInput from "@busgroup/vue3-base-input";
 import { useI18n } from "vue-i18n";
 import useSalesStore from "@/store/salesConsole/sales.store";
 import FormError from "../error/FormError.vue";
-import { GeneralError } from "././types/errors/errors.type";
+import { GeneralError } from "types/errors/errors.type";
 
 const props = defineProps({
   modalTitle: {

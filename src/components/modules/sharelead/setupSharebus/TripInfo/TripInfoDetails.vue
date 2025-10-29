@@ -1,8 +1,13 @@
 <template>
-  <!-- <pre>{{ tripInfo }}</pre> -->
   <span v-if="isOneLiner">
     <p class="ship-gray text-start mb-0 d-inline">
-      <span v-if="!isReturnTrip">
+      <span
+        v-if="isReturnTrip"
+        class="light-gray-bg rounded-circle green-jewel fs-6 text-center mx-2 px-2 py-1 text-start"
+      >
+        <i class="fi fi-arrow-left-right text-stroke-1"></i>
+      </span>
+      <span>
         {{ placeShortName(tripInfo?.origin as string) }} -
         {{ placeShortName(tripInfo?.destination as string) }}
       </span>
@@ -13,13 +18,7 @@
         <img v-if="isReturnTrip" src="/img/trip-info/left-arrow.svg" alt="" />
       </span>
       <span class="ship-gray text-start">
-        {{
-          getReadableDateFormat(
-            tripInfo.departureDateTime,
-            currentLocale,
-            options
-          )
-        }}
+        {{ formatDateBasedOnOrientation(tripInfo.departureDateTime) }}
       </span>
     </p>
   </span>
@@ -38,13 +37,7 @@
           <img v-if="isReturnTrip" src="/img/trip-info/left-arrow.svg" alt="" />
         </span>
         <p class="ship-gray ms-2" :class="!tripStatus && 'fw-bold'">
-          {{
-            getReadableDateFormat(
-              tripInfo.departureDateTime,
-              currentLocale,
-              options
-            )
-          }}
+          {{ formatDateBasedOnOrientation(tripInfo.departureDateTime) }}
         </p>
       </div>
       <p
@@ -74,14 +67,7 @@
         <img v-if="isReturnTrip" src="/img/trip-info/left-arrow.svg" alt="" />
       </span>
       <span class="ms-1 fw-bold ship-gray">
-        {{
-          getReadableDateFormat(
-            tripInfo.departureDateTime,
-            currentLocale,
-            options,
-            dateFormat
-          )
-        }}
+        {{ formatDateBasedOnOrientation(tripInfo.departureDateTime) }}
       </span>
     </div>
     <div class="ms-2 mb-3 d-flex flex-column align-items-start">
@@ -99,9 +85,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from "vue";
 import {
-  getFormattedTime,
   splitAndGetFirstElement,
-  getReadableDateFormat,
   placeShortName,
   calculateDivDistance,
 } from "@/utils";
@@ -109,6 +93,8 @@ import { DateTimeFormatOptions } from "@intlify/core-base";
 import { locales } from "@/locales";
 import { useI18n } from "vue-i18n";
 import SingleItinerary from "./SingleItinerary.vue";
+import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
+import { AllowedFormats } from "@/utils/companyTimeFormat";
 
 const props = defineProps({
   tripInfo: {
@@ -140,21 +126,23 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  dateFormat: {
-    type: String,
-    default: "",
-  },
 });
 
 const { locale, t } = useI18n();
 const currentLocale = ref(locales[locale.value]);
+const formatInCompanyTz = useCompanyTimeFormat();
 
-const options = computed<DateTimeFormatOptions>(() => ({
-  weekday: props.isHorizontal || props.isOneLiner ? "short" : "long",
-  year: "numeric",
-  month: props.isHorizontal || props.isOneLiner ? "short" : "long",
-  day: "numeric",
-}));
+const formatDateBasedOnOrientation = (dateStr: string) => {
+  const formatPattern: AllowedFormats =
+    props.isHorizontal || props.isOneLiner
+      ? "EEE, MMM d, yyyy"
+      : "EEEE, MMMM d, yyyy";
+  return formatInCompanyTz(dateStr, formatPattern, currentLocale.value);
+};
+
+const getFormattedTime = (dateStr: string) => {
+  return formatInCompanyTz(dateStr, "HH:mm");
+};
 
 const departureSpanId = computed(() => {
   return props.isReturnTrip ? "departure-info1" : "departure-info";

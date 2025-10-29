@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { PasswordValidation } from "../../../../.././types/auth/user.type";
+import { PasswordValidation } from "../../../../../types/auth/user.type";
 import { regexPasswordValidation } from "@/utils";
 
 const props = defineProps({

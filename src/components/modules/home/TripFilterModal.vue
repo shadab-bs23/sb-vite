@@ -8,7 +8,7 @@
     footer-class="border-top-0 pb-4"
   >
     <template v-slot:header>
-      <h3>Trip filter</h3>
+      <h3>{{ t("common.trip_filter") }}</h3>
     </template>
     <template v-slot:closeButton>
       <div @click="() => toggleModal()">
@@ -19,7 +19,9 @@
     </template>
     <template v-slot:content>
       <div class="d-flex flex-column align-items-start">
-        <label for="dateRange" class="form-label fw-bold">Date range</label>
+        <label for="dateRange" class="form-label fw-bold">{{
+          t("common.date_range")
+        }}</label>
         <BaseDatePicker
           v-model="searchDateRange"
           id="dateRange"

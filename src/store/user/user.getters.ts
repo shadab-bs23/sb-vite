@@ -1,5 +1,5 @@
 import { ROLE } from "@/components/common/enums/enums";
-import { User } from "././types/auth/user.type";
+import { User } from "types/auth/user.type";
 import { State } from "./types";
 export default {
   /**

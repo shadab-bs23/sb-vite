@@ -5,7 +5,7 @@
         <span>
           <i class="fi fi-check-circle-fill green-jewel"></i>
         </span>
-        <span class="ms-3 ship-gray">
+        <span class="ms-2 ship-gray">
           {{ t("sharebus.joiner.booking.your_tickets_cancelled") }}
         </span>
       </div>
