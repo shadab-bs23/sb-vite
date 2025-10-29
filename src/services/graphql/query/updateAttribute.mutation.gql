@@ -1,0 +1,5 @@
+mutation updateAttribute($input: UpdateSharebusInput!) {
+  updateSharebus(input: $input) {
+    status
+  }
+}

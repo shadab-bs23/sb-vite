@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+   <!-- Primary Meta Tags -->
+   <meta name="title" content="Sharebus">
+   <meta name="description" content="Sharebus lets travel together">
+   <!-- Open Graph / Facebook -->
+   <meta property="og:type" content="website">
+   <meta property="og:title" content="Sharebus">
+   <meta property="og:description" content="Sharebus lets travel together">
+   <meta property="og:image" content="https://dev.sharebus.co/assets/5dba2951-7bfd-47fb-8ee5-3678715ff903.jpg">
+   <!-- Twitter -->
+   <meta property="twitter:card" content="summary_large_image">
+   <meta property="twitter:type" content="website">
+   <meta property="twitter:title" content="Sharebus lets travel together">
+   <meta property="twitter:description" content="Sharebus">
+   <meta property="twitter:image" content="https://dev.sharebus.co/assets/5dba2951-7bfd-47fb-8ee5-3678715ff903.jpg">
+ 
+    <link
+      rel="shortcut icon"
+      href="/favicon.ico"
+      type="image/x-icon"
+    />
+    <title>Sharebus</title>
+    <!-- Google Tag Manager -->
+    <script crossorigin="anonymous">
+    (function (w, d, s, l, i) {
+        w[l] = w[l] || []; w[l].push({
+          'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+        }); var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-KV2N84R');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Ferdia's CDN ---------------------------------------------------------------------------------------------- -->
+
+    <!-- PrimeVue theme - see https://github.com/busgroup/styleguide/tree/master/primevue-theme -->
+    <link
+      rel="preload"
+      href="https://style.ferdia.no/latest/css/ferdiaPrimeVueTheme.min.css"
+      as="style"
+      crossorigin="anonymous"
+      onload="this.rel='stylesheet'"
+    />
+
+    <!-- Custom bootstrap build with Ferdia style --------------------------------------------- -->
+    <link
+      rel="preload"
+      href="https://style.ferdia.no/latest/css/main.min.css"
+      as="style"
+      crossorigin="anonymous"
+      onload="this.rel='stylesheet'"
+    />
+
+    <!--
+      THIS HAS BEEN DISABLED FOR NOW - WE SHOULD TRY TO AVOID USING BOOTSTRAP JS, AND ONLY USE BOOTSRAP CSS-->
+      <script
+      src="https://style.ferdia.no/latest/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script> 
+
+    <!-- supplementing manifest / PWA ------------------------------------------------------------------------------ -->
+
+    <!-- Generic -->
+    <link rel="icon" type="image/png" sizes="32x32" href="img/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="img/icons/favicon-16x16.png" />
+
+    <!-- Apple-specific -->
+    <link rel="mask-icon" href="img/icons/safari-pinned-tab.svg" color="#138340" />
+
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-57x57.png" sizes="57x57" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-72x72.png" sizes="72x72" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-76x76.png" sizes="76x76" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-114x114.png" sizes="114x114" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-120x120.png" sizes="120x120" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-144x144.png" sizes="144x144" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-152x152.png" sizes="152x152" />
+    <link rel="apple-touch-icon" href="img/icons/apple-icon-180x180.png" sizes="180x180" />
+
+    <!-- MS-specific -->
+    <meta name="msapplication-TileColor" content="#138340" />
+    <meta name="msapplication-config" content="img/icons/browserconfig.xml" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Other misc ------------------------------------------------------------------------------------------------ -->
+    <script>
+      window.global = window;
+      var exports = {};
+    </script>
+    <!-- Google map -->
+    <script
+    type="module"
+      src="https://maps.googleapis.com/maps/api/js?key=%VITE_APP_GOOGLE_MAP_API_KEY%&callback=Function.prototype&libraries=places&v=weekly" async
+    ></script>
+
+     <!--- stripe CDN  -->
+     <script src="https://js.stripe.com/v3/"></script>   
+    <script>
+      // Set global vars ------------------------------------------------------------------------------------------- -->
+
+      // prettier-ignore
+      window.FERDIA_CUSTOM = {
+        // BUILD_INFO: JSON.parse('<%=import.meta.env.VITE_APP_BUILD_INFO%>'),
+
+        /**
+         * Info derived from URL - assuming standardized setup:
+         *
+         * - URL-scheme : `<ENV.>sharebus.co/<CONTRY CODE>/<CORP CODE>/`, where...
+         *   - `ENV`          : dev || test || staging, or inferred when absent: local || production
+         *   - `CONTRY CODE`  : ISO 316 Alpha-2 country code
+         *   - `CORP CODE`    : Name of company (sales channel)
+         * - URL-scheme, example : test.sharebus.co/no/ferdia/
+         * - for local: "localhost" or "127.0.0.1" as hostname, or "local" as subdomain
+         * - for production: no subdomain
+         */
+        FROM_URL: (function () {
+          var HOSTNAME = window.location.hostname,  // e.g.'sharebus.co'
+              subdomain = HOSTNAME.split(".")[0],
+              is_local = HOSTNAME === "localhost" || HOSTNAME === "127.0.0.1" ||
+                location.port === "8080" || subdomain === "local",
+              default_corp = "ferdia",
+              default_country = "no",
+              pathArray, is_prod, COUNTRY, ENV, CORP;
+
+          if (is_local) {
+            ENV = "local";
+            CORP = default_corp;
+            COUNTRY = default_country;
+          } else {
+            is_prod = HOSTNAME === subdomain; // When there is no subdomain
+            pathArray = window.location.pathname.split('/').slice(1);
+            ENV = is_prod ? "production" : subdomain.toLowerCase();
+            COUNTRY = pathArray[0] && pathArray[0].toLowerCase() || default_country;
+            CORP = pathArray[1] && pathArray[1].toLowerCase() || default_corp;
+          }
+          return {ENV, COUNTRY, CORP};
+        })()
+      }
+    </script>
+
+    <!--- stripe CDN No current use -->
+    <!-- <script src="https://js.stripe.com/v3/"></script> -->
+  </head>
+  <body class="container-fluid">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KV2N84R" height="0" width="0" style="display:none;visibility:hidden">
+      </iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <noscript>
+      <strong>We're sorry but %VITE_APP_TITLE% doesn't work
+        properly without JavaScript enabled. Please enable it to
+        continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

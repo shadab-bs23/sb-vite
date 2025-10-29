@@ -1,0 +1,5 @@
+mutation unpublishTrip($input: TripId!) {
+  unpublishTrip(input: $input) {
+    status
+  }
+}

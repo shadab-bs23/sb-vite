@@ -1,0 +1,87 @@
+@media only screen and (min-width: 992px) {
+  footer .links-wrapper {
+    font-size: 16px;
+    height: 52px;
+    .navbar-brand img {
+      height: 26px;
+    }
+  }
+  .role-container {
+    box-shadow: 0px 8px 35px rgba(0, 0, 0, 0.16);
+  }
+  .for-mobile {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 769px) {
+  .navbar {
+    height: 100px;
+    .navbar-brand img {
+      height: 30px;
+    }
+  }
+  .navbar-brand img {
+    height: 25px;
+  }
+  .tickets-container {
+    justify-content: end;
+  }
+
+  .booking-left-content {
+    border: 1px solid $light-gray-2;
+    border-radius: 5px;
+  }
+}
+@media only screen and (max-width: 992px) {
+  .footer-contact-us-button {
+    margin-bottom: 5px;
+  }
+  .for-desk {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .navbar {
+    height: 97px;
+    .navbar-brand img {
+      height: 48px;
+    }
+  }
+
+  .explore-section {
+    .search {
+      width: 75%;
+      font-size: 12px;
+    }
+  }
+  .custom-card-wrap {
+    .custom-card {
+      flex-grow: 1;
+      border-radius: 4px;
+      border: 1px solid $light-gray-2;
+    }
+  }
+
+  .tickets-container {
+    justify-content: space-between;
+  }
+}
+@media only screen and (max-width: 576px) {
+  .button-responsive {
+    justify-content: start !important;
+  }
+  .navbar {
+    height: 80px;
+    .navbar-brand img {
+      height: 25px;
+    }
+  }
+  .navbar-brand img {
+    height: 25px;
+  }
+  .btn-width-mq {
+    width: 100%;
+  }
+}

@@ -1,0 +1,143 @@
+name: UITests
+
+env:
+  SHAREBUS_UI_AUTOMATION_DEPLOY_KEY: ${{ secrets.SHAREBUS_UI_AUTOMATION_DEPLOY_KEY }}
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+on:
+  workflow_dispatch:
+    branches:
+      - main
+
+    inputs:
+      Tags:
+        description: "Tags"
+        default: "@trips"
+        required: true
+        type: string
+
+      Browser:
+        description: "Browser"
+        default: "chrome"
+        required: false
+        type: choice
+        options:
+          - chrome
+          - firefox
+          - edge
+          - safari
+
+      Url:
+        description: "Url"
+        default: "https://test.sharebus.co/"
+        required: false
+        type: choice
+        options:
+          - "https://staging.sharebus.co/"
+          - "https://test.sharebus.co/"
+          - "https://dev.sharebus.co/"
+
+      ParallelTest:
+        description: "Parallel Test"
+        default: "1"
+        required: false
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Get submodules
+        run: |
+          export LC_ALL=en_US.UTF-8
+          export LANG=en_US.UTF-8
+          eval `ssh-agent -s`
+          ssh-add - <<< "${SHAREBUS_UI_AUTOMATION_DEPLOY_KEY}"
+          git submodule update --init --recursive --remote
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: "11"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Print input parameters
+        run: |
+          echo "headless=true" >> $GITHUB_ENV
+          echo "url=${{ github.event.inputs.Url }}" >> $GITHUB_ENV
+          echo "browser=${{ github.event.inputs.Browser }}" >> $GITHUB_ENV
+          echo "tags=${{ github.event.inputs.Tags }}" >> $GITHUB_ENV
+          echo "count=${{ github.event.inputs.ParallelTest }}" >> $GITHUB_ENV
+
+      - name: Run UITests
+        working-directory: sharebus-uitest-automation
+        id: run_ui_tests
+        run: |
+          mvn clean test -Dcucumber.filter.tags='${{ env.tags }}' -Ddataproviderthreadcount=${{ env.count }} -DBROWSER=${{ env.browser }} -DBASE_URL=${{ env.url }} -DHEADLESS=${{ env.headless }} -q
+
+      - name: Get All Tests
+        uses: mavrosxristoforos/get-xml-info@1.1.1
+        id: getxml_total
+        if: always()
+        with:
+          xml-file: "sharebus-uitest-automation/target/testng-results.xml"
+          xpath: "//testng-results/@total"
+
+      - name: Get Passed Tests
+        uses: mavrosxristoforos/get-xml-info@1.1.1
+        id: getxml_passed
+        if: always()
+        with:
+          xml-file: "sharebus-uitest-automation/target/testng-results.xml"
+          xpath: "//testng-results/@passed"
+
+      - name: Get Failed Tests
+        uses: mavrosxristoforos/get-xml-info@1.1.1
+        id: getxml_failed
+        if: always()
+        with:
+          xml-file: "sharebus-uitest-automation/target/testng-results.xml"
+          xpath: "//testng-results/@failed"
+
+      - name: Get Skipped Tests
+        uses: mavrosxristoforos/get-xml-info@1.1.1
+        id: getxml_skipped
+        if: always()
+        with:
+          xml-file: "sharebus-uitest-automation/target/testng-results.xml"
+          xpath: "//testng-results/@skipped"
+
+      - name: Generate Reports
+        if: always()
+        run: |
+          echo "total=${{ steps.getxml_total.outputs.info }}" >> $GITHUB_ENV
+          echo "passed=${{ steps.getxml_passed.outputs.info }}" >> $GITHUB_ENV
+          echo "failed=${{ steps.getxml_failed.outputs.info }}" >> $GITHUB_ENV
+          echo "skipped=${{ steps.getxml_skipped.outputs.info }}" >> $GITHUB_ENV
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        if: always()
+        env:
+          SLACK_WEBHOOK: "#ci-cd-sharebus"
+          SLACK_COLOR: "${{ job.status }}"
+          SLACK_USERNAME: "${{ github.event.repository.name }}"
+          SLACK_ICON: "https://github.com/rtCamp.png?size=48"
+          SLACK_TITLE: "Browser: ${{ github.event.inputs.Browser }}"
+          SLACK_MESSAGE: "Total run: ${{ env.total }}, passed: ${{ env.passed }}, failed: ${{ env.failed }}, skipped: ${{ env.skipped }}"
+          SLACK_FOOTER: "Test Tags: ${{ env.tags }}"
+
+      - name: Print Log
+        if: always()
+        run: |
+          cat ./sharebus-uitest-automation/debug.log

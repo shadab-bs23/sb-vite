@@ -1,0 +1,207 @@
+@import "utility_classes";
+@import "media_query";
+@import "setupShareBus";
+@import "card";
+@import "breadcrumb_menu";
+@import "button";
+// @import "./custom-element-plus/element_date_picker";
+/*
+To fix issue of the google place autocomplete pac-container fixed to the input field.
+*/
+html,
+body {
+  overflow-x: visible;
+}
+.signup-input {
+  align-items: flex-start;
+  border: 1px solid #dedede;
+  padding: 16px;
+  label {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    color: #000000;
+  }
+  input {
+    height: 100%;
+    width: 100% !important;
+    border: none;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: #000000;
+    padding-left: 0;
+  }
+}
+
+.modal {
+  z-index: 1031;
+}
+.modal-backdrop {
+  z-index: 1030;
+}
+
+.inline-style-none {
+  list-style: none;
+}
+
+.fi-arrow-right-short::before,
+.fi-arrow-left-short::before {
+  font-size: 1.8rem;
+}
+
+.sb-bg-warning {
+  background: #fdf292;
+}
+
+.sb-loader-size {
+  height: 100px;
+  width: 100px;
+  border-color: #79c142;
+}
+
+input::placeholder,
+input::placeholder {
+  color: gray;
+}
+
+button {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+/**
+font weight doesn't work on bootstrap icons. This is a workaround found from stackoverflow.
+See here: https://stackoverflow.com/questions/70483510/bootstrap5-icons-font-weight
+*/
+.icon-text-stroke {
+  -webkit-text-stroke: 1px;
+  font-size: 1.2em;
+  line-height: 1.3;
+}
+
+.text-stroke-2 {
+  -webkit-text-stroke: 2px;
+}
+
+.overlay-primary-background {
+  background-color: rgba(187, 182, 182, 0.8);
+}
+
+.vertical-line {
+  height: 30px;
+  border-left: 1px dashed $light-gray-2;
+}
+
+.sharelead-item-hover {
+  &:hover {
+    @extend .orange-buttercup-bg-rgba;
+  }
+}
+
+.joiner-item-hover {
+  &:hover {
+    @extend .malibu-bg-rgba;
+  }
+}
+
+/*
+  This code removes control arrow buttons from input fields
+*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Border and placeholder text color on error */
+.border-error {
+  border-color: $error-input;
+  &::placeholder {
+    color: $error-input;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.total-payment-line {
+  border-bottom: 1px solid #000000;
+  opacity: 1;
+}
+
+.list-breakdown ul,
+.summary-breakdown ul {
+  li {
+    max-width: 100%;
+    list-style-type: none;
+  }
+  padding: 0.7rem 0.7rem 0rem 0.7rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+.p-datepicker {
+  z-index: 1031 !important;
+}
+
+/** Vue toastification custom styles*/
+.Vue-Toastification__toast {
+  align-items: center;
+}
+
+.Vue-Toastification__icon {
+  margin: 0;
+}
+
+.Vue-Toastification__toast-body {
+  margin: 0 15px 0 15px;
+}
+
+//info  close button
+.Vue-Toastification__close-button {
+  opacity: 1;
+  font-size: 20px !important;
+  background-color: orange;
+  color: white;
+  border-radius: 50%;
+  height: 35px;
+}
+
+//error close button
+.Vue-Toastification__toast--error > .Vue-Toastification__close-button {
+  @extend .Vue-Toastification__close-button;
+  background-color: $warning;
+}
+
+.sb-dropdown {
+  color: $ship-gray;
+  border-bottom: 1px solid #0c1026;
+  &:hover {
+    background: #e5fbee;
+    border-color: #61e897;
+    color: $ship-gray;
+  }
+  &:focus {
+    background: #e5fbee;
+    /* Primary/Ship Gray */
+    border: 2px solid #0c1026;
+    color: $ship-gray;
+  }
+  &:disabled {
+    background: #e5fbee;
+    opacity: 0.4;
+  }
+}

@@ -1,0 +1,64 @@
+name: Sharebus Frotnend Dev Environment Deployment
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Replace Tokens
+        uses: cschleiden/replace-tokens@v1.3
+        with:
+          tokenPrefix: "${"
+          tokenSuffix: "}"
+          files: '[".env.development"]'
+        env:
+          VUE_APP_AUTH_IDENTITY_POOL_ID: ${{ vars.VUE_APP_AUTH_IDENTITY_POOL_ID}}
+          VUE_APP_AUTH_USER_POOL_ID: ${{ vars.VUE_APP_AUTH_USER_POOL_ID }}
+          VUE_APP_AUTH_CLIENT_ID: ${{ vars.VUE_APP_AUTH_CLIENT_ID }}
+          VUE_APP_GOOGLE_MAP_API_KEY: ${{ vars.VUE_APP_GOOGLE_MAP_API_KEY }}
+          VUE_APP_APPSYNC_API_KEY: ${{ vars.VUE_APP_APPSYNC_API_KEY }}
+          VUE_APP_STRIPE_PUBLIC_KEY: ${{ vars.VUE_APP_STRIPE_PUBLIC_KEY }}
+          VUE_APP_APPSYNC_URL: ${{ vars.VUE_APP_APPSYNC_URL }}
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: NPM Token with PAT
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_PRIVATE_TOKEN }}
+                @busgroup:registry=https://npm.pkg.github.com/ " > .npmrc
+
+      - name: NPM Packages Install
+        run: npm install
+
+      - name: Development Build
+        run: npm run build
+
+      - name: Test
+        run: npm run test:unit
+
+      - name: Deploy to Dev
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          DISTRIBUTION_ID: ${{ vars.AWS_DISTRIBUTION_ID }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: |
+          aws s3 cp \
+            --recursive \
+            --region ${{ vars.AWS_REGION }} \
+            dist s3://${{ vars.AWS_BUCKET_NAME }}
+          aws cloudfront create-invalidation --distribution-id ${{ vars.AWS_DISTRIBUTION_ID }} --paths "/*" --region ${{ vars.AWS_REGION }}

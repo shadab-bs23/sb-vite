@@ -1,0 +1,30 @@
+#element-plus-date-picker {
+  .el-range-editor.is-active {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem #c7d2fe;
+    border-color: #138340 !important;
+  }
+}
+
+ //write a css media query
+@media (max-width: 767px) {
+  .el-date-range-picker.has-sidebar {
+    width: 275px !important;
+    .el-picker-panel__sidebar {
+      position: unset !important;
+      width: 100% !important;
+    }
+    .el-picker-panel__body {
+      margin-left: 0 !important;
+      width: 275px !important;
+      min-width: unset !important;
+      display: flex !important;
+      background-color: white !important;
+      flex-direction: column !important;
+      .el-date-range-picker__content {
+        width: 100% !important;
+      }
+    }
+  }
+}

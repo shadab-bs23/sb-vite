@@ -1,0 +1,3 @@
+[submodule "sharebus-uitest-automation"]
+	path = sharebus-uitest-automation
+	url = git@github.com:busgroup/sharebus-uitest-automation.git

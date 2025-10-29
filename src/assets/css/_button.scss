@@ -1,0 +1,218 @@
+.sb-btn-lg {
+  height: 46px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 22px;
+  padding: 10px, 0px, 10px, 12px;
+  border-radius: 25px;
+
+  i {
+    &::before {
+      vertical-align: -0.25em;
+      font-size: 24px;
+    }
+  }
+}
+.sb-btn-md {
+  height: 36px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 8px 24px;
+  border-radius: 25px;
+
+  i {
+    &::before {
+      vertical-align: -0.25em;
+      font-size: 18px;
+    }
+  }
+}
+.sb-btn-sm {
+  height: 28px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  padding: 4px 13px;
+  border-radius: 25px;
+  i {
+    &::before {
+      vertical-align: -0.25em;
+      font-size: 18px;
+    }
+  }
+}
+.sb-btn-primary {
+  background-color: $primary;
+  color: #fefffe;
+  &:hover {
+    background-color: #159c49;
+    border-color: #159c49;
+    /* Grays/White */
+    color: #fefffe;
+  }
+  &:focus {
+    /* Primary/Green Jewel Lighter */
+    background: #159c49;
+    /* Grays/Text */
+    border: 2px solid #1a1b1a;
+    /* Grays/White */
+    color: #fefffe;
+  }
+  &:disabled {
+    /* Primary/Green Jewel */
+    background: #138340;
+    opacity: 0.4;
+    color: #fefffe !important;
+  }
+}
+
+.sb-btn-primary-alt {
+  background-color: $primary-alt;
+  color: $ship-gray;
+  border: none;
+  &:hover {
+    background-color: #61e897;
+    border-color: #61e897;
+    color: $ship-gray;
+  }
+  &:focus {
+    background: #61e897;
+    /* Primary/Ship Gray */
+    border: 2px solid #0c1026;
+    color: $ship-gray;
+  }
+  &:disabled {
+    background: #a5f2c4;
+    opacity: 0.4;
+  }
+}
+.sb-btn-secondary {
+  /* Grays/White */
+  background: #fefffe;
+  /* Grays/Medium gray */
+  border: 1px solid #8b9389;
+  color: #0c1026;
+  border-radius: 25px;
+  &:hover {
+    /* Extended greens/ Extended light green */
+    background: #e5fbee;
+    /* Primary/Green Jewel */
+    border: 1px solid #138340;
+    /* Primary/Green Jewel */
+    color: #138340;
+  }
+  &:focus {
+    /* Extended greens/ Extended light green */
+    background: #e5fbee;
+    /* Primary/Green Jewel */
+    color: #138340;
+    border: 2px solid #138340;
+    border-radius: 25px;
+  }
+  &:disabled {
+    background: #fefffe;
+    opacity: 0.4;
+    /* Grays/Medium gray */
+    color: #0c1026;
+    border: 1px solid #8b9389;
+  }
+}
+
+.sb-btn-danger {
+  color: #0c1026;
+  background: #ffffff;
+  border: 1px solid #d4001a;
+  &:hover {
+    background: #ffe6e9;
+    color: #d4001a;
+    border: 1px solid #d4001a;
+  }
+  &:focus {
+    background: #ffe6e9;
+    border: 2px solid #d4001a;
+    color: #d4001a;
+  }
+  &:disabled {
+    background: #ffffff;
+    opacity: 0.4;
+    color: #0c1026;
+    border: 1px solid #d4001a;
+  }
+}
+
+.btn-menu-action-sharelead {
+  background-color: #fdedd3;
+}
+.btn-menu-action-joiner {
+  background-color: #ddedfd;
+}
+.sb-btn-joiner {
+  background: #ffffff;
+  &:hover {
+    background: #ddedfd;
+  }
+  &:focus {
+    background: #eef6fe;
+    /* Secondary/Blue Malibu */
+    border: 2px solid #54a7f5;
+  }
+}
+.sb-btn-sharelead {
+  background: #ffffff;
+  &:hover {
+    background: #fdedd3;
+  }
+  &:focus {
+    background: #fdedd3;
+    /* Secondary/Orange Buttercup */
+    border: 2px solid #f5a623;
+  }
+}
+
+.sb-tertiary {
+  color: #138340;
+  // padding: 8px 24px;
+  &:hover {
+    background: #e5fbee;
+    border-radius: 25px;
+    // padding: 8px 24px;
+    text-decoration: none;
+  }
+  &:active {
+    background: #ffff;
+    /* Primary/Green Jewel */
+    border-bottom: 2px solid #138340 !important;
+    // padding: 8px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    // padding: 8px 24px;
+  }
+  &:disabled {
+    background: #e5fbee;
+    // padding: 8px 24px;
+    opacity: 0.4;
+    padding: 8px 24px;
+  }
+}
+
+.sb-vipps-btn {
+  background-color: #ec6539;
+  &:hover {
+    background-color: #f9774b;
+    border: 2px solid #f9774b;
+  }
+}
+
+.language-menu-btn {
+  background: #ffffff;
+  border: 1px solid #8b9389;
+  &:hover {
+    background: #ddedfd;
+  }
+  &:focus {
+    background: #eef6fe;
+    /* Secondary/Blue Malibu */
+    border: 2px solid #54a7f5;
+  }
+}

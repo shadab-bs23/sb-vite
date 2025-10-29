@@ -1,0 +1,15 @@
+/**
+  Design for cards
+*/
+.card-default {
+  background: linear-gradient(0deg, #ffffff, #ffffff), #ffffff;
+  border: 1px solid $medium-gray;
+}
+
+.card-hover {
+  @extend .card-default;
+  &:hover {
+    border: 1px solid var(--ferdia-c1-green-jewel1);
+    cursor: pointer;
+  }
+}

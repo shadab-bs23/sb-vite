@@ -1,0 +1,263 @@
+$color-ferdia-white: #fefffe;
+
+$light-gray-2: #d5d6d5;
+$light-gray: #f4f5f4;
+$medium-gray: #8b9389;
+
+$light-mid-gray: #bcc1bb;
+$secondary-red-carnation: #d5d6d5;
+$ship-gray: #0c1026;
+$info-yellow: #fdf292;
+$info-yellow-2: #fffce9;
+$error-card: #feebe7;
+$light-red: #f7efed;
+$error-input: #d4001a;
+$red-carnation: #f64b60;
+$custom-yellow: #fdf292;
+$info-Turquoise: #9ce8f5;
+$info-ongoing: #b0f0d2;
+
+$primary: #138340;
+$primary-alt: #a5f2c4;
+
+$secondary: #54a7f5;
+$secondary-c11: #e5f8fa;
+$secondary-c10: #cfe6fc;
+$secondary-c5: #e7f3fe;
+$secondary-c2: #f5fafe;
+
+$warning: #f5a623;
+$warning-c10: #fdebce;
+$warning-c7: #fcecc0;
+$warning-c6: #fef8c8;
+$warning-c5: #fef5e7;
+$warning-c2: #fffbf5;
+
+$danger: #f64b60;
+
+$buttercup-orange: #f5a623;
+$buttercup-orange-10: #fdebce;
+$buttercup-orange-5: #fef5e7;
+$buttercup-orange-2: #fffbf5;
+
+$blue-malibu: #54a7f5;
+$blue-malibu-10: #cfe6fc;
+$blue-malibu-5: #e7f3fe;
+$blue-malibu-2: #f5fafe;
+
+$venetian-red: #d4001a;
+$venetian-red-10: #ffccd2;
+$venetian-red-5: #ffe5e9;
+$venetian-red-2: #fff5f6;
+
+$text-color: #1a1b1a;
+$gray-dark: #757675;
+$gray-medium: #999999;
+$gray-light-medium: #bfbfbf;
+$gray-light: #f4f5f4;
+.blue-malibu {
+  color: $blue-malibu;
+}
+.blue-malibu-bg {
+  background-color: $blue-malibu;
+}
+.blue-malibu-rgba-bg {
+  background-color: rgba(84, 167, 245, 0.1);
+}
+.gray-white {
+  color: $color-ferdia-white !important;
+}
+.gray-white-bg {
+  background-color: $color-ferdia-white !important;
+}
+.orange-buttercup {
+  color: var(--ferdia-c2-buttercup) !important;
+}
+.orange-buttercup-bg {
+  background-color: var(--ferdia-c2-buttercup) !important;
+}
+.orange-buttercup-bg-rgba {
+  background-color: rgba(#f5a623, 0.2) !important;
+}
+.green-jewel {
+  color: var(--ferdia-c1-green-jewel1) !important;
+}
+.green-jewel-bg {
+  background-color: var(--ferdia-c1-green-jewel1) !important;
+}
+.green-jewel-border {
+  border: 1px solid var(--ferdia-c1-green-jewel1) !important;
+}
+.malibu {
+  color: var(--ferdia-c1-malibu) !important;
+}
+.malibu-bg {
+  background-color: var(--ferdia-c1-malibu) !important;
+}
+.malibu-bg-rgba {
+  background-color: rgba(#54a7f5, 0.2) !important;
+}
+.extended-green-bg {
+  background: #a5f2c4;
+}
+.extended-green {
+  color: #a5f2c4;
+}
+.extended-light-green-bg {
+  background: #e5fbee;
+}
+.extended-light-green-bg-rgba {
+  background-color: rgba(#e5fbee, 0.4);
+}
+.light-gray-2 {
+  color: $light-gray-2;
+}
+.light-gray-2-bg {
+  background-color: $light-gray-2;
+}
+.light-gray {
+  color: $light-gray;
+}
+.light-gray-bg {
+  background-color: $light-gray;
+}
+.light-mid-gray-border {
+  border: 1px solid $light-mid-gray;
+}
+.primary-ship-gray-bg {
+  background: $ship-gray;
+}
+.ship-gray {
+  color: $ship-gray !important;
+}
+.info-yellow-bg {
+  background: $info-yellow;
+}
+.info-yellow-2-bg {
+  background: $info-yellow-2;
+}
+.info-Turquoise-bg {
+  background: $info-Turquoise;
+}
+.info-ongoing-bg {
+  background: $info-ongoing;
+}
+.secondary-c11-bg {
+  background: $secondary-c11;
+}
+.auth-error {
+  background: #feebe7;
+}
+.warning-c7-bg {
+  background: $warning-c7;
+}
+.warning-c6-bg {
+  background: $warning-c6;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.fw-600 {
+  font-weight: 600;
+}
+.fs-14 {
+  font-size: 14px;
+}
+.fs-19 {
+  font-size: 19px;
+}
+.fs-26 {
+  font-size: 26px;
+}
+.fs-36 {
+  font-size: 36px;
+}
+.error-bg {
+  background-color: $error-card;
+}
+.error-input-color {
+  color: $error-input;
+}
+.light-red-bg {
+  background-color: $light-red;
+}
+.red-carnation {
+  color: $red-carnation;
+}
+.red-carnation-border {
+  border: 1px solid $red-carnation;
+}
+.primary-border {
+  border: 2px solid $primary;
+}
+.primary-bg {
+  background-color: $primary;
+}
+.primary {
+  color: $primary;
+}
+.custom-yellow {
+  color: $custom-yellow;
+}
+.bg-custom-yellow {
+  background-color: $custom-yellow;
+}
+.medium-gray-border {
+  border-color: $medium-gray;
+}
+
+.w-90 {
+  width: 90%;
+}
+
+.w-fit-content {
+  width: fit-content;
+}
+
+.w-60-px {
+  width: 60px;
+}
+
+.z-index-top {
+  z-index: 1000;
+}
+
+.h-lg {
+  height: 46px;
+}
+
+.gray-border {
+  border: 1px solid $gray-light-medium;
+}
+
+.green-jewel-border {
+  border: 1px solid var(--ferdia-c1-green-jewel1);
+}
+
+.mt-100px {
+  margin-top: 100px;
+}
+
+.mt-16px {
+  margin-top: 16px;
+}
+
+.mb-16px {
+  margin-bottom: 16px;
+}
+
+.mt-24px {
+  margin-top: 24px;
+}
+
+.mb-24px {
+  margin-bottom: 24px;
+}
+
+.ps-24px {
+  padding-left: 24px;
+}
+
+.pe-16px {
+  padding-right: 16px;
+}

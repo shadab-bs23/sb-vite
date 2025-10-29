@@ -1,0 +1,38 @@
+/*
+  Breadcrumb styles
+*/
+.divider {
+  --bs-breadcrumb-divider: "＞";
+}
+
+.crumb-link > i {
+  color: var(--ferdia-c1-green-jewel1) !important;
+}
+
+.crumb-link {
+  &:hover {
+    color: var(--ferdia-c1-green-jewel1) !important;
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+  }
+}
+
+.crumb-label {
+  &:active {
+    background: var(--ferdia-c1-green-jewel1) !important;
+    color: white !important;
+    padding: 5px;
+    border-radius: 4px;
+  }
+}
+
+.crumb:hover {
+  cursor: pointer;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: $ship-gray;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 2.3;
+}
