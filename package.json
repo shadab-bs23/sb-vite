@@ -46,6 +46,7 @@
     "esbuild": "^0.23.0",
     "graphql-tag": "^2.12.6",
     "json-logic-js": "^2.0.2",
+    "jszip": "^3.10.1",
     "pinia": "^2.0.13",
     "pinia-plugin-persistedstate": "^1.6.1",
     "primeicons": "^5.0.0",

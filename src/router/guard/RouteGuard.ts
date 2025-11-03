@@ -151,6 +151,8 @@ export const isSalesOrPartnerSharelead = (to, from, next) => {
 export const isJoiner = (to, from, next) => {
   const { isJoiner, loading } = auth;
 
+  console.log("isJoiner:", isJoiner.value, "to.path:", to.path);
+
   const verify = () => {
     if (!isJoiner.value && to.path !== "/user/select-role") {
       return next({ path: "/user/select-role" });

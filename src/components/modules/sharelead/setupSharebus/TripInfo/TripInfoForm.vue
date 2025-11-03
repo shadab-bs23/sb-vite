@@ -29,8 +29,11 @@
         {{ t("sharebus.publish.trip_name") }}*
       </h4>
       <p class="ship-gray">{{ t("sharebus.publish.trip_name_desc") }}</p>
+      <pre>
+        {{ tripInfoForm.values }}
+      </pre>
       <BaseInput
-        v-model="tripInfoForm.values.name"
+        v-model="tripName"
         id="name"
         :modifier-class="`rounded ${
           shouldShowFieldError('name', tripNameErrMsg) ? 'is-invalid' : ''
@@ -56,7 +59,7 @@
         {{ t("common.category") }}*
       </h4>
       <TripCategory
-        :selected-category="tripInfoForm.values.category"
+        :selected-category="tripCategory"
         @on-select-trip-category="handleTripCategorySelection"
       />
       <p
@@ -74,7 +77,7 @@
       <div class="my-2 col-sm-12 col-md-5 ship-gray my-3">
         <p>{{ t("sharebus.publish.who_organizes") }}</p>
         <BaseInput
-          v-model="tripInfoForm.values.trip_organizer"
+          v-model="organizer"
           id="trip_organizer"
           modifier-class="rounded"
           @blur="markFieldAsTouched('trip_organizer')"
@@ -105,7 +108,7 @@
                 ? 'border-error'
                 : 'ship-gray'
             }`"
-            v-model="tripInfoForm.values.info_to_travellers"
+            v-model="travelerInfo"
             @blur="markFieldAsTouched('info_to_travellers')"
             @input="resetSubmitState"
           ></textarea>
@@ -122,7 +125,7 @@
       <div class="my-2 col-sm-12 col-md-8 ship-gray">
         <p>{{ t("sharebus.publish.link_to_event") }}</p>
         <BaseInput
-          v-model="tripInfoForm.values.website_url"
+          v-model="eventLink"
           id="eventLink"
           modifier-class="rounded"
           @blur="markFieldAsTouched('website_url')"
@@ -287,13 +290,18 @@ const tripInfoForm = useForm({
 });
 
 // Field validation
-const { errorMessage: tripNameErrMsg } = useField("name");
-const { errorMessage: tripCategoryErrMsg } = useField("category");
-const { errorMessage: travelerInfoErrMsg } = useField("info_to_travellers");
-const { errorMessage: eventLinkErrMsg } = useField("website_url");
-const { errorMessage: organizerErrMsg } = useField("trip_organizer");
+const { value: tripName, errorMessage: tripNameErrMsg } =
+  useField<string>("name");
+const { value: tripCategory, errorMessage: tripCategoryErrMsg } =
+  useField<string>("category");
+const { value: travelerInfo, errorMessage: travelerInfoErrMsg } =
+  useField<string>("info_to_travellers");
+const { value: eventLink, errorMessage: eventLinkErrMsg } =
+  useField<string>("website_url");
+const { value: organizer, errorMessage: organizerErrMsg } =
+  useField<string>("trip_organizer");
 const { errorMessage: photoErrMsg, setErrors: setPhotoErr } =
-  useField("image_url");
+  useField<File | null>("image_url");
 
 // Manually check if the required fields are valid
 const validateRequiredFields = (showErrors = false): boolean => {

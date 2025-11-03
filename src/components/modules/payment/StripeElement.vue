@@ -56,6 +56,7 @@ const stripeInfo = reactive({
   submitBtn: false,
 });
 const country = inject<ComputedRef<countryType>>("country");
+let stripe = window.Stripe(import.meta.env.VITE_APP_STRIPE_PUBLIC_KEY);
 
 onMounted(() => {
   /*
@@ -104,8 +105,6 @@ const loader = useLoaderStore();
 const user = useUserStore();
 const payment = usePaymentInfoStore();
 
-let stripe = window.Stripe(process.env.VITE_APP_STRIPE_PUBLIC_KEY);
-
 const paymentByRole = {
   [ROLE.SHARELEAD]: {
     paymentAction: payment.fetchShareleadPaymentIntentData,
@@ -144,7 +143,9 @@ const paymentSubmit = () => {
         clientSecret:
           result?.data[paymentByRole[user.currentRole].gqlKey].client_secret,
         confirmParams: {
-          return_url: `${process.env.VITE_APP_DOMAIN_URL}/payment-confirmation/${props.stripePayload.trip_id}`,
+          return_url: `${
+            import.meta.env.VITE_APP_DOMAIN_URL
+          }/payment-confirmation/${props.stripePayload.trip_id}`,
           payment_method_data: {
             billing_details: {
               name: user.data.attributes.name,

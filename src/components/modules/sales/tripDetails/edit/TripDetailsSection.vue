@@ -99,7 +99,7 @@ console.log("tripId:", tripId.value, "tripTag:", route.params.tag);
 
 const discountTiers = computed(() => {
   const salesTrip = salesStore.salesEditTrip[tripId.value];
-  return ((salesTrip?.trip_ticket_discounts as any).ticket_discounts ||
+  return ((salesTrip?.trip_ticket_discounts as any)?.ticket_discounts ||
     props.tripInfo.ticket_discounts) as TicketDiscount[];
 });
 

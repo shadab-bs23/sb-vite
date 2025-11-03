@@ -589,7 +589,7 @@ const publishSharebus = () => {
       });
   } else {
     // No image_url to upload, publish directly
-    // performPublish(tripId, tripInfoData, tripInfoData.photoPreview || "");
+    performPublish(tripId, tripInfoData, tripInfoData.photoPreview || "");
     console.log("Publishing sharebus without image upload");
     performPublish(tripId, tripInfoData, tripInfoData.image_url || "");
   }

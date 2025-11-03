@@ -19,8 +19,8 @@ module.exports = {
     ts: "@typescript-eslint/parser",
   },
   rules: {
-    "no-console": import.meta.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": import.meta.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-console": import.meta.env.MODE === "production" ? "warn" : "off",
+    "no-debugger": import.meta.env.MODE === "production" ? "warn" : "off",
     "vue/script-setup-uses-vars": "warn",
     "vue/no-multiple-template-root": 0,
     "vue/v-slot-style": [

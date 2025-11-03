@@ -139,7 +139,7 @@ const linkToShare = computed(() => {
   const searchParam = searchText.value ? `&search=${searchText.value}` : "";
   const categoryParam = category.value ? `&search=${category.value}` : "";
 
-  return `${environmentLink[process.env.NODE_ENV as string]}/rss-feed?country=${
+  return `${environmentLink[import.meta.env.MODE as string]}/rss-feed?country=${
     country?.value.countryISO as string
   }${searchParam || categoryParam}${dateTimeParams}`;
 });

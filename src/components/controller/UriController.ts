@@ -13,7 +13,7 @@ import { useConfigStore } from "@/store";
  * We also considered using [query-string](https://www.npmjs.com/package/query-string). Benifits that we will get from it is that, this package takes care of type checking of the properties.
  */
 export default class UriController {
-  private static _is_in_mode_prod = import.meta.env.NODE_ENV === "production";
+  private static _is_in_mode_prod = import.meta.env.MODE === "production";
 
   private static _validQueryParams = ["country", "tabindex", "search"];
   private static _country = ref<string>("");

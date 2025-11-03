@@ -39,7 +39,7 @@ declare interface BUILD_INFO {
   LAST_COMMIT?: LAST_COMMIT & typeof LAST_COMMIT;
   VERSION: string; // version from package.json
   NAME: string; // name from package.json
-  /** corresponding to process.env.NODE_ENV at build time */
+  /** corresponding to import.meta.env.MODE at build time */
   BUILT_FOR_ENV: string;
 }
 
