@@ -371,6 +371,13 @@ export const vpCalculateDistanceAndTimeWithMapAPI = (
             let previousDepartureValue = (
               tempLastCalculatedPoint.planned_departure_time as Date
             ).valueOf();
+
+            if (typeof previousDepartureValue === "string") {
+              previousDepartureValue = new Date(
+                previousDepartureValue
+              ).valueOf();
+            }
+
             let departureDateTime;
             if (index < lastIndex) {
               departureDateTime = new Date(

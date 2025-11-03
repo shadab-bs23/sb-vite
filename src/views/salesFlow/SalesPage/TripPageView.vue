@@ -125,7 +125,16 @@
             {{ textMapChangesList[value] }}
           </li>
         </ul>
-        <div class="mt-5 d-flex flex-column align-items-center">
+        <div>
+          <div
+            v-if="showRouteChangeAlert"
+            class="alert alert-info"
+            role="alert"
+          >
+            {{ t("setup.route_point_changes_detected") }}
+          </div>
+        </div>
+        <div class="mt-2 d-flex flex-column align-items-center">
           <BaseButton
             button-class="sb-btn-primary fw-bold sb-btn-md mb-3 "
             @click="publishChanges"
@@ -267,6 +276,7 @@ const config = useConfigStore();
 const confirmationModal = useToggle();
 const toggled = useToggle();
 const country = inject<ComputedRef<countryType>>("country");
+const showRouteChangeAlert = computed(() => salesStore.showRouteChangeAlert);
 
 const tabIndex = ref(route.query.tabindex ? Number(route.query.tabindex) : 0);
 const loading = ref(false);

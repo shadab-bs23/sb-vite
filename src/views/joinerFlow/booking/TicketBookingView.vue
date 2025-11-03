@@ -73,17 +73,7 @@ import { CTA, LOCAL_VAR } from "@/components/common/enums/enums";
 import TicketBookingStepOne from "@/components/modules/joiner/booking/TicketBookingStepOne.vue";
 import CheckoutStep from "@/components/modules/joiner/booking/CheckoutStep.vue";
 import { CheckoutInfo } from "@/components/modules/joiner/booking/types/checkout.types";
-
-// Define PickupPoint interface
-interface PickupPoint {
-  id?: string | number;
-  point?: string;
-  point_formal?: string;
-  planned_departure_time?: Date | string;
-  point_latitude?: string | number;
-  point_longitude?: string | number;
-  sequence?: number;
-}
+import { useI18n } from "vue-i18n";
 
 enum Step {
   SELECT_TRIP = 1,
@@ -96,6 +86,7 @@ const route = useRoute();
 const router = useRouter();
 const user = useUserStore();
 const joinerTripStore = useJoinerTripStore();
+const { t } = useI18n();
 const config = useConfigStore();
 const cartStore = useCartStore();
 const configuration = computed(() => config.getSharebusSetupConfig);
@@ -134,9 +125,9 @@ const isRoundTrip = computed(() => {
 
 // Step Navigator configuration
 const stepNavItems = computed(() => [
-  { label: "Select Trip" },
-  { label: "Select Ticket" },
-  { label: "Checkout" },
+  { label: t("sharebus.booking_step_menu.select_trip") },
+  { label: t("sharebus.booking_step_menu.select_ticket") },
+  { label: t("sharebus.booking_step_menu.checkout") },
 ]);
 
 const onContinueCheckout = () => {

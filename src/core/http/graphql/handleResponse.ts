@@ -10,10 +10,13 @@ import { GraphQLErrors } from "@apollo/client/errors";
  */
 export const handleErrorResponse = (error): void => {
   const loader = useLoaderStore();
-
   error.map(({ message, locations, path, extensions }) => {
     loader.changeLoadingStatus({ isLoading: false });
-    showToast("error", message || i18n.global.t("common.generic_error"));
+    if (error[0] && error[0].message?.includes("vehicle_type")) {
+      showToast("error", i18n.global.t("error.vehicle_type_error"));
+    } else {
+      showToast("error", i18n.global.t("common.generic_error"));
+    }
     switch (extensions?.code) {
       /*
        * If user has no permission to visit an authorized url user

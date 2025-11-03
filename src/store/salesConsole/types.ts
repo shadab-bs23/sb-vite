@@ -135,6 +135,7 @@ export interface State {
   salesEditTrip: salesConsoleEditTrip;
   editing_mode: boolean;
   copy_trip: CopyTrip;
+  showRouteChangeAlert: boolean;
 }
 interface Actions {
   setSalesConsoleTripChangeRequest: (payload: TripSetType) => void;

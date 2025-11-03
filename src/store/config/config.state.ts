@@ -42,6 +42,7 @@ export default (): State => ({
     FerdiaSupportTripReminderDays: 0,
     FerdiaSupportTripReminderTimeOfDay: "",
     FerdiaSupportEmail: "",
+    TeqOrgInfo: {},
   },
   loading: true,
 });

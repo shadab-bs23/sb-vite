@@ -58,11 +58,6 @@
         </template>
       </TripSummarySection>
     </div>
-    <div>
-      <div v-if="showRouteChangeAlert" class="alert alert-info" role="alert">
-        {{ t("setup.route_point_changes_detected") }}
-      </div>
-    </div>
   </div>
 </template>
 
@@ -195,7 +190,7 @@ const salesHistory = computed(
 const editingMode = computed(() => salesStore.$state.editing_mode);
 
 // Alert logic for route and price changes
-const showRouteChangeAlert = ref(false);
+const showRouteChangeAlert = computed(() => salesStore.showRouteChangeAlert);
 
 // Watch for route points changes - compare with original API data
 watch(
@@ -223,7 +218,7 @@ watch(
 
       // Only show alert if the number of route points changed (added/removed)
       if (currentFlat.length !== originalFlat.length) {
-        showRouteChangeAlert.value = true;
+        salesStore.$patch({ showRouteChangeAlert: true });
       }
     } catch (error) {
       console.error("Error comparing route points:", error);

@@ -41,21 +41,22 @@
           {{ selectedCountry.name }}
         </p>
         <hr />
-        <p
-          class="green-jewel fw-600 cursor-pointer mb-3"
-          v-for="(country, index) in filteredCountries"
-          :key="index"
-          @click="changeCountry(country)"
-        >
-          <img
-            :src="`/img/locales/${countriesFlag[country].flag}`"
-            class="me-2"
-          />
-          Sharebus {{ countryMap[country].name }}
-          <i class="fi fi-arrow-right ms-2"></i>
-        </p>
+        <template v-if="isJoiner">
+          <p
+            class="green-jewel fw-600 cursor-pointer mb-3"
+            v-for="(country, index) in filteredCountries"
+            :key="index"
+            @click="changeCountry(country)"
+          >
+            <img
+              :src="`/img/locales/${countriesFlag[country].flag}`"
+              class="me-2"
+            />
+            Sharebus {{ countryMap[country].name }}
+            <i class="fi fi-arrow-right ms-2"></i>
+          </p>
+        </template>
       </div>
-
       <h3 class="mt-4 mb-3">{{ t("common.language") }}</h3>
       <ul
         class="locale-dropdown-menu p-0 gray-white-bg me-0 w-90"
@@ -93,9 +94,10 @@ import UriController from "@/components/controller/UriController";
 import DecisionDialog from "../dialog/DecisionDialog.vue";
 import { toastWithActionable } from "@/services/toast/toast.service";
 import { useRoute } from "vue-router";
-import { useConfigStore } from "@/store";
+import { useConfigStore, useUserStore } from "@/store";
 import NavController from "./controller/NavController";
 import { localStorageSetItem } from "@/core/localStorage/LocalStorage";
+import { ROLE } from "../enums/enums";
 
 defineProps({
   isMenuItem: {
@@ -112,12 +114,51 @@ defineProps({
 const route = useRoute();
 const { locale, t, availableLocales } = useI18n({ useScope: "global" });
 const countryMap = UriController.countryMap;
-
+const user = useUserStore();
 const config = useConfigStore();
 const configuration = computed(() => config.getSharebusSetupConfig);
 
 const selectedCountry = ref();
 const query = computed(() => UriController.getQuery());
+
+const partnerName = computed(() => user.partner);
+const teqOrgsList = computed(() => config.setupSharebus.TeqOrgInfo);
+const isJoiner = computed(() => user.currentRole === ROLE.JOINER);
+
+const setSelectedCountry = (country) => {
+  localStorageSetItem("country_selected", country);
+  UriController.setQuery({
+    country: country,
+  });
+  selectedCountry.value = {
+    name: countryMap.value[country].name,
+    currency: countryMap.value[country as string],
+    flag: countriesFlag[country].flag,
+  };
+
+  clearDataAndRedirect(route.name, country);
+};
+
+watch(
+  [teqOrgsList, partnerName, isJoiner],
+  ([teqOrgs, partner, isJoiner]) => {
+    const orgInfo = teqOrgs?.[partner];
+
+    if (!isJoiner) {
+      setSelectedCountry(orgInfo.country);
+      const currentLocale = localStorage.getItem("locale");
+      if (
+        currentLocale &&
+        currentLocale !== orgInfo.country.toLowerCase() &&
+        currentLocale !== "en"
+      ) {
+        locale.value = "en";
+        localStorage.setItem("locale", "en");
+      }
+    }
+  },
+  { immediate: true }
+);
 
 watch(
   () => [query.value, countryMap.value],
@@ -135,19 +176,6 @@ watch(
     deep: true,
   }
 );
-const setSelectedCountry = (country) => {
-  localStorageSetItem("country_selected", country);
-  UriController.setQuery({
-    country: country,
-  });
-  selectedCountry.value = {
-    name: countryMap.value[country].name,
-    currency: countryMap.value[country as string],
-    flag: countriesFlag[country].flag,
-  };
-
-  clearDataAndRedirect(route.name, country);
-};
 
 const filteredCountries = computed(() => {
   return Object.keys(countryMap.value).filter(

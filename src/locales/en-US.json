@@ -188,11 +188,11 @@
     "status": "Status",
     "ticket": "Ticket",
     "ticket_price": "Ticket prices",
-    "ticket_type": "Ticket Type",
+    "ticket_type": "Ticket type",
     "time": "Time",
     "to": "To",
     "total": "Total",
-    "trip_ad": "Trip Ad",
+    "trip_ad": "Trip ad",
     "trip_booking_page": "Trip booking page",
     "trip_filter": "Trip filter",
     "unsaved_changes_warning": "You have unsaved changes. Are you sure you want to leave?",
@@ -207,7 +207,7 @@
   },
   "discount": {
     "add_discount": "Add discount",
-    "before_departure_or_less": "before departure or less",
+    "before_departure_or_less": "or less before departure",
     "days": "days",
     "days_before_departure": "Days before departure",
     "discount": "Discount",
@@ -225,7 +225,7 @@
     "contact_support": "contact support",
     "date_error": "Date error",
     "departure_date_past": "Departure date cannot be in the past.",
-    "fix_all_errors": "Please fix all the errors",
+    "fix_all_errors": "Please fix the errors",
     "location_required": "Please enter location for this viapoint first!",
     "oops": "Oops! Something went wrong",
     "or": "or",
@@ -234,6 +234,7 @@
     "try_to": "Try to",
     "unauthorized": "Unauthorized error",
     "valid link": "Are you sure you are opening a valid link? ",
+    "vehicle_type_error": "No available vehicle type for the provided passenger amount. Please contact your administrator.",
     "visit": "Visit"
   },
   "football": "Very good for health",
@@ -445,6 +446,11 @@
       "your_cart": "Your cart"
     },
     "booking_from_organization": "Are you booking this trip on behalf of a handball organization?",
+    "booking_step_menu": {
+      "checkout": "Checkout",
+      "select_ticket": "Select ticket",
+      "select_trip": "Select trip"
+    },
     "booking": {
       "amount_reserved_first_line": "The amount will be reserved in your bank account for 14 days. ",
       "amount_reserved_second_line": "When the bus is confirmed the amount will be withdrawn",
@@ -475,7 +481,7 @@
     "cancel_bus_until": "Cancelling the bus can be done up until {passenger_goal} tickets booked",
     "checkout": {
       "adult": "Adult",
-      "amount_to_pay": "Amount to Pay",
+      "amount_to_pay": "Amount to pay",
       "change_ticket_holder": "Change ticket holder",
       "checkout": "Checkout",
       "child": "Child",
@@ -483,7 +489,7 @@
       "continue_to_payment": "Continue to payment",
       "copy_to_all_tickets": "Copy to all tickets",
       "customer_support": "customer support",
-      "data_reset_details": "Switching to 'You' as the ticket holder will reset any information you have entered for other ticket holders. This action cannot be undone.",
+      "data_reset_details": "Switching to 'You' as the ticket holder will reset any information you have entered for other ticket holders. This action cannot be reverted.",
       "data_reset_warning": "You will lose all entered information",
       "departure": "Departure",
       "email": "E-mail",
@@ -501,7 +507,7 @@
       "secure_payment": "Secure payments powered by Stripe",
       "secure_payment_label": "Secure payment",
       "secure_transaction": "All transactions are secure and encrypted",
-      "select_payment_method": "Select Payment Method",
+      "select_payment_method": "Select payment method",
       "select_ticket_holder": "Select ticket holder",
       "select_tickets": "Select tickets",
       "select_trip": "Select trip",
@@ -795,12 +801,12 @@
     "refunded_in_progress": "Refund in progress"
   },
   "viapoints": {
-    "add_via_point": "Add Via Point(s)",
+    "add_via_point": "Add via point(s)",
     "arrow_departure": "Departure",
     "departure": "Departure",
     "departure_dateTime": "Departure date and time",
     "distance": "Distance",
-    "enter_via_point_location": "Enter Via Point location",
+    "enter_via_point_location": "Enter via point location",
     "estimated_arrival_datetime": "Estimated arrival date and time",
     "eta": "ETA",
     "field_required": "This field is required.",

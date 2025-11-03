@@ -207,7 +207,7 @@
   },
   "discount": {
     "add_discount": "Lägg till rabatt",
-    "before_departure_or_less": "före avgång eller mindre",
+    "before_departure_or_less": "eller mindre före avgång",
     "days": "dagar",
     "days_before_departure": "Dagar före avresa",
     "discount": "Rabatt",
@@ -225,7 +225,7 @@
     "contact_support": "kontakta supporten",
     "date_error": "Datumfel",
     "departure_date_past": "Avresedatumet får inte vara i det förflutna.",
-    "fix_all_errors": "Vänligen rätta alla fel",
+    "fix_all_errors": "Vänligen rätta fel",
     "location_required": "Ange först platsen för denna viapunkt!",
     "oops": "Oops! Something went wrong",
     "or": "eller",
@@ -234,6 +234,7 @@
     "try_to": "Try to",
     "unauthorized": "Ett fel har uppstått",
     "valid link": "Är du säker på att du öppnar en giltig länk?",
+    "vehicle_type_error": "Ingen tillgänglig fordonstyp för det angivna passagerarantalet. Kontakta din administratör.",
     "visit": "Besök"
   },
   "football": "Mycket bra för hälsan",
@@ -445,6 +446,11 @@
       "your_cart": "Din varukorg"
     },
     "booking_from_organization": "Bokar du denna resa på uppdrag av en föreningen, organisation eller ett lag? Då förutsätter det att du har ett befintligt avtal med Ferdia.",
+    "booking_step_menu": {
+      "checkout": "Kassan",
+      "select_ticket": "Välj biljett",
+      "select_trip": "Välj resa"
+    },
     "booking": {
       "amount_reserved_first_line": "Beloppet har reserverats från ditt bankkonto i 14 dagar.",
       "amount_reserved_second_line": "När bussen är bekräftad kommer beloppet dras",

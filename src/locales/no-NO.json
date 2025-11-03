@@ -193,9 +193,9 @@
     "to": "Til",
     "total": "Total",
     "trip_ad": "Turannonsen",
-    "trip_booking_page": "Side for reisebestilling",
+    "trip_booking_page": "Side for turbestilling",
     "trip_filter": "Turfilter",
-    "unsaved_changes_warning": "Du har ulagrede endringer. Er du sikker på at du vil forlate?",
+    "unsaved_changes_warning": "Du har ulagrede endringer. Er du sikker på at du vil forlate siden?",
     "upload_photo_logo": "Last opp bilde eller logo",
     "visit_support_page": "Besøk vår supportside",
     "yes": "Ja"
@@ -207,7 +207,7 @@
   },
   "discount": {
     "add_discount": "Legg til rabatt",
-    "before_departure_or_less": "før avreise eller mindre",
+    "before_departure_or_less": "eller mindre før avreise",
     "days": "dager",
     "days_before_departure": "Dager før avreise",
     "discount": "Rabatt",
@@ -225,7 +225,7 @@
     "contact_support": "kontakt support",
     "date_error": "Datofeil",
     "departure_date_past": "Avreisedatoen kan ikke være passert.",
-    "fix_all_errors": "Vennligst rett opp alle feilene",
+    "fix_all_errors": "Vennligst rett opp feilene",
     "location_required": "Vennligst angi plasseringen for dette viapunktet først!",
     "oops": "Noe gikk galt",
     "or": "eller",
@@ -234,6 +234,7 @@
     "try_to": "Forsøk å",
     "unauthorized": "En feil har oppstått",
     "valid link": "Dobbelsjekk at lenken er gyldig.",
+    "vehicle_type_error": "Ingen tilgjengelig kjøretøytype for det oppgitte passasjerantallet. Ta kontakt med administratoren din.",
     "visit": "Besøk"
   },
   "football": "Veldig bra for helsen",
@@ -369,7 +370,7 @@
       "last_changed": "Sist endret {date_time} - {status} av {name}"
     },
     "trip_changes_count": " Denne turen har {count} endringer og må republiseres",
-    "trip_changes_published": "Reiseendringer publisert!",
+    "trip_changes_published": "Turendringer publisert!",
     "trip_copied_successfully": "Trip has been copied successfully!",
     "trip_not_available": "Beklager, turen er ikke tilgjengelig for øyeblikket",
     "trip_not_available_toast": "Beklager, turen er ikke tilgjengelig for øyeblikket",
@@ -402,11 +403,11 @@
     "set_max_bus_capacity": "Angi maksimal busskapasitet",
     "set_passenger_goal": "Sett passasjermål",
     "setup_route": "Sett opp rute",
-    "show_remaining_seats": "Vis gjenværende antall tilgjengelige seter på reisesiden for besøkende",
+    "show_remaining_seats": "Vis gjenværende antall tilgjengelige seter på tursiden for besøkende",
     "stops": "stopp",
     "suggested_ticket_price": "Foreslått billettpris",
     "ticket_prices": "Billettpriser",
-    "trip_info": "Reiseinformasjon",
+    "trip_info": "Turinformasjon",
     "trip_info_description": "Gi viktig informasjon til passasjerene. Denne informasjonen vil være synlig på offentlige sider og under kjøpsprosessen.",
     "trip_info_preview": "Forhåndsvisning av reiseinformasjon",
     "update": "Oppdater",
@@ -445,6 +446,11 @@
       "your_cart": "Handlevognen din"
     },
     "booking_from_organization": "Bestiller du denne turen på vegne av lag, forening eller organisasjon? Dette forutsetter at din organisasjon har en eksisterende avtale med Ferdia.",
+    "booking_step_menu": {
+      "checkout": "Kassen",
+      "select_ticket": "Velg billett",
+      "select_trip": "Velg tur"
+    },
     "booking": {
       "amount_reserved_first_line": "Beløpet har blitt reservert fra din bankkonto i 14 dager.",
       "amount_reserved_second_line": "Belastning skjer etter at bussen er bekerftet.",
@@ -488,11 +494,11 @@
       "departure": "Avreise",
       "email": "E-post",
       "itinerary": "Reiserute",
-      "more_stop": "mer stopp",
+      "more_stop": "flere stopp",
       "more_stops": "flere stopp",
       "name": "Navn",
       "other_ticket_holders": "Andre billettinnehavere",
-      "payment": "innbetaling",
+      "payment": "Betaling",
       "payment_deadline": "Betalingsfrist",
       "phone": "Telefon",
       "processing_payment": "Behandler betalingen din ...",
@@ -717,7 +723,7 @@
     "select_valid_origin": "Velg et gyldig avreisested!",
     "ticket_selector": {
       "discount_if_book_today": "rabatt hvis du bestiller i dag!",
-      "early_bird_surprise": "Overraskelse! Som morgenfugl får du",
+      "early_bird_surprise": "Overraskelse! Som early bird får du",
       "left": "venstre",
       "price_varies_by_embark": "Billettprisen vil variere basert på valgt avgangssted.",
       "select_travelers": "Velg reisende"

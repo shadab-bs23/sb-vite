@@ -34,6 +34,7 @@ export default (): State => ({
     },
   },
   editing_mode: false,
+  showRouteChangeAlert: false,
   copy_trip: {
     id: "",
     name: "",

@@ -115,13 +115,7 @@ const profileContactInfo = computed(() => [
     title: t("auth.profile.change_profile_info"),
     description: t("auth.profile.change_profile_info_description"),
     action_title: t("auth.profile.change_profile_info_action_text"),
-    action_link: "https://sharebus.zendesk.com/hc/en-us/requests/new",
-  },
-  {
-    title: t("auth.profile.get_your_bonus_information"),
-    description: t("auth.profile.get_your_bonus_information_description"),
-    action_title: t("auth.profile.get_your_bonus_information_action_text"),
-    action_link: "https://sharebus.zendesk.com/hc/en-us/requests/new",
+    action_link: "https://www.ferdia.co/no/contact",
   },
 ]);
 

@@ -207,7 +207,7 @@
   },
   "discount": {
     "add_discount": "Tilføj rabat",
-    "before_departure_or_less": "før afgang eller mindre",
+    "before_departure_or_less": "eller mindre før afgang",
     "days": "dage",
     "days_before_departure": "Dage før afrejse",
     "discount": "Rabat",
@@ -225,7 +225,7 @@
     "contact_support": "kontakt support",
     "date_error": "Datofejl",
     "departure_date_past": "Afrejsedatoen må ikke være i fortiden.",
-    "fix_all_errors": "Ret venligst alle fejlene",
+    "fix_all_errors": "Ret venligst fejlene",
     "location_required": "Indtast venligst først placeringen for dette viapunkt!",
     "oops": "Noget gik galt",
     "or": "eller",
@@ -234,6 +234,7 @@
     "try_to": "Forsøg at",
     "unauthorized": "Der er opstået en fejl",
     "valid link": "Dobbeltjek at linket er gyldigt",
+    "vehicle_type_error": "Ingen tilgængelig køretøjstype for det angivne passagerantal. Kontakt venligst din administrator.",
     "visit": "Besøg"
   },
   "football": "Meget godt for helbredet",
@@ -445,6 +446,11 @@
       "your_cart": "Din kurv"
     },
     "booking_from_organization": "Bestiller du denne rejse på vegne af en håndboldorganisation?",
+    "booking_step_menu": {
+      "checkout": "Tjekke ud",
+      "select_ticket": "Vælg billet",
+      "select_trip": "Vælg tur"
+    },
     "booking": {
       "amount_reserved_first_line": "Beløbet er reserveret fra din bankkonto i 14 dage.",
       "amount_reserved_second_line": "Når bussen er bekræftet, vil beløbet blive trukket",

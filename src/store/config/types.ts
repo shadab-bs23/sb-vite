@@ -26,6 +26,14 @@ export type SetupSharebusConfig = {
   ShowNotificationBanner: boolean;
   NotificationBannerText: string;
   country_iso_codes: object;
+  TeqOrgInfo: {
+    [key: string]: {
+      orgName: string;
+      orgNo: string;
+      country: string;
+      domain: string;
+    };
+  };
 };
 
 export type ScheduledConfig = {
