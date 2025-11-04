@@ -38,7 +38,7 @@
       <div>
         <p>
           <img :src="`/img/locales/${selectedCountry.flag}`" class="me-2" />
-          {{ selectedCountry.name }}
+          {{ selectedCountry?.name }}
         </p>
         <hr />
         <template v-if="isJoiner">
@@ -52,7 +52,7 @@
               :src="`/img/locales/${countriesFlag[country].flag}`"
               class="me-2"
             />
-            Sharebus {{ countryMap[country].name }}
+            Sharebus {{ countryMap[country]?.name }}
             <i class="fi fi-arrow-right ms-2"></i>
           </p>
         </template>
@@ -131,9 +131,9 @@ const setSelectedCountry = (country) => {
     country: country,
   });
   selectedCountry.value = {
-    name: countryMap.value[country].name,
+    name: countryMap.value[country]?.name,
     currency: countryMap.value[country as string],
-    flag: countriesFlag[country].flag,
+    flag: countriesFlag[country]?.flag,
   };
 
   clearDataAndRedirect(route.name, country);
@@ -149,7 +149,7 @@ watch(
       const currentLocale = localStorage.getItem("locale");
       if (
         currentLocale &&
-        currentLocale !== orgInfo.country.toLowerCase() &&
+        currentLocale !== orgInfo?.country?.toLowerCase() &&
         currentLocale !== "en"
       ) {
         locale.value = "en";
@@ -165,9 +165,9 @@ watch(
   (value) => {
     if (!isEmptyObject(value[1])) {
       selectedCountry.value = {
-        name: countryMap.value[value[0].country as string].name,
-        currency: countryMap.value[value[0].country as string].currency,
-        flag: countriesFlag[value[0].country as string].flag,
+        name: countryMap.value[value[0].country as string]?.name,
+        currency: countryMap.value[value[0].country as string]?.currency,
+        flag: countriesFlag[value[0].country as string]?.flag,
       };
     }
   },
@@ -179,7 +179,7 @@ watch(
 
 const filteredCountries = computed(() => {
   return Object.keys(countryMap.value).filter(
-    (country) => countryMap.value[country].name !== selectedCountry.value.name
+    (country) => countryMap.value[country]?.name !== selectedCountry.value?.name
   );
 });
 

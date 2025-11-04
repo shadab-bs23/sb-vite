@@ -68,17 +68,42 @@ export const GET_TRIP = (tripId: string) => gql`
       discount_scheme
       vat_percent
       deadline_passenger_goal
+      deadline_passenger_goal_reminder
+      deadline_trip_reminder
       update_history {
         trip_location_time
         trip_goal
+        trip_deadline_passenger_goal
         trip_pricing
         trip_general_info
         trip_republish
         trip_deadline_passenger_goal
+        # trip_ticket_pricing
+        # trip_ticket_discounts
+        # trip_pax
+        # show_trip_available_seats
         updated_by_ferdia_sales
         updated_by_sharelead
       }
-      bus_availability
+     bus_availability
+     ticket_discounts {
+      days
+      percent
+    }
+    ticket_pricing {
+      categories {
+        enabled
+        name
+      }
+      via_points {
+        category_prices {
+          name
+          price
+        }
+        id
+      }
+    }
+    show_available_seats
     }
     listTickets(trip_id: "${tripId}", filter: {status: {eq: "BOOKED"}}){
      items{
@@ -87,8 +112,10 @@ export const GET_TRIP = (tripId: string) => gql`
       type
       ticket_price
       transaction_id
-      download_url,
+      download_url
       requester
+      trip_via_point_id
+      category
      }
     }
   }
