@@ -1,5 +1,5 @@
 import { StoreDefinition } from "pinia";
-import { UserSignUpProcess } from "././types/auth/user.type";
+import { UserSignUpProcess } from "types/auth/user.type";
 
 export type ForgotPassword = {
   step?: number;

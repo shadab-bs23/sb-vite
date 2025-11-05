@@ -59,15 +59,15 @@ const props = defineProps({
   },
 });
 const priceSummaryInfo = computed(() => {
+  const contributedAmount = props.tripInfo.sharelead_contributed_amount ?? 0;
+  const ticketReservedPrice = props.tripInfo.sharelead_ticket_reserved_price ?? 0;
   return {
-    deductibleAmount: props.tripInfo.sharelead_contributed_amount,
+    deductibleAmount: contributedAmount,
     chosenDiscount: props.tripInfo.discount_scheme,
-    grandTotalPrice:
-      props.tripInfo.sharelead_contributed_amount +
-      props.tripInfo.sharelead_ticket_reserved_price,
+    grandTotalPrice: contributedAmount + ticketReservedPrice,
     tickets: props.tripInfo.tickets_reserved,
     ticketPrice: props.tripInfo.regular_ticket_price,
-    totalTicketPrice: props.tripInfo.sharelead_ticket_reserved_price,
+    totalTicketPrice: ticketReservedPrice,
   };
 });
 </script>

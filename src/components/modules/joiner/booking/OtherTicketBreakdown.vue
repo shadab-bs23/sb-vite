@@ -116,12 +116,13 @@ function hasActiveCopyInCategory(category: string, idx: number) {
 
 function updateTicketHolder(
   index: number,
-  field: keyof TicketHolder,
+  field: string,
   value: unknown
 ) {
   const ticket = allTickets.value[index];
   if (!ticket) return;
-  (ticket as TicketHolder)[field] = value as never;
+  const ticketField = field as keyof TicketHolder;
+  (ticket as TicketHolder)[ticketField] = value as never;
   if (field === "copyToAll" && value) {
     allTickets.value.forEach((t, i) => {
       if (i !== index && t.categoryName === ticket.categoryName) {

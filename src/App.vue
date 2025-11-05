@@ -15,7 +15,7 @@ const config = useConfigStore();
 const country = computed(() => UriController.getQuery().country);
 watchEffect(() => {
   if (country.value) {
-    initAmplify(country.value);
+    initAmplify();
   }
 });
 

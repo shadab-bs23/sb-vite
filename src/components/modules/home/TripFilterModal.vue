@@ -30,7 +30,7 @@
           :showButtonBar="true"
           component-class="h-lg rounded w-100"
           :input-class="`${searchDateRangeErrMsg ? 'border-error' : ''}`"
-          selection-mode="range"
+          :selection-mode="'Range'"
         />
       </div>
     </template>

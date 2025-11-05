@@ -193,7 +193,7 @@ const totalSoldTickets = computed(() => {
   return max_pax - (available_earlybird_tickets + available_regular_tickets);
 });
 const isJoinerTicketsExist = computed(() => {
-  return props.tripInfo.ticket.length > 0;
+  return (props.tripInfo.ticket?.length ?? 0) > 0;
 });
 const remainingPassGoal = computed(() => {
   if (totalSoldTickets.value >= props.tripInfo.passenger_goal) {

@@ -522,10 +522,9 @@ const isValidPrice = (value: string): boolean => {
   return !isNaN(numValue) && numValue >= 0;
 };
 
-const renameCategoryLabel = (
-  category: "categoryOne" | "categoryTwo" | "categoryThree"
-) => {
-  currentCategory.value = category;
+const renameCategoryLabel = (category: string) => {
+  const validCategory = category as "categoryOne" | "categoryTwo" | "categoryThree";
+  currentCategory.value = validCategory;
   renameCategoryModal.value = true;
 };
 

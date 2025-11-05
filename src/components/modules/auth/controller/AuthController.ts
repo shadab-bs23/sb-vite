@@ -1,4 +1,4 @@
-import { signUpProcess } from "./types/auth/user.type";
+import { signUpProcess } from "types/auth/user.type";
 import { ref } from "vue";
 
 export default class AuthController {

@@ -34,7 +34,7 @@
         type="password"
       />
       <p class="error-input-color fw-bold mt-1">{{ repeatPasswordErrMsg }}</p>
-      <p class="warning-msg fw-bold" v-if="currentPasswordErrMsg?.length > 0">
+      <p class="warning-msg fw-bold" v-if="currentPasswordErrMsg && currentPasswordErrMsg.length > 0">
         {{ t("auth.profile.please_chose_diffrent_password") }}
       </p>
       <div class="d-flex mt-3">

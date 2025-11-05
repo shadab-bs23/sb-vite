@@ -4,6 +4,7 @@ export const TRIP_CATEGORY = {
   wellness: "wellness",
   vacation: "vacation",
   other: "other",
+  none: "none",
 };
 
 export const tripCategoryClickSchema = {

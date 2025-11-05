@@ -74,12 +74,12 @@ const sendOtpToReset = () => {
     if (error.value) error.value = { message: "", type: "" };
     userStore
       .handleForgotPasswordCode(forgotPasswordInfo.value.userName as string)
-      .then((res) => {
-        if (res.data.resetPassword) {
+      .then((res: any) => {
+        if (res.data?.resetPassword) {
           signUpStore.handleForGotPasswordInfo({
             step: 2,
           });
-        } else if (res.errors.length) {
+        } else if (res.errors?.length) {
           error.value = {
             type: res.errors[0].errorType,
             message: ResetPasswordError.value[res.errors[0].errorType],

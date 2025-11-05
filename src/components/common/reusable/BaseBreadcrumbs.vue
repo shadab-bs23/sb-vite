@@ -89,9 +89,9 @@ defineProps({
 
 const route = useRoute();
 
-const crumbs = route.meta.breadcrumb;
+const crumbs = route.meta.breadcrumb as any;
 
-const handleRedirect = (crumb) => {
+const handleRedirect = (crumb: any) => {
   if (!crumb.url.length) {
     goBack();
   } else {

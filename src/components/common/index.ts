@@ -12,7 +12,7 @@ const requireComponent = import.meta.glob("./**/*.vue");
  */
 const register = (app: App<Element>): void => {
   for (const path in requireComponent) {
-    requireComponent[path]().then((mod) => {
+    requireComponent[path]().then((mod: any) => {
       if(mod.default.__name) app.component(mod.default.__name, mod.default);
     });
   }

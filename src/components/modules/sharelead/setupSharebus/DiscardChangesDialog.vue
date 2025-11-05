@@ -1,6 +1,6 @@
 <template>
   <BaseConfirmationModal
-    :modal-id="modalId"
+    :modal-id="modalId || 'discard-changes-modal'"
     :modelValue="show"
     @update:modelValue="handleModelValueUpdate"
   >

@@ -164,10 +164,11 @@ watch(
   () => [query.value, countryMap.value],
   (value) => {
     if (!isEmptyObject(value[1])) {
+      const queryValue = value[0] as { country?: string };
       selectedCountry.value = {
-        name: countryMap.value[value[0].country as string]?.name,
-        currency: countryMap.value[value[0].country as string]?.currency,
-        flag: countriesFlag[value[0].country as string]?.flag,
+        name: countryMap.value[queryValue.country as string]?.name,
+        currency: countryMap.value[queryValue.country as string]?.currency,
+        flag: countriesFlag[queryValue.country as string]?.flag,
       };
     }
   },
@@ -184,9 +185,10 @@ const filteredCountries = computed(() => {
 });
 
 const selectedInfo = computed(() => {
+  const country = query.value.country as string;
   return {
-    currency: countryMap.value[query.value.country as string].currency,
-    country: query.value.country,
+    currency: countryMap.value[country]?.currency,
+    country: country,
   };
 });
 

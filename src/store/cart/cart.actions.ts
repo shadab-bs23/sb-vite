@@ -1,5 +1,7 @@
-import { roundPriceWithDecimals } from "./cart.utils";
+import { roundPriceWithDecimals, setInitTickets } from "./cart.utils";
 import { TicketItem, StoreContext, FormattedTicket } from "./types";
+import { Trip } from "../trip/privateTrip/types";
+import { JoinerTicket } from "../trip/joiner/types";
 
 export default {
   setTripId(this: StoreContext, tripId: string) {
@@ -100,5 +102,13 @@ export default {
 
   getFormattedTickets(this: StoreContext): FormattedTicket[] {
     return this.formattedTickets;
+  },
+
+  getJoinerTicketsExist(this: StoreContext): { tripId: string } {
+    return { tripId: this.tripId };
+  },
+
+  getJoinerTickets(this: StoreContext, trip: Trip): JoinerTicket {
+    return setInitTickets(trip);
   },
 };

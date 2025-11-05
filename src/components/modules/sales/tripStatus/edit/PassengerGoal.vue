@@ -67,15 +67,10 @@
       </BaseButton>
       <TripLastChangedInfo
         class="mt-2"
-        v-if="showUpdateHistory"
-        :dateString="updateHistoryDateString"
-        :status="
-          typeof salesHistory !== 'undefined' &&
-          salesHistory.update_history.trip_goal
-            ? t('common.not_published')
-            : t('common.published')
-        "
-        :published-by="publishedBy"
+        v-if="showUpdateHistory && updateHistory"
+        :trip-id="tripId"
+        :change-key="SalesEditGroup.PASSENGER_GOAL"
+        :update-history="updateHistory"
       />
     </div>
     <BaseSaveChanges
@@ -91,7 +86,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 import BaseInput from "@busgroup/vue3-base-input";
 import { computed, PropType, ref, watch } from "vue";
 import TripLastChangedInfo from "@/components/modules/sales/TripLastChangedInfo.vue";
-import { UpdateHistory } from "@/store/salesConsole/types";
+import { UpdateHistory, SalesEditGroup } from "@/store/salesConsole/types";
 import { useI18n } from "vue-i18n";
 const salesStore = useSalesStore();
 const props = defineProps({
@@ -131,10 +126,11 @@ const salesHistory = computed(
 
 const publishedBy = computed(() => {
   if (typeof salesHistory.value === "undefined") {
+    if (!props.updateHistory) return "";
     if (typeof props.updateHistory.updated_by_ferdia_sales === "string") {
       return "";
     } else {
-      return props.updateHistory.updated_by_ferdia_sales.name;
+      return props.updateHistory.updated_by_ferdia_sales?.name ?? "";
     }
   }
   return useUserStore().data.attributes.name;
@@ -155,7 +151,7 @@ const updateHistoryDateString = computed(() => {
     salesHistory.value.update_history.trip_goal
   ) {
     return salesHistory.value.update_history.trip_goal;
-  } else if (props.updateHistory && props.updateHistory.trip_goal) {
+  } else if (props.updateHistory?.trip_goal) {
     return props.updateHistory.trip_goal;
   }
   return "";
@@ -164,9 +160,12 @@ const updateHistoryDateString = computed(() => {
 const passengerGoalLast = computed({
   get: () => {
     const history = salesStore.getSalesConsoleTrip()[props.tripId];
-    return history && typeof history.trip_goal?.passenger_goal !== "undefined"
-      ? history.trip_goal?.passenger_goal
-      : props.passengerGoal;
+    const tripGoal = history?.trip_goal;
+    if (tripGoal && typeof tripGoal === 'object' && 'passenger_goal' in tripGoal) {
+      const goal = tripGoal as { passenger_goal: number };
+      return goal.passenger_goal;
+    }
+    return props.passengerGoal;
   },
   set: (value) => {
     const setObj = {

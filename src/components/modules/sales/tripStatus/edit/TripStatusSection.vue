@@ -69,6 +69,7 @@ import PassengerGoalReach from "./PassengerGoalReach.vue";
 import BaseButton from "@busgroup/vue3-base-button";
 import { TRIP_STATUS } from "@/components/modules/sharelead/trip/tripStatus/tripStatusEnum";
 import { useSalesStore, useSharebusStore, useConfigStore } from "@/store";
+import { SetupSharebusConfig, ScheduledConfig } from "@/store/config/types";
 import DecisionDialog from "@/components/common/dialog/DecisionDialog.vue";
 import ReminderInfo from "../../ReminderInfo.vue";
 import TripStatusBanner from "@/components/common/info/TripStatusBanner.vue";
@@ -87,7 +88,10 @@ const salesStore = useSalesStore();
 const shareBusStore = useSharebusStore();
 const config = useConfigStore();
 const editingMode = computed(() => salesStore.$state.editing_mode);
-const configuration = computed(() => config.getSharebusSetupConfig);
+const configuration = computed(() => {
+  const configValue = config.getSharebusSetupConfig as SetupSharebusConfig & ScheduledConfig;
+  return configValue;
+});
 
 const { t } = useI18n();
 const totalSoldTickets = computed(() => {

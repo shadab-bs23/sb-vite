@@ -23,7 +23,7 @@
           <template v-slot:grandTotal>
             <li class="d-flex justify-content-end" v-if="grandTotalPrice">
               <span class="fw-bold fs-3"
-                >{{ $country.global.currency }} {{ grandTotalPrice }}, -</span
+                >{{ country?.value?.currency ?? '' }} {{ grandTotalPrice }}, -</span
               >
             </li>
           </template>
@@ -128,22 +128,24 @@ const cancelProcess = (value: boolean) => {
   stripePayInitiated.value = !value;
 };
 
-const grandTotalPrice = computed(
-  () =>
-    props.tripInfo.sharelead_contributed_amount +
-    props.tripInfo.sharelead_ticket_reserved_price
-);
+const grandTotalPrice = computed(() => {
+  const contributedAmount = props.tripInfo.sharelead_contributed_amount ?? 0;
+  const ticketReservedPrice = props.tripInfo.sharelead_ticket_reserved_price ?? 0;
+  return contributedAmount + ticketReservedPrice;
+});
 /*
  * getting price info
  */
 const priceSummaryInfo = computed(() => {
+  const contributedAmount = props.tripInfo.sharelead_contributed_amount ?? 0;
+  const ticketReservedPrice = props.tripInfo.sharelead_ticket_reserved_price ?? 0;
   return {
-    deductibleAmount: props.tripInfo.sharelead_contributed_amount,
+    deductibleAmount: contributedAmount,
     chosenDiscount: props.tripInfo.discount_scheme,
     grandTotalPrice: grandTotalPrice.value,
     tickets: props.tripInfo.tickets_reserved,
     ticketPrice: props.tripInfo.regular_ticket_price,
-    totalTicketPrice: props.tripInfo.sharelead_ticket_reserved_price,
+    totalTicketPrice: ticketReservedPrice,
   };
 });
 </script>

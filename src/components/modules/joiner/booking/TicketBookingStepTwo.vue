@@ -101,17 +101,21 @@ const stripeBtnText = computed(() => {
 });
 
 const tickets = computed(() => {
-  const joinerTickets = cartStore.getJoinerTickets(props.currentTrip);
-  return joinerTickets;
+  return cartStore.getTickets();
 });
+
+const joinerTickets = computed(() => {
+  return cartStore.getJoinerTickets(props.currentTrip);
+});
+
 const totalPrice = computed(() => {
   const early =
-    tickets.value.earlyBirdTickets.count >= 1
-      ? tickets.value.earlyBirdTickets.price
+    joinerTickets.value.earlyBirdTickets.count >= 1
+      ? joinerTickets.value.earlyBirdTickets.price
       : 0;
   const regular =
-    tickets.value.regularTickets.count >= 1
-      ? tickets.value.regularTickets.price
+    joinerTickets.value.regularTickets.count >= 1
+      ? joinerTickets.value.regularTickets.price
       : 0;
 
   return early + regular;
@@ -127,8 +131,8 @@ const stripePayload = computed(() => {
   return {
     trip_id: props.currentTrip.id,
     total_price: totalPrice.value,
-    early_bird_tickets: tickets.value.earlyBirdTickets.count,
-    regular_tickets: tickets.value.regularTickets.count,
+    early_bird_tickets: joinerTickets.value.earlyBirdTickets.count,
+    regular_tickets: joinerTickets.value.regularTickets.count,
   };
 });
 
@@ -160,9 +164,10 @@ const confirmPayment = () => {
     .joinerTicketBookedAndFetchRedirectInfo({
       trip_id: props.currentTrip.id,
       total_price: totalPrice.value,
-      early_bird_tickets: tickets.value.earlyBirdTickets.count,
-      regular_tickets: tickets.value.regularTickets.count,
+      early_bird_tickets: joinerTickets.value.earlyBirdTickets.count,
+      regular_tickets: joinerTickets.value.regularTickets.count,
       last_updated_at: props.currentTrip.updated_at,
+      tickets: cartStore.getFormattedTickets(),
     })
     .then((res) => {
       window.location.href =

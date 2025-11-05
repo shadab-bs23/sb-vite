@@ -1,4 +1,6 @@
 import { StoreDefinition } from "pinia";
+import { Trip } from "../trip/privateTrip/types";
+import { JoinerTicket } from "../trip/joiner/types";
 
 export interface TicketItem {
   categoryName: string;
@@ -51,6 +53,8 @@ interface Actions {
   getTickets: () => TicketItem[];
   hasItems: () => boolean;
   getCartItemCount: () => number;
+  getJoinerTicketsExist: () => { tripId: string };
+  getJoinerTickets: (trip: Trip) => JoinerTicket;
 }
 
 /*

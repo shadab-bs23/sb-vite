@@ -361,10 +361,10 @@ onMounted(() => {
     } else {
       // Only initialize empty prices if we don't have any in the store
       pickupPoints.value = setUpInfo1.value.route_points.oneway.map((point) => {
+        const departureTime = point.planned_departure_time || convertDateToISOString(new Date());
         return {
           location: point.point || "",
-          departureTime:
-            point.planned_departure_time || convertDateToISOString(new Date()),
+          departureTime: departureTime as string | Date,
           id: point.id, // Use id directly
           prices: { categoryOne: "", categoryTwo: "", categoryThree: "" },
         };

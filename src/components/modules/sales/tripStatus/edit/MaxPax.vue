@@ -30,14 +30,9 @@
       <TripLastChangedInfo
         class="mt-2"
         v-if="showUpdateHistory"
-        :dateString="updateHistoryDateString"
-        :status="
-          typeof salesHistory !== 'undefined' &&
-          salesHistory.update_history.trip_goal
-            ? t('common.not_published')
-            : t('common.published')
-        "
-        :published-by="publishedBy"
+        :trip-id="tripId"
+        :change-key="SalesEditGroup.MAX_PAX"
+        :update-history="updateHistory"
       />
     </div>
     <BaseSaveChanges
@@ -53,8 +48,9 @@ import BaseButton from "@busgroup/vue3-base-button";
 import BaseInput from "@busgroup/vue3-base-input";
 import { computed, PropType, ref, watch } from "vue";
 import TripLastChangedInfo from "@/components/modules/sales/TripLastChangedInfo.vue";
-import { UpdateHistory } from "@/store/salesConsole/types";
+import { UpdateHistory, SalesEditGroup } from "@/store/salesConsole/types";
 import { useI18n } from "vue-i18n";
+import { SetupSharebusConfig } from "@/store/config/types";
 const salesStore = useSalesStore();
 const props = defineProps({
   totalSoldTickets: {
@@ -133,16 +129,14 @@ const updateHistoryDateString = computed(() => {
 const maxPaxLast = computed({
   get: () => {
     const history = salesStore.getSalesConsoleTrip()[props.tripId];
-    return history && typeof history.trip_pax?.max_pax !== "undefined"
-      ? history.trip_pax?.max_pax
+    return history && typeof history.max_pax !== "undefined"
+      ? history.max_pax
       : props.maxPax;
   },
   set: (value) => {
     const setObj = {
       [props.tripId]: {
-        trip_pax: {
-          max_pax: value && value >= 1 ? value : 1,
-        },
+        max_pax: value && value >= 1 ? value : 1,
         update_history: {
           trip_pax: new Date(),
         },

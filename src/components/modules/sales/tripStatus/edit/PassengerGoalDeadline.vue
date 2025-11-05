@@ -4,7 +4,7 @@
     <InfoBanner
       :message="
         t('sales.pass_goal_deadline_time', {
-          passGoalLastTime: configuration.PassengerGoalDeadlineTimeOfDay,
+          passGoalLastTime: passGoalDeadlineTime,
         })
       "
     />
@@ -40,7 +40,7 @@
         v-if="updateHistory"
         class="mt-2"
         :trip-id="tripId"
-        change-key="trip_deadline_passenger_goal"
+        :change-key="SalesEditGroup.TRIP_GOAL_DEADLINE"
         :update-history="updateHistory"
       />
     </div>
@@ -61,6 +61,7 @@ import {
   UpdateHistory,
   TripLocationTime,
   TripGoalDeadline,
+  SalesEditGroup,
 } from "@/store/salesConsole/types";
 import { isBefore } from "date-fns";
 import { showToast } from "@/services/toast/toast.service";
@@ -68,6 +69,7 @@ import { SHAREBUS_CONFIG } from "@/services/graphql/enums/sharebus-config";
 import DatePickerAdapter from "@/components/common/DatePickerAdapter.vue";
 import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
 import { convertDateToISOString } from "@/utils";
+import { SetupSharebusConfig, ScheduledConfig } from "@/store/config/types";
 
 const salesStore = useSalesStore();
 const config = useConfigStore();
@@ -93,6 +95,10 @@ const props = defineProps({
 const { t } = useI18n();
 const editingPassengerGoalDeadlineMode = ref(false);
 const configuration = computed(() => config.getSharebusSetupConfig);
+const passGoalDeadlineTime = computed(() => {
+  const configValue = configuration.value as SetupSharebusConfig & ScheduledConfig;
+  return configValue.PassengerGoalDeadlineTimeOfDay ?? '';
+});
 const formattedCompanyTime = useCompanyTimeFormat();
 onMounted(() => {
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
@@ -147,7 +153,7 @@ const maxDate = computed(() => {
     "dd-MM-yyyy"
   );
   const departureDate = getPlannedDepartureDate() || departureCompanyDateStr;
-  const deadlineTime = configuration.value.PassengerGoalDeadlineTimeOfDay;
+  const deadlineTime = passGoalDeadlineTime.value;
   const maxDeadline = `${departureDate} ${deadlineTime}`;
   return formattedCompanyTime(maxDeadline, "dd-MM-yyyy HH:mm");
 });
