@@ -24,15 +24,17 @@ import TripController from "@/components/modules/sharelead/controllers/TripContr
 import { useRoute } from "vue-router";
 import CancelBooking from "@/components/modules/joiner/booking/cancelBooking/CancelBooking.vue";
 import CancelBookingConfirmation from "@/components/modules/joiner/booking/cancelBooking/CancelBookingConfirmation.vue";
+import { useTripStore } from "@/store";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const route = useRoute();
 const trip = TripController.getCurrentTrip;
-const shareleadTripStore = TripController.getShareleadTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const joinerTripStore = TripController.getJoinerStore();
 const showConfirmation = ref(false);
 
 onMounted(() => {
-  shareleadTripStore.getTrip(route.params.tag as string);
+  tripStore.getTrip(route.params.tag as string);
 });
 
 const handleTicketCancellation = () => {

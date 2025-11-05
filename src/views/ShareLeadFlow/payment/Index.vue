@@ -9,11 +9,12 @@ import TicketConfirmation from "@/components/modules/payment/BookTicketConfirmat
 import PayAndBook from "@/components/modules/payment/PayAndBook.vue";
 import verifying from "@/components/modules/payment/PaymentVerifying.vue";
 import { useTripStore } from "@/store";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const targetComponentName = ref("" as string | string[]);
 const routeParams = computed(() => route.params.tag);
 const route = useRoute();
-const shareleadTripStore = useTripStore();
+const shareleadTripStore = useTripStore() as unknown as StoreContext;
 
 watch(
   () => routeParams.value,

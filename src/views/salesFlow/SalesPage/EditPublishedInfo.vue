@@ -59,6 +59,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 import PreviewModal from "@/components/modules/sharelead/publishSharebus/tripPreview/PreviewModal.vue";
 import { TripInfoData } from "@/store/sharebus/types";
 import { useI18n } from "vue-i18n";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 interface TripInfoFormInstance {
   validateForm: (showError?: boolean) => boolean;
@@ -70,7 +71,7 @@ const route = useRoute();
 const tripInfoFormRef = ref<TripInfoFormInstance | null>(null);
 const { t } = useI18n();
 
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const salesStore = useSalesStore();
 const isEditingMode = computed(() => salesStore.$state.editing_mode);
 onMounted(() => {

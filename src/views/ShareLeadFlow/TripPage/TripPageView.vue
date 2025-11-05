@@ -132,11 +132,12 @@ import { showToast } from "@/services/toast/toast.service";
 import { useRedirect } from "@/services/auth/redirect.service";
 import { countryType } from "@/core/plugin/countryPlugin";
 import UriController from "@/components/controller/UriController";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 const country = inject<ComputedRef<countryType>>("country");
 
 const { t } = useI18n();
 const route = useRoute();
-const shareleadTripStore = useTripStore();
+const shareleadTripStore = useTripStore() as unknown as StoreContext;
 
 const departureInfo = TripController.getTripDeparture();
 const returnInfo = TripController.getTripReturn();
@@ -155,7 +156,11 @@ const totalSoldTickets = computed(() => {
 
 onMounted(() => {
   shareleadTripStore.getTrip(route.params.tag as string).then((trip) => {
-    if (trip.getTrip.country !== country?.value.countryISO) {
+    const tripData = trip as unknown as {
+      getTrip: { country: string };
+      errors?: unknown;
+    };
+    if (tripData.getTrip?.country !== country?.value.countryISO) {
       showToast("error", t("sales.permission_denied"));
       useRedirect().redirect();
     }

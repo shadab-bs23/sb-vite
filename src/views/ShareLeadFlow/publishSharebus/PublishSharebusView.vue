@@ -26,9 +26,10 @@ import { useI18n } from "vue-i18n";
 import PublishSharebusForm from "@/components/modules/sharelead/publishSharebus/publishForm/PublishSharebusForm.vue";
 import { useRoute } from "vue-router";
 import { useTripStore } from "@/store";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const { t } = useI18n();
-const shareLeadTripStore = useTripStore();
+const shareLeadTripStore = useTripStore() as unknown as StoreContext;
 const route = useRoute();
 const tripInfo = computed(() => shareLeadTripStore.getCurrentTrip);
 const tripId = computed(() => route.params.tag as string);

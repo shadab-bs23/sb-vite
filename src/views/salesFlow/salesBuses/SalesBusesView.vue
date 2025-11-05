@@ -177,8 +177,9 @@ import {
   toastWithActionable,
 } from "@/services/toast/toast.service";
 import DecisionDialog from "@/components/common/dialog/DecisionDialog.vue";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const { t } = useI18n();
 const copyModal = useToggle();
 

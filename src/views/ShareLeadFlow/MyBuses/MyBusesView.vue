@@ -75,8 +75,9 @@ import { routePush } from "@/utils";
 import BaseButton from "@busgroup/vue3-base-button";
 import MyBussesViewWrapper from "./MyBussesViewWrapper.vue";
 import { countryType } from "@/core/plugin/countryPlugin";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const { t } = useI18n();
 const country = inject<ComputedRef<countryType>>("country");
 

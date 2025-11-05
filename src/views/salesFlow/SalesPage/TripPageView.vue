@@ -267,11 +267,12 @@ import { useRedirect } from "@/services/auth/redirect.service";
 import { ROLE } from "@/components/common/enums/enums";
 import { SHAREBUS_CONFIG } from "@/services/graphql/enums/sharebus-config";
 import { handleUnauthorizedError } from "@/core/http/graphql/handleResponse";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const { t } = useI18n();
 const route = useRoute();
 const user = useUserStore();
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const salesStore = useSalesStore();
 const config = useConfigStore();
 const confirmationModal = useToggle();
@@ -617,18 +618,29 @@ onMounted(() => {
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
   tripStore.getTrip(route.params.tag as string).then((trip) => {
-    const errors = trip.errors;
-    if (errors) {
+    const tripData = trip as unknown as {
+      errors?: import("@apollo/client/errors").GraphQLErrors;
+      getTrip: {
+        country: string;
+        update_history: {
+          updated_by_ferdia_sales: string;
+        } | null;
+      };
+    };
+    const errors = tripData.errors;
+    if (errors && errors.length > 0) {
       handleUnauthorizedError(errors);
     }
 
-    if (trip.getTrip.country !== country?.value.countryISO) {
+    if (tripData.getTrip.country !== country?.value.countryISO) {
       showToast("error", t("sales.permission_denied"));
       useRedirect().redirect();
     }
 
-    if (trip.getTrip.update_history !== null) {
-      fetchAndSetEditor(trip.getTrip.update_history.updated_by_ferdia_sales);
+    if (tripData.getTrip.update_history !== null) {
+      fetchAndSetEditor(
+        tripData.getTrip.update_history.updated_by_ferdia_sales
+      );
     }
   });
 });

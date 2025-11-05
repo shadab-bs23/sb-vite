@@ -20,10 +20,10 @@ import {
 } from "@/utils";
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { Coordinate } from "types/sharebus/map.type";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const route = useRoute();
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const salesStore = useSalesStore();
 
 onMounted(() => {
@@ -321,11 +321,12 @@ const parsedRoutePoints = computed(() => {
 const initValues = computed(() => {
   const salesHistoryTripLocTime = salesHistory.value
     ?.trip_location_time as TripLocationTime;
-  const routePoints = salesHistory.value && salesHistoryTripLocTime?.route_points
-    ? salesHistoryTripLocTime.route_points
-    : trip.value.route_points
-    ? parsedRoutePoints.value
-    : { oneway: [], return: [] };
+  const routePoints =
+    salesHistory.value && salesHistoryTripLocTime?.route_points
+      ? salesHistoryTripLocTime.route_points
+      : trip.value.route_points
+      ? parsedRoutePoints.value
+      : { oneway: [], return: [] };
 
   const oneway = routePoints.oneway || [];
   const returnRoute = routePoints.return || [];
@@ -336,8 +337,14 @@ const initValues = computed(() => {
 
   const baseValues = {
     tripId: route.params.tag as string,
-    signage: salesHistoryTripLocTime?.bus_signage || trip.value?.booking_reference || "",
-    bus_availability: salesHistoryTripLocTime?.bus_availability ?? trip.value?.bus_availability ?? false,
+    signage:
+      salesHistoryTripLocTime?.bus_signage ||
+      trip.value?.booking_reference ||
+      "",
+    bus_availability:
+      salesHistoryTripLocTime?.bus_availability ??
+      trip.value?.bus_availability ??
+      false,
     route_points: routePoints,
     origin: firstOneway?.point || "",
     originLatLng: firstOneway

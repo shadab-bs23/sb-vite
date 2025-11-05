@@ -59,12 +59,13 @@ import TripController from "@/components/modules/sharelead/controllers/TripContr
 import { computed, onMounted } from "vue";
 import { useTripStore } from "@/store";
 import { useRoute } from "vue-router";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 const { t } = useI18n();
 
 const departureInfo = TripController.getTripDeparture();
 const route = useRoute();
 const returnInfo = TripController.getTripReturn();
-const shareleadTripStore = useTripStore();
+const shareleadTripStore = useTripStore() as unknown as StoreContext;
 onMounted(() => {
   shareleadTripStore.getTrip(route.params.tag as string);
 });

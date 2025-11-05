@@ -58,6 +58,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 import { useSharebusStore, useTripStore } from "@/store";
 import DecisionDialog from "@/components/common/dialog/DecisionDialog.vue";
 import { countryType } from "@/core/plugin/countryPlugin";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const props = defineProps({
   trip: {
@@ -67,7 +68,7 @@ const props = defineProps({
 });
 const { t } = useI18n();
 const shareBusStore = useSharebusStore();
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const country = inject<ComputedRef<countryType>>("country");
 
 const salesUpdateUnpublished = computed(() => {
