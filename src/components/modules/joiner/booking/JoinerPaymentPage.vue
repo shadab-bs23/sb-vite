@@ -145,6 +145,7 @@ const paymentPayload = computed(() => {
     regular_tickets: totalTicketsCount, // Total purchased tickets count
     last_updated_at: updatedAt,
     category_tickets: cartStore.getFormattedTickets(),
+    tickets: cartStore.getFormattedTickets(),
   };
 });
 

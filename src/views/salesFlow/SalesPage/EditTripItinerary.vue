@@ -20,6 +20,7 @@ import {
 } from "@/utils";
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { Coordinate } from "types/sharebus/map.type";
 
 const route = useRoute();
 const tripStore = useTripStore();
@@ -320,22 +321,52 @@ const parsedRoutePoints = computed(() => {
 const initValues = computed(() => {
   const salesHistoryTripLocTime = salesHistory.value
     ?.trip_location_time as TripLocationTime;
-  if (salesHistory.value && salesHistoryTripLocTime?.route_points) {
-    return {
-      tripId: route.params.tag as string,
-      signage: salesHistoryTripLocTime.bus_signage,
-      bus_availability: salesHistoryTripLocTime.bus_availability,
-      route_points: salesHistoryTripLocTime.route_points,
-    };
-  }
+  const routePoints = salesHistory.value && salesHistoryTripLocTime?.route_points
+    ? salesHistoryTripLocTime.route_points
+    : trip.value.route_points
+    ? parsedRoutePoints.value
+    : { oneway: [], return: [] };
 
-  return {
+  const oneway = routePoints.oneway || [];
+  const returnRoute = routePoints.return || [];
+  const firstOneway = oneway[0];
+  const lastOneway = oneway[oneway.length - 1];
+  const firstReturn = returnRoute[0];
+  const lastReturn = returnRoute[returnRoute.length - 1];
+
+  const baseValues = {
     tripId: route.params.tag as string,
-    signage: trip.value && trip.value.booking_reference,
-    bus_availability: trip.value.bus_availability,
-    route_points: trip.value.route_points
-      ? parsedRoutePoints.value
-      : { oneway: [], return: [] },
+    signage: salesHistoryTripLocTime?.bus_signage || trip.value?.booking_reference || "",
+    bus_availability: salesHistoryTripLocTime?.bus_availability ?? trip.value?.bus_availability ?? false,
+    route_points: routePoints,
+    origin: firstOneway?.point || "",
+    originLatLng: firstOneway
+      ? {
+          lat: parseFloat(String(firstOneway.point_latitude || 0)),
+          lng: parseFloat(String(firstOneway.point_longitude || 0)),
+        }
+      : { lat: 0, lng: 0 },
+    destination: lastOneway?.point || "",
+    destinationLatLng: lastOneway
+      ? {
+          lat: parseFloat(String(lastOneway.point_latitude || 0)),
+          lng: parseFloat(String(lastOneway.point_longitude || 0)),
+        }
+      : { lat: 0, lng: 0 },
+    departureDate: firstOneway?.planned_departure_time
+      ? new Date(firstOneway.planned_departure_time)
+      : new Date(),
+    departureTime: firstOneway?.planned_departure_time
+      ? new Date(firstOneway.planned_departure_time)
+      : new Date(),
+    returnDate: firstReturn?.planned_departure_time
+      ? new Date(firstReturn.planned_departure_time)
+      : null,
+    returnTime: firstReturn?.planned_departure_time
+      ? new Date(firstReturn.planned_departure_time)
+      : null,
   };
+
+  return baseValues;
 });
 </script>

@@ -99,27 +99,27 @@ const user = useUserStore();
 
 const isSharelead = computed(() => user.currentRole === ROLE.SHARELEAD);
 
-const shareleadTickets = computed(() => sharebus.getStepThreeData.tickets);
+const shareleadTickets = computed(() => sharebus.getPassengerGoalAndPriceStepData.tickets);
 
 const submitBtnClicked = computed({
-  get: () => ShareBusSetUpController.getSubmitState(STEPS.THREE),
+  get: () => ShareBusSetUpController.getSubmitState(STEPS.TRIP_INFO),
   set: (value = true) => {
-    ShareBusSetUpController.setSubmitState(STEPS.THREE, value);
+    ShareBusSetUpController.setSubmitState(STEPS.TRIP_INFO, value);
   },
 });
 
 const decisionOnDiscount = computed({
   get: () => {
-    return sharebus.getStepThreeData.shareLeadDiscountDecision;
+    return sharebus.getPassengerGoalAndPriceStepData.tripCreationDiscountDecision;
   },
   set: (value) => {
-    sharebus.setStep3DataSpecific("shareLeadDiscountDecision", value);
+    sharebus.setPassengerGoalAndPriceStepDataSpecific("tripCreationDiscountDecision", value);
   },
 });
 const decisionOnTickets = computed(() =>
-  isSharelead.value ? sharebus.getStepThreeData.shareLeadTicketDecision : 1
+  isSharelead.value ? sharebus.getPassengerGoalAndPriceStepData.tripCreationTicketDecision : 1
 );
-const discountSchema = computed(() => sharebus.getStepThreeData.discountScheme);
+const discountSchema = computed(() => sharebus.getPassengerGoalAndPriceStepData.discountScheme);
 
 watch(
   () => shareleadTickets.value,
@@ -162,17 +162,17 @@ watch(
   () => discountSchema.value,
   (oldValue, newValue) => {
     if (oldValue !== newValue) {
-      sharebus.setStep3DataSpecific("discountPercentage", 0);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("discountPercentage", 0);
     }
   }
 );
 
 const chosenDiscount = computed({
   get: () => {
-    return sharebus.getStepThreeData.discountScheme as string;
+    return sharebus.getPassengerGoalAndPriceStepData.discountScheme as string;
   },
   set: (value) => {
-    sharebus.setStep3DataSpecific("discountScheme", value);
+    sharebus.setPassengerGoalAndPriceStepDataSpecific("discountScheme", value);
   },
 });
 

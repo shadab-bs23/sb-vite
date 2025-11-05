@@ -326,9 +326,9 @@ const initValues = computed(() => {
     return {
       bus_availability: sharebus.getRouteStepData.busAvailability,
       route_points: sharebus.getRouteStepData.route_points,
-    };
+    } as any;
   }
-  return {};
+  return undefined;
 });
 
 //it will be used while backend give us api we will send information to them
@@ -589,7 +589,6 @@ const publishSharebus = () => {
       });
   } else {
     // No image_url to upload, publish directly
-    performPublish(tripId, tripInfoData, tripInfoData.photoPreview || "");
     console.log("Publishing sharebus without image upload");
     performPublish(tripId, tripInfoData, tripInfoData.image_url || "");
   }

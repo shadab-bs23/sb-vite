@@ -86,7 +86,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 import BaseInput from "@busgroup/vue3-base-input";
 import { computed, PropType, ref, watch } from "vue";
 import TripLastChangedInfo from "@/components/modules/sales/TripLastChangedInfo.vue";
-import { UpdateHistory, SalesEditGroup } from "@/store/salesConsole/types";
+import { UpdateHistory, SalesEditGroup, SaleTripEditAttributes } from "@/store/salesConsole/types";
 import { useI18n } from "vue-i18n";
 const salesStore = useSalesStore();
 const props = defineProps({
@@ -168,14 +168,10 @@ const passengerGoalLast = computed({
     return props.passengerGoal;
   },
   set: (value) => {
-    const setObj = {
-      [props.tripId]: {
-        trip_goal: {
-          passenger_goal: value && value >= 0 ? value : 0,
-        },
-        update_history: {
-          trip_goal: new Date(),
-        },
+    const setObj: Partial<SaleTripEditAttributes> & { trip_id: string } = {
+      trip_id: props.tripId,
+      trip_goal: {
+        passenger_goal: value && value >= 0 ? value : 0,
       },
     };
     salesStore.setSalesConsoleTripChangeRequest(setObj);

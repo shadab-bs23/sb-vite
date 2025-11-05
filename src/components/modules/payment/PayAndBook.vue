@@ -23,7 +23,8 @@
           <template v-slot:grandTotal>
             <li class="d-flex justify-content-end" v-if="grandTotalPrice">
               <span class="fw-bold fs-3"
-                >{{ country?.value?.currency ?? '' }} {{ grandTotalPrice }}, -</span
+                >{{ countryValue?.currency ?? "" }} {{ grandTotalPrice }},
+                -</span
               >
             </li>
           </template>
@@ -32,7 +33,7 @@
       <div class="col-sm-12 offset-md-1 offset-xl-1 col-md-11 col-xl-5 p-0">
         <div class="p-2" v-if="!stripePayInitiated">
           <BaseButton
-            v-if="country?.countryISO === 'NO'"
+            v-if="countryValue?.countryISO === 'NO'"
             button-class="sb-btn-primary sb-btn-lg sb-vipps-btn rounded-pill mw-100 col-sm-12 col-md-6 w-100 fw-600"
             @click="confirmPayment"
             :is-disabled="clickedVipps.show.value"
@@ -99,8 +100,9 @@ const stripePayload = computed(() => ({
 }));
 
 const country = inject<ComputedRef<countryType>>("country");
+const countryValue = computed(() => country?.value);
 const stripeBtnText = computed(() => {
-  return country?.value.countryISO === "NO"
+  return countryValue.value?.countryISO === "NO"
     ? t("sharebus.booking.pay_with_stripe")
     : t("sharebus.booking.proceed_with_payment");
 });
@@ -130,7 +132,8 @@ const cancelProcess = (value: boolean) => {
 
 const grandTotalPrice = computed(() => {
   const contributedAmount = props.tripInfo.sharelead_contributed_amount ?? 0;
-  const ticketReservedPrice = props.tripInfo.sharelead_ticket_reserved_price ?? 0;
+  const ticketReservedPrice =
+    props.tripInfo.sharelead_ticket_reserved_price ?? 0;
   return contributedAmount + ticketReservedPrice;
 });
 /*
@@ -138,7 +141,8 @@ const grandTotalPrice = computed(() => {
  */
 const priceSummaryInfo = computed(() => {
   const contributedAmount = props.tripInfo.sharelead_contributed_amount ?? 0;
-  const ticketReservedPrice = props.tripInfo.sharelead_ticket_reserved_price ?? 0;
+  const ticketReservedPrice =
+    props.tripInfo.sharelead_ticket_reserved_price ?? 0;
   return {
     deductibleAmount: contributedAmount,
     chosenDiscount: props.tripInfo.discount_scheme,

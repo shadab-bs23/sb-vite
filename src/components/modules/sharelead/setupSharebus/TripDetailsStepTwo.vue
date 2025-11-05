@@ -133,15 +133,16 @@ const country = inject<ComputedRef<countryType>>("country");
 const userDetails = computed(() => user);
 
 const fromOrganization = computed({
-  get: () => sharebus.getStepTwoData.fromOrganization,
+  get: () => sharebus.getOrganizationStepData.fromOrganization,
   set: (value) => {
-    sharebus.setStepTwoData({
+    sharebus.setOrganizationStepData({
+      ...sharebus.getOrganizationStepData,
       fromOrganization: value,
     });
   },
 });
 const clubOrTeamNameVModel = ref("");
-const organizationId = ref(sharebus.getStepTwoData.organizationId);
+const organizationId = ref(sharebus.getOrganizationStepData.organizationId);
 const clubOrTeamName = ref("");
 const isDropdownResultShow = ref(false);
 const clubOrgErr = ref("");
@@ -149,7 +150,7 @@ const clubOrgErr = ref("");
 let dropdownIcon = ref("fi fi-chevron-down");
 
 onMounted(() => {
-  const stepTwoStore = sharebus.getStepTwoData;
+  const stepTwoStore = sharebus.getOrganizationStepData;
 
   clubOrTeamNameVModel.value = stepTwoStore.clubOrTeam as string;
   clubOrTeamName.value = stepTwoStore.clubOrTeam as string;
@@ -166,17 +167,17 @@ const filteredOrgs = computed(() => {
 });
 
 const submitBtnClicked = computed({
-  get: () => ShareBusSetUpController.getSubmitState(STEPS.TWO),
+  get: () => ShareBusSetUpController.getSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES),
   set: () => {
-    ShareBusSetUpController.setSubmitState(STEPS.TWO);
+    ShareBusSetUpController.setSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES);
   },
 });
 
 watch(
-  () => ShareBusSetUpController.getSubmitState(STEPS.TWO),
+  () => ShareBusSetUpController.getSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES),
   (value) => {
     if (value) {
-      ShareBusSetUpController.setSubmitState(STEPS.TWO, false);
+      ShareBusSetUpController.setSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES, false);
       handleSubmit();
     }
   }
@@ -202,7 +203,7 @@ const handleDropdownItemClick = (item) => {
   clubOrTeamNameVModel.value = item.name;
   clubOrTeamName.value = item.name;
   clubOrgErr.value = "";
-  ShareBusSetUpController.setSubmitState(STEPS.TWO, false);
+    ShareBusSetUpController.setSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES, false);
   organizationId.value = item.id;
   showDropdownResult();
   // }
@@ -217,9 +218,10 @@ const handleNoBtnClick = () => {
   clubOrTeamNameVModel.value = "";
   clubOrTeamName.value = "";
   clubOrgErr.value = "";
-  ShareBusSetUpController.setSubmitState(STEPS.TWO, false);
+    ShareBusSetUpController.setSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES, false);
   organizationId.value = null;
-  sharebus.setStepTwoData({
+  sharebus.setOrganizationStepData({
+    ...sharebus.getOrganizationStepData,
     fromOrganization: DECISION_RESULT.NO,
     clubOrTeam: clubOrTeamName.value,
     organizationId: null,
@@ -244,8 +246,9 @@ const handleSubmit = () => {
     showToast("info", t("home.joiner_warning"), 6000, "top-left");
     return;
   }
-  ShareBusSetUpController.setSubmitState(STEPS.TWO, false);
-  sharebus.setStepTwoData({
+    ShareBusSetUpController.setSubmitState(STEPS.PASSENGER_GOAL_AND_PRICES, false);
+  sharebus.setOrganizationStepData({
+    ...sharebus.getOrganizationStepData,
     fromOrganization: fromOrganization.value,
     clubOrTeam: clubOrTeamName.value,
     organizationId: Number(organizationId.value),

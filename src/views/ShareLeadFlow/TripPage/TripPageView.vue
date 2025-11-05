@@ -52,7 +52,7 @@
               <div
                 class="d-flex flex-wrap custom-card-wrap mt-3 col-xl-10 col-xxl-7 col-lg-12 col-md-12 col-sm-12"
                 :class="
-                  tripInfo.club_share_per_extra_ticket > 0 &&
+                  (tripInfo.club_share_per_extra_ticket ?? 0) > 0 &&
                   tripInfo.earlybird_ticket_price > 0
                     ? 'justify-content-between'
                     : 'justify-content-start'
@@ -78,9 +78,9 @@
                 />
                 <TicketPrice
                   class="custom-card rounded mb-1"
-                  v-if="tripInfo.club_share_per_extra_ticket > 0"
+                  v-if="(tripInfo.club_share_per_extra_ticket ?? 0) > 0"
                   :title="t('sharebus.ticket.bonus_per_ticket')"
-                  :amount="tripInfo.club_share_per_extra_ticket"
+                  :amount="tripInfo.club_share_per_extra_ticket ?? 0"
                   currency="Kr"
                   :info="
                     t('sharebus.ticket.after_sold_ticket_amount', {

@@ -124,7 +124,8 @@ onMounted(() => {
 
   const tripId = sharebusStore.setup.createdTripId;
   if (tripId) {
-    tripControllerStore.getTrip(tripId);
+    // Use the store action directly - Pinia will handle the context
+    (tripControllerStore as any).getTrip(tripId);
   }
   // Initial validation after component is mounted
   setTimeout(validateBeforeNextStep, 100);

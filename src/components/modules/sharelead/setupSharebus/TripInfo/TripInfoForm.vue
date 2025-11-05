@@ -459,6 +459,17 @@ const handleFileSelection = (file: File | null = null) => {
 
   // Get current form values to preserve all input field values
   const currentFormValues = tripInfoForm.values;
+  const imageUrlValue = currentFormValues.image_url;
+  let imageUrlString: string = "";
+
+  if (typeof imageUrlValue === "string") {
+    imageUrlString = imageUrlValue;
+  } else if (imageUrlValue && typeof imageUrlValue === "object") {
+    const fileValue = imageUrlValue as unknown;
+    if (fileValue instanceof File) {
+      imageUrlString = URL.createObjectURL(fileValue);
+    }
+  }
 
   // Update store with file or clear it if null (file removal)
   // When file is null, explicitly set image_url to empty string to clear it from store
@@ -468,7 +479,7 @@ const handleFileSelection = (file: File | null = null) => {
     trip_organizer: currentFormValues.trip_organizer,
     info_to_travellers: currentFormValues.info_to_travellers,
     website_url: currentFormValues.website_url,
-    image_url: file || "", // Set to empty string when file is removed
+    image_url: imageUrlString,
   });
 };
 

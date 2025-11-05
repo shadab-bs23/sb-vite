@@ -60,14 +60,13 @@ const routeData = computed(() => {
   return routeStepData?.route_points || { oneway: [], return: [] };
 });
 
-const tripControllerStore = TripController.getShareleadTripStore();
-
 // Set the publish step as valid by default on mount
 onMounted(() => {
   emit("validation-change", { step: 4, isValid: true });
   const tripId = sharebus.setup.createdTripId;
   if (tripId) {
-    tripControllerStore.getTrip(tripId);
+    // Use the store action directly - Pinia will handle the context
+    (tripStore as any).getTrip(tripId);
   }
 });
 </script>

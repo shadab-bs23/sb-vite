@@ -1,7 +1,7 @@
-import { SetupSharebusConfig, State } from "./types";
+import { SetupSharebusConfig, ScheduledConfig, State } from "./types";
 
 export default {
-  getSharebusSetupConfig(state: State): SetupSharebusConfig {
+  getSharebusSetupConfig(state: State): SetupSharebusConfig & ScheduledConfig {
     return state.setupSharebus;
   },
 };

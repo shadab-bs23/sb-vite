@@ -51,7 +51,13 @@
         <PassengerGoalGeneralInfo
           v-if="isHaveBonusTickets < 0"
           :passenger-goal-deadline=" subtractDaysFromDate(
-                  setUpInfo1?.departureDate as string,
+                  setUpInfo1.route_points.oneway[0]?.planned_departure_time 
+                    ? (typeof setUpInfo1.route_points.oneway[0].planned_departure_time === 'string' 
+                        ? setUpInfo1.route_points.oneway[0].planned_departure_time 
+                        : setUpInfo1.route_points.oneway[0].planned_departure_time instanceof Date
+                          ? isoFormatDateTime(setUpInfo1.route_points.oneway[0].planned_departure_time.toISOString())
+                          : isoFormatDateTime(String(setUpInfo1.route_points.oneway[0].planned_departure_time)))
+                    : '',
                   setupConfig.PassengerGoalDeadlineDays  
                 )"
           :passenger-goal="passengerGoal"
@@ -69,7 +75,7 @@
             :amount="setUpInfo3.ticketPrice"
             currency="Kr"
             :info="
-              setUpInfo1.viaPoints.return.length > 1
+              setUpInfo1.route_points.return.length > 0
                 ? t('sharebus.ticket.roundtrip')
                 : t('sharebus.ticket.singletrip')
             "
@@ -93,7 +99,7 @@
       <ActivateDiscount
         v-if="
           !isSharelead ||
-          setUpInfo3.shareLeadTicketDecision !== DECISION_RESULT.INTERMEDIATE
+          setUpInfo3.tripCreationTicketDecision !== DECISION_RESULT.INTERMEDIATE
         "
       />
       <PriceSummary
@@ -161,9 +167,9 @@ import {
   useUserStore,
 } from "@/store";
 import {
-  SharebusStepOne,
-  SharebusStepThree,
-  SharebusStepTwo,
+  RouteStepData,
+  OrganizationStepData,
+  PassengerGoalAndPriceStepData,
 } from "@/store/sharebus/types";
 import {
   getCutPriceDiscountInfo,
@@ -171,9 +177,9 @@ import {
   getNoDiscountPriceInfo,
 } from "./service/executeJSONLogic";
 import { DECISION_RESULT, DISCOUNT_SCHEME } from "./enums/SetUpShareBusEnum";
-import { jsonLogicResult } from "./types/JsonLogicType";
+import { jsonLogicResult, TypeLogicBase } from "./types/JsonLogicType";
 import ShareBusSetUpController from "./Controllers/ShareBusSetUpController";
-import { subtractDaysFromDate } from "@/utils";
+import { subtractDaysFromDate, isoFormatDateTime } from "@/utils";
 import { SetupSharebusConfig } from "@/store/config/types";
 import { ROLE, STEPS } from "@/components/common/enums/enums";
 import PassengerGoalBonusInfo from "./PassengerGoalInfo/PassengerGoalBonusInfo.vue";
@@ -197,15 +203,15 @@ const setupConfig = computed<SetupSharebusConfig>(() => {
   return config.getSharebusSetupConfig;
 });
 
-const setUpInfo1 = computed<SharebusStepOne>(() => {
-  return sharebus.getStepOneData;
+const setUpInfo1 = computed<RouteStepData>(() => {
+  return sharebus.getRouteStepData;
 });
-const setUpInfo2 = computed<SharebusStepTwo>(() => {
-  return sharebus.getStepTwoData;
+const setUpInfo2 = computed<OrganizationStepData>(() => {
+  return sharebus.getOrganizationStepData;
 });
 
-const setUpInfo3 = computed<SharebusStepThree>(() => {
-  return sharebus.getStepThreeData;
+const setUpInfo3 = computed<PassengerGoalAndPriceStepData>(() => {
+  return sharebus.getPassengerGoalAndPriceStepData;
 });
 
 const isSharelead = computed(() => user.currentRole === ROLE.SHARELEAD);
@@ -232,39 +238,48 @@ const PASSENGER_GOAL = ShareBusSetUpController.getPassengerGoalLimit;
 const TICKET_NUMBER = ShareBusSetUpController.getTicketNumberLimit;
 
 const passengerGoal = ref(
-  sharebus.getStepThreeData.passengerGoal || PASSENGER_GOAL.value.DEFAULT
+  sharebus.getPassengerGoalAndPriceStepData.passengerGoal || PASSENGER_GOAL.value.DEFAULT
 );
 const passengerGoalCalculable = ref(
-  sharebus.getStepThreeData.passengerGoal || PASSENGER_GOAL.value.DEFAULT
+  sharebus.getPassengerGoalAndPriceStepData.passengerGoal || PASSENGER_GOAL.value.DEFAULT
 );
 const busInfo = computed(() => {
   return busInfoStore.getBusInfoData;
 });
 
 const submitBtnClicked = computed({
-  get: () => ShareBusSetUpController.getSubmitState(STEPS.THREE),
+  get: () => ShareBusSetUpController.getSubmitState(STEPS.TRIP_INFO),
   set: () => {
-    ShareBusSetUpController.setSubmitState(STEPS.THREE);
+    ShareBusSetUpController.setSubmitState(STEPS.TRIP_INFO);
   },
 });
 
-const departureInfo = computed(() => ({
-  origin: setUpInfo1.value.origin,
-  destination: setUpInfo1.value.destination,
-  departureDateTime: setUpInfo1.value.departureDateTime,
-  arrivalDateTime: setUpInfo1.value.departureArrivalDateTime,
-  route_points: setUpInfo1.value.viaPoints.oneway,
-}));
+const departureInfo = computed(() => {
+  const oneway = setUpInfo1.value.route_points.oneway;
+  if (!oneway.length) return { origin: '', destination: '', departureDateTime: null, arrivalDateTime: null, route_points: [] };
+  return {
+    origin: oneway[0].point,
+    destination: oneway[oneway.length - 1].point,
+    departureDateTime: oneway[0].planned_departure_time,
+    arrivalDateTime: oneway[oneway.length - 1].planned_arrival_time,
+    route_points: oneway,
+  };
+});
 
-const returnInfo = computed(() => ({
-  origin: setUpInfo1.value.destination,
-  destination: setUpInfo1.value.origin,
-  departureDateTime: setUpInfo1.value.returnDateTime,
-  arrivalDateTime: setUpInfo1.value.returnArrivalDateTime,
-  route_points: setUpInfo1.value.viaPoints.return,
-}));
+const returnInfo = computed(() => {
+  const returnRoute = setUpInfo1.value.route_points.return;
+  if (!returnRoute.length) return { origin: '', destination: '', departureDateTime: null, arrivalDateTime: null, route_points: [] };
+  const oneway = setUpInfo1.value.route_points.oneway;
+  return {
+    origin: returnRoute[0].point,
+    destination: returnRoute[returnRoute.length - 1].point,
+    departureDateTime: returnRoute[0].planned_departure_time,
+    arrivalDateTime: returnRoute[returnRoute.length - 1].planned_arrival_time,
+    route_points: returnRoute,
+  };
+});
 
-const tickets = computed(() => sharebus.getStepThreeData.tickets as number);
+const tickets = computed(() => sharebus.getPassengerGoalAndPriceStepData.tickets as number);
 
 const invalidSeatCountErr = ref("");
 
@@ -291,7 +306,7 @@ watch(
 );
 
 onMounted(() => {
-  const stepThreeStore: SharebusStepThree = sharebus.getStepThreeData;
+  const stepThreeStore: PassengerGoalAndPriceStepData = sharebus.getPassengerGoalAndPriceStepData;
 
   passengerGoal.value = stepThreeStore.passengerGoal as number;
 
@@ -332,7 +347,7 @@ watch(
       values[0] >= PASSENGER_GOAL.value.MIN
     ) {
       passengerGoal.value = values[0];
-      sharebus.setStep3DataSpecific("passengerGoal", values[0]);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("passengerGoal", values[0]);
     } else {
       passengerGoal.value = setUpInfo3.value.passengerGoal as number;
     }
@@ -354,9 +369,9 @@ const hasErrors = computed(() => {
   return (
     (user.currentRole === ROLE.SHARELEAD &&
       (invalidSeatCountErr.value ||
-        setUpInfo3.value.shareLeadTicketDecision ===
+        setUpInfo3.value.tripCreationTicketDecision ===
           DECISION_RESULT.INTERMEDIATE)) ||
-    setUpInfo3.value.shareLeadDiscountDecision === DECISION_RESULT.INTERMEDIATE
+    setUpInfo3.value.tripCreationDiscountDecision === DECISION_RESULT.INTERMEDIATE
   );
 });
 /*
@@ -375,7 +390,7 @@ watch(
         discount_scheme: setUpInfo3.value.discountScheme as string,
       };
       let jsonLogicCalculated = {} as jsonLogicResult;
-      let jsonLogicCalculatedNone = {} as jsonLogicResult;
+      let jsonLogicCalculatedNone: number = 0;
 
       switch (value.discountScheme) {
         case DISCOUNT_SCHEME.CUT_PRICE:
@@ -394,36 +409,43 @@ watch(
             club_bonus_share: setupConfig.value.ClubBonusShare,
           });
           jsonLogicCalculatedNone = getNoDiscountPriceInfo({
-            ...data,
-            club_bonus_share: setupConfig.value.ClubBonusShare,
-          });
+            bus_price: data.bus_price,
+            passenger_goal: data.passenger_goal,
+            discount_scheme: data.discount_scheme,
+          } as TypeLogicBase);
           break;
         default:
-          jsonLogicCalculated = getNoDiscountPriceInfo({
-            ...data,
-            club_bonus_share: setupConfig.value.ClubBonusShare,
-          });
+          const noDiscountPrice = getNoDiscountPriceInfo({
+            bus_price: data.bus_price,
+            passenger_goal: data.passenger_goal,
+            discount_scheme: data.discount_scheme,
+          } as TypeLogicBase);
+          jsonLogicCalculated = {
+            ticketPrice: noDiscountPrice,
+            deductibleAmount: 0,
+            bonus: 0,
+          };
       }
       if (value.discountScheme == DISCOUNT_SCHEME.EARLY_BIRD) {
-        sharebus.setStep3DataSpecific(
+        sharebus.setPassengerGoalAndPriceStepDataSpecific(
           "earlyBirdTicketPrice",
           jsonLogicCalculated.ticketPrice
         );
-        sharebus.setStep3DataSpecific(
+        sharebus.setPassengerGoalAndPriceStepDataSpecific(
           "ticketPrice",
-          jsonLogicCalculatedNone.ticketPrice
+          jsonLogicCalculatedNone
         );
       } else {
-        sharebus.setStep3DataSpecific(
+        sharebus.setPassengerGoalAndPriceStepDataSpecific(
           "ticketPrice",
           jsonLogicCalculated.ticketPrice
         );
-        sharebus.setStep3DataSpecific("earlyBirdTicketPrice", 0);
+        sharebus.setPassengerGoalAndPriceStepDataSpecific("earlyBirdTicketPrice", 0);
       }
 
-      sharebus.setStep3DataSpecific("bonus", jsonLogicCalculated.bonus);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("bonus", jsonLogicCalculated.bonus);
 
-      sharebus.setStep3DataSpecific(
+      sharebus.setPassengerGoalAndPriceStepDataSpecific(
         "deductibleAmount",
         jsonLogicCalculated.deductibleAmount || 0
       );
@@ -433,15 +455,15 @@ watch(
           ? (setUpInfo3.value.tickets as number) *
             jsonLogicCalculated.ticketPrice
           : 0;
-      sharebus.setStep3DataSpecific("totalTicketPrice", totalTicketPrice);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("totalTicketPrice", totalTicketPrice as number);
 
       let grandTotal =
         (setUpInfo3.value.totalTicketPrice as number) +
         ((jsonLogicCalculated.deductibleAmount as number) || 0);
-      sharebus.setStep3DataSpecific("grandTotalPrice", grandTotal);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("grandTotalPrice", grandTotal as number);
     } else {
-      sharebus.setStep3DataSpecific("totalTicketPrice", 0);
-      sharebus.setStep3DataSpecific("grandTotalPrice", 0);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("totalTicketPrice", 0);
+      sharebus.setPassengerGoalAndPriceStepDataSpecific("grandTotalPrice", 0);
     }
   },
   {

@@ -440,10 +440,10 @@ const tripTicketPricing = computed(() => {
         via_points: mapRoutePointsWithPricing(
           parsedRoutePoints.value.oneway,
           salesHistoryTicketPricing.via_points ||
-            remoteTripPricing.via_points ||
+            remoteTripPricing?.via_points ||
             [],
           salesHistoryTicketPricing.categories ||
-            remoteTripPricing.categories ||
+            remoteTripPricing?.categories ||
             []
         ),
       };

@@ -245,14 +245,14 @@ export const calculateDistanceAndTimeWithMapAPI = (
     setLoading(true);
     return directionsService.route(routeObject, function (result, status) {
       setLoading(false);
-      if (status === "OK") {
+      if (status === "OK" && result?.routes?.[0]) {
         const legs = result.routes[0].legs;
         const tempPoints = [...locationsPoints];
         let tempLastCalculatedPoint = {} as TViaPoints;
         const newTempPoint = tempPoints.map((item, index) => {
           if (index > 0) {
             const pauseTimeValue = pauseTime * 60000,
-              legDuration = legs[index - 1].duration.value * 1000,
+              legDuration = (legs[index - 1]?.duration?.value ?? 0) * 1000,
               legDurationWithLegPercent =
                 legDuration + (legDuration * legPercent) / 100;
             let previousDepartureValue = (
@@ -351,7 +351,7 @@ export const vpCalculateDistanceAndTimeWithMapAPI = (
     setLoading(true);
     return directionsService.route(routeObject, function (result, status) {
       setLoading(false);
-      if (status === "OK") {
+      if (status === "OK" && result?.routes?.[0]) {
         const legs = result.routes[0].legs;
 
         let tempPoints = vpIndex > 0 ? locationsPoints.slice(0, vpIndex) : [];
@@ -482,7 +482,7 @@ export const singleVpCalculateDistanceAndTimeWithMapAPI = (
       setLoading(true);
       return directionsService.route(routeObject, function (result, status) {
         setLoading(false);
-        if (status === "OK") {
+        if (status === "OK" && result?.routes?.[0]) {
           const legs = result.routes[0].legs;
 
           /**

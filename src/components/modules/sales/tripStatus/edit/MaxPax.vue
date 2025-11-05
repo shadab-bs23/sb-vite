@@ -48,7 +48,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 import BaseInput from "@busgroup/vue3-base-input";
 import { computed, PropType, ref, watch } from "vue";
 import TripLastChangedInfo from "@/components/modules/sales/TripLastChangedInfo.vue";
-import { UpdateHistory, SalesEditGroup } from "@/store/salesConsole/types";
+import { UpdateHistory, SalesEditGroup, SaleTripEditAttributes } from "@/store/salesConsole/types";
 import { useI18n } from "vue-i18n";
 import { SetupSharebusConfig } from "@/store/config/types";
 const salesStore = useSalesStore();
@@ -134,13 +134,9 @@ const maxPaxLast = computed({
       : props.maxPax;
   },
   set: (value) => {
-    const setObj = {
-      [props.tripId]: {
-        max_pax: value && value >= 1 ? value : 1,
-        update_history: {
-          trip_pax: new Date(),
-        },
-      },
+    const setObj: Partial<SaleTripEditAttributes> & { trip_id: string } = {
+      trip_id: props.tripId,
+      max_pax: value && value >= 1 ? value : 1,
     };
     salesStore.setSalesConsoleTripChangeRequest(setObj);
   },

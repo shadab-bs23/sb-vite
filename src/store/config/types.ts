@@ -68,7 +68,7 @@ interface Getters {
   getSharebusSetupConfig: () => SetupSharebusConfig & ScheduledConfig;
 }
 interface Actions {
-  fetchSetupSharebusConfig: (configId: string) => void;
+  fetchSetupSharebusConfig: (configId: string, unitTestCB?: () => void) => void;
 }
 
 /*

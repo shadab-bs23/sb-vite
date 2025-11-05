@@ -88,7 +88,7 @@ import {
 } from "vue";
 import BaseButton from "@busgroup/vue3-base-button";
 import { useI18n } from "vue-i18n";
-import { Coordinate } from "./types/sharebus/map.type";
+import { Coordinate } from "types/sharebus/map.type";
 import {
   useSharebusStore,
   useUserStore,
@@ -219,6 +219,7 @@ type ValidationSchemaType = {
   returnDate: Date | null;
   returnTime: Date | null;
   route_points: RoutePoints;
+  bus_availability?: boolean;
 };
 
 /*
@@ -240,7 +241,7 @@ watch(
   () => props.initValues,
   (values) => {
     busAvailability.value = values?.departureDate
-      ? values?.bus_availability
+      ? (values?.bus_availability ?? false)
       : false;
   },
   { immediate: true }
@@ -249,10 +250,11 @@ watch(
 const saveItineraryData = (isSave: boolean) => {
   if (isSave) {
     handleFormSubmission();
-  } else
+  } else if (props.initValues) {
     routePushTagQuery("trip-sales-page", props.initValues.tripId, {
       tabindex: 1,
     });
+  }
 };
 
 const setTripType = (value) => {
@@ -286,7 +288,7 @@ const onSubmit = stepOneForm.handleSubmit((values) => {
     userDetails.value.currentRole !== ROLE.PARTNER_SHARELEAD
   ) {
     showToast("info", t("auth.common.select_sales_role"), 3000, "top-left");
-    ShareBusSetUpController.setSubmitState(STEPS.ONE, false);
+    ShareBusSetUpController.setSubmitState(STEPS.ROUTE_PAGE, false);
     return;
   }
 
@@ -297,71 +299,45 @@ const onSubmit = stepOneForm.handleSubmit((values) => {
     userDetails.value.isAuthenticated
   ) {
     showToast("info", t("home.joiner_warning"), 3000, "top-left");
-    ShareBusSetUpController.setSubmitState(STEPS.ONE, false);
+    ShareBusSetUpController.setSubmitState(STEPS.ROUTE_PAGE, false);
     return;
   }
 
   if (hasVpErrors.value || vpMissing.value) {
     showToast("error", "Please fix all the errors", 3000, "bottom-center");
-    ShareBusSetUpController.setSubmitState(STEPS.ONE, false);
+    ShareBusSetUpController.setSubmitState(STEPS.ROUTE_PAGE, false);
     return;
   }
 
   if (props.isEditMode) {
+    if (!route_points.value.oneway.length) return;
+    const firstOneway = route_points.value.oneway[0];
+    const lastOneway = route_points.value.oneway[route_points.value.oneway.length - 1];
+    
     emit("onSave", {
       ...values,
       bus_signage: props.initValues?.signage,
       outbound_from_lat_long: {
-        lat: route_points.value.oneway[0].point_latitude,
-        lng: route_points.value.oneway[0].point_longitude,
+        lat: firstOneway.point_latitude,
+        lng: firstOneway.point_longitude,
       },
       outbound_to_lat_long: {
-        lat: route_points.value.oneway[route_points.value.oneway.length - 1]
-          .point_latitude,
-        lng: route_points.value.oneway[route_points.value.oneway.length - 1]
-          .point_longitude,
+        lat: lastOneway.point_latitude,
+        lng: lastOneway.point_longitude,
       },
       outbound_to_date_time:
-        route_points.value.oneway[0].planned_departure_time || null,
+        firstOneway.planned_departure_time || null,
       bus_availability: busAvailability.value,
       return_to_date_time:
-        route_points.value.oneway[route_points.value.oneway.length - 1]
-          .planned_arrival_time || null,
+        lastOneway.planned_arrival_time || null,
       route_points: route_points.value,
     });
     return;
   }
 
-  sharebus.setStepOneData({
-    origin: route_points.value.oneway[0].point,
-    originLatLng: {
-      lat: route_points.value.oneway[0].point_latitude,
-      lng: route_points.value.oneway[0].point_longitude,
-    },
-    destination:
-      route_points.value.oneway[route_points.value.oneway.length - 1].point,
-    destinationLatLng: {
-      lat: route_points.value.oneway[route_points.value.oneway.length - 1]
-        .point_latitude,
-      lng: route_points.value.oneway[route_points.value.oneway.length - 1]
-        .point_longitude,
-    },
-    departureDateTime: route_points.value.oneway[0].planned_departure_time,
-    departureArrivalDateTime:
-      route_points.value.oneway[route_points.value.oneway.length - 1]
-        .planned_departure_time,
+  sharebus.setRouteStepData({
     busAvailability: busAvailability.value,
-    returnDateTime:
-      tripType.value === TRIP_TYPE.ROUND
-        ? route_points.value.return[0].planned_departure_time
-        : null,
-    returnArrivalDateTime:
-      tripType.value === TRIP_TYPE.ROUND
-        ? route_points.value.return[route_points.value.return.length - 1]
-            .planned_departure_time
-        : null,
-
-    viaPoints: route_points.value,
+    route_points: route_points.value,
   });
   fetchBusPrice();
 });
@@ -377,10 +353,10 @@ const handleFormSubmission = () => {
 };
 
 watch(
-  () => ShareBusSetUpController.getSubmitState(STEPS.ONE),
+  () => ShareBusSetUpController.getSubmitState(STEPS.ROUTE_PAGE),
   (value) => {
     if (value) {
-      ShareBusSetUpController.setSubmitState(STEPS.ONE, false);
+      ShareBusSetUpController.setSubmitState(STEPS.ROUTE_PAGE, false);
       handleFormSubmission();
     }
   },
@@ -418,31 +394,33 @@ watch(
 );
 
 const fetchBusPrice = async () => {
+  if (!route_points.value.oneway.length) return;
+  
+  const firstOneway = route_points.value.oneway[0];
+  const lastOneway = route_points.value.oneway[route_points.value.oneway.length - 1];
+  
   const departureInfo = {
     outbound_from: {
-      place: route_points.value.oneway[0].point,
-      point_latitude: route_points.value.oneway[0].point_latitude,
-      point_longitude: route_points.value.oneway[0].point_longitude,
+      place: firstOneway.point,
+      point_latitude: firstOneway.point_latitude,
+      point_longitude: firstOneway.point_longitude,
     },
     outbound_to: {
-      place:
-        route_points.value.oneway[route_points.value.oneway.length - 1].point,
-      point_latitude:
-        route_points.value.oneway[route_points.value.oneway.length - 1]
-          .point_latitude,
-      point_longitude:
-        route_points.value.oneway[route_points.value.oneway.length - 1]
-          .point_longitude,
+      place: lastOneway.point,
+      point_latitude: lastOneway.point_latitude,
+      point_longitude: lastOneway.point_longitude,
     },
     outbound_datetime: {
-      departure_datetime: isoFormatDateTime(
-        route_points.value.oneway[0].planned_departure_time
-      ),
+      departure_datetime: firstOneway.planned_departure_time 
+        ? isoFormatDateTime(firstOneway.planned_departure_time instanceof Date 
+            ? firstOneway.planned_departure_time.toISOString() 
+            : String(firstOneway.planned_departure_time))
+        : '',
       tz: "Europe/Oslo",
     },
   };
   const returnInfo =
-    tripType.value === TRIP_TYPE.ROUND
+    tripType.value === TRIP_TYPE.ROUND && route_points.value.return.length > 0
       ? {
           return_from: {
             place: route_points.value.return[0].point,
@@ -462,9 +440,11 @@ const fetchBusPrice = async () => {
           },
           bus_availability: busAvailability.value,
           return_datetime: {
-            departure_datetime: isoFormatDateTime(
-              route_points.value.return[0].planned_departure_time
-            ),
+            departure_datetime: route_points.value.return[0].planned_departure_time
+              ? isoFormatDateTime(route_points.value.return[0].planned_departure_time instanceof Date
+                  ? route_points.value.return[0].planned_departure_time.toISOString()
+                  : String(route_points.value.return[0].planned_departure_time))
+              : '',
 
             tz: "Europe/Oslo",
           },
@@ -478,13 +458,13 @@ const fetchBusPrice = async () => {
     route_points: JSON.stringify(route_points.value),
   };
   busPriceApiResponse.isLoading = true;
-  busStore.fetchBusInfoData(queryPayload).then((res) => {
-    busPriceApiResponse.error = res.error;
-    busPriceApiResponse.isLoading = res.loading;
+  busStore.fetchBusInfoData(queryPayload).then((res: { error?: unknown; loading?: boolean }) => {
+    busPriceApiResponse.error = res.error ?? {};
+    busPriceApiResponse.isLoading = res.loading ?? false;
   });
 };
 
-const route_points = ref({ oneway: [], return: [] });
+const route_points = ref<RoutePoints>({ oneway: [], return: [] });
 const setRoutePoints = (routePoints) => {
   route_points.value = routePoints;
 };

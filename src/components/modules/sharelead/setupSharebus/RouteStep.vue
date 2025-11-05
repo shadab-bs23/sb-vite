@@ -407,9 +407,9 @@ const fetchBusPrice = async () => {
 
   return busStore
     .fetchBusInfoData(queryPayload)
-    .then((res) => {
-      busPriceApiResponse.error = res.errors;
-      busPriceApiResponse.isLoading = res.loading;
+    .then((res: { errors?: unknown; loading?: boolean; data?: { getBusPrice?: unknown } }) => {
+      busPriceApiResponse.error = res.errors || {};
+      busPriceApiResponse.isLoading = res.loading || false;
       if (res?.data?.getBusPrice) {
         hasBusPriceError.value = false;
       } else {

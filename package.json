@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-graphql": "^2.0.3",
+    "@types/google.maps": "^3.58.1",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",

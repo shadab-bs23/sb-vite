@@ -68,7 +68,7 @@ const sharebus = useSharebusStore();
 const config = useConfigStore();
 
 onMounted(() => {
-  setValue(sharebus.getStepThreeData.discountPercentage || 0);
+  setValue(sharebus.getPassengerGoalAndPriceStepData.discountPercentage || 0);
 });
 
 const ticketPriceText = computed(() =>
@@ -89,14 +89,14 @@ const disCountLimit = {
 };
 const discountPercentage = computed({
   get: () => {
-    return sharebus.getStepThreeData.discountPercentage;
+    return sharebus.getPassengerGoalAndPriceStepData.discountPercentage;
   },
   set: (value) => {
-    sharebus.setStep3DataSpecific("discountPercentage", value as number);
+    sharebus.setPassengerGoalAndPriceStepDataSpecific("discountPercentage", value as number);
   },
 });
 const stepThreeInfo = computed(() => {
-  return sharebus.getStepThreeData;
+  return sharebus.getPassengerGoalAndPriceStepData;
 });
 const { value, errorMessage, handleChange, setValue, setErrors } =
   useField("percentage");

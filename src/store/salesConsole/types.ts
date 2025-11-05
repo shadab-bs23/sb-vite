@@ -138,7 +138,9 @@ export interface State {
   showRouteChangeAlert: boolean;
 }
 interface Actions {
-  setSalesConsoleTripChangeRequest: (payload: TripSetType) => void;
+  setSalesConsoleTripChangeRequest: (
+    payload: Partial<SaleTripEditAttributes> & { trip_id: string }
+  ) => void;
   getSalesConsoleTrip: () => salesConsoleEditTrip;
   updateTripAttribute: (payload: object) => Promise<salesConsoleEditTrip>;
   unpublishTrip: (payload: object) => Promise<UnpublishTripStatus>;
@@ -159,5 +161,5 @@ interface Getters {
  * store context define as summarize of store
  */
 export type StoreContext = ReturnType<
-  StoreDefinition<"sales", State, Actions, Getters>
+  StoreDefinition<"sales", State, Getters, Actions>
 >;

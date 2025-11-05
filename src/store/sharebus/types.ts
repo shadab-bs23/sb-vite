@@ -136,7 +136,7 @@ interface Actions {
   setTripInfoData: (tripInfo: TripInfoData) => void;
   setPublishStepData: (publishStepData: PublishStepData) => void;
   setPassengerGoalAndPriceStepDataSpecific: (
-    key: string,
+    key: keyof PassengerGoalAndPriceStepData,
     value: string | number | unknown
   ) => void;
   createSharebus: (payload: CreateShareBus) => void;

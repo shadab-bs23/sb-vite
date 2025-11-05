@@ -21,6 +21,7 @@ import { useSharebusStore } from "@/store";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { DECISION_RESULT } from "../enums/SetUpShareBusEnum";
+import { PassengerGoalAndPriceStepData } from "@/store/sharebus/types";
 const { t } = useI18n();
 
 const props = defineProps({
@@ -32,9 +33,9 @@ const props = defineProps({
 const sharebus = useSharebusStore();
 
 const isDecisionTaken = computed({
-  get: () => sharebus.getPassengerGoalAndPriceStepData[props.decisionFor],
+  get: () => sharebus.getPassengerGoalAndPriceStepData[props.decisionFor as keyof PassengerGoalAndPriceStepData],
   set: (value) => {
-    sharebus.setPassengerGoalAndPriceStepDataSpecific(props.decisionFor, value);
+    sharebus.setPassengerGoalAndPriceStepDataSpecific(props.decisionFor as keyof PassengerGoalAndPriceStepData, value);
   },
 });
 </script>

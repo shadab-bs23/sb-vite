@@ -249,6 +249,7 @@ import {
   Passenger,
   SalesEditGroup,
   TripEditor,
+  TripLocationTime,
 } from "@/store/salesConsole/types";
 import {
   isoFormatDateTime,
@@ -354,10 +355,12 @@ const fetchAndSetEditor = (salesPerson: string | TripEditor) => {
   if (salesPersonId) {
     useUserStore()
       .fetchUserById(salesPersonId)
-      .then((res) => {
-        const editor = JSON.parse(res.data.getUserInfo);
-        if (editor) {
-          tripStore.setEditor({ id: salesPersonId, name: editor.name });
+      .then((res: any) => {
+        if (res?.data?.getUserInfo) {
+          const editor = JSON.parse(res.data.getUserInfo);
+          if (editor) {
+            tripStore.setEditor({ id: salesPersonId, name: editor.name });
+          }
         }
       })
       .catch((err) => console.log(err));
@@ -530,21 +533,19 @@ const publishChanges = async (isLeavePage = false) => {
   }
 
   if (changes.trip_location_time) {
+    const tripLocationTime = changes.trip_location_time as TripLocationTime;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes.trip_location_time as any).route_points = JSON.stringify({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      oneway: (changes.trip_location_time as any).route_points.oneway.map(
-        (item, index) => {
-          return { ...item, sequence: index };
-        }
-      ),
-      return: changes.trip_location_time.route_points.return.map(
-        (item, index) => {
-          return { ...item, sequence: index };
-        }
-      ),
+      oneway: tripLocationTime.route_points.oneway.map((item, index) => {
+        return { ...item, sequence: index };
+      }),
+      return: tripLocationTime.route_points.return.map((item, index) => {
+        return { ...item, sequence: index };
+      }),
     });
-    delete changes.trip_location_time.bus_signage;
+    delete (changes.trip_location_time as Partial<TripLocationTime>)
+      .bus_signage;
   }
 
   const newPayload = prepareNewFlowPayload(changes);
