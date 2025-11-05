@@ -36,6 +36,8 @@
               :trip-status="tripStatus"
               :departure-info="departureInfo"
               :return-info="returnInfo"
+              :total-sold-tickets="totalSoldTickets"
+              :max-pax="tripInfo.max_pax"
             />
           </div>
         </TabComponent>
@@ -93,6 +95,13 @@ const tripInfo = computed(() => shareleadTripStore.getCurrentTrip);
 const tripStatus = computed(
   () => shareleadTripStore.getCurrentTrip.trip_status
 );
+
+const totalSoldTickets = computed(() => {
+  const { max_pax, available_earlybird_tickets, available_regular_tickets } =
+    tripInfo.value;
+
+  return max_pax - (available_earlybird_tickets + available_regular_tickets);
+});
 
 onMounted(() => {
   shareleadTripStore.getTrip(route.params.tag as string).then((trip) => {
