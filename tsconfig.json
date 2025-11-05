@@ -15,7 +15,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "allowJs": true,
-    "types": ["jest"],
+    "types": ["jest", "google.maps"],
     "paths": {
       "@/*": ["src/*"]
     },

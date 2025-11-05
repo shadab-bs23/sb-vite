@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 // Global type definitions for [~FERDIA_CUSTOM~]
 // Project: [~sharebus-frontend~]
 declare module "*.gql" {
