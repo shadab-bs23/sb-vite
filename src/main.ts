@@ -28,7 +28,7 @@ import "primeicons/primeicons.css";
 import { useAppFilters } from "@/composables/useAppFilters";
 import countryPlugin from "./core/plugin/countryPlugin";
 import ElementPlus from "element-plus";
-import "/node_modules/element-plus/es/components/date-picker/style/css";
+import "element-plus/dist/index.css";
 
 const filterBeforeCreate = (
   toast: ToastOptionsAndRequiredContent,

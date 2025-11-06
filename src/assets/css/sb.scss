@@ -1,10 +1,11 @@
-@import "utility_classes";
-@import "media_query";
-@import "setupShareBus";
-@import "card";
-@import "breadcrumb_menu";
-@import "button";
-// @import "./custom-element-plus/element_date_picker";
+@use "variables" as *;
+@use "utility_classes" as *;
+@use "media_query" as *;
+@use "setupShareBus" as *;
+@use "card" as *;
+@use "breadcrumb_menu" as *;
+@use "button" as *;
+// @use "./custom-element-plus/element_date_picker" as *;
 /*
 To fix issue of the google place autocomplete pac-container fixed to the input field.
 */

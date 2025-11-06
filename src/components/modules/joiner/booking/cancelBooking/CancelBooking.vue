@@ -58,7 +58,7 @@ const handleSubmitEmail = (email: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/utility_classes";
+@use "@/assets/css/utility_classes" as *;
 .btn-hover {
   color: $red-carnation;
 }
