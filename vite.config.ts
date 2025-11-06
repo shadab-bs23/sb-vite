@@ -4,7 +4,7 @@ import path from "path";
 import graphql from "@rollup/plugin-graphql";
 
 export default defineConfig({
-
+  logLevel: "info",
   plugins: [vue(), graphql()],
   define: {
     global: {},
