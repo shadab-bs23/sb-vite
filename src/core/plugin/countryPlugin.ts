@@ -1,5 +1,5 @@
 import UriController from "@/components/controller/UriController";
-import { computed } from "vue";
+import { computed, type App } from "vue";
 
 // Map of country ISO codes to timezones
 const countryTimezoneMap: Record<string, string> = {
@@ -18,7 +18,7 @@ export type countryType = {
   timezone?: string;
 };
 const currencyPlugin = {
-  install(app) {
+  install(app: App) {
     const country = computed<countryType>(() => {
       const countryMap = UriController.countryMap;
       const query = UriController.getQuery();
@@ -32,7 +32,7 @@ const currencyPlugin = {
       };
     });
     app.config.globalProperties.$country = {
-      global: country,
+      value: country,
     };
     app.provide("country", country);
   },
