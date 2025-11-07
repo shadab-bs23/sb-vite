@@ -37,7 +37,9 @@
           <!-- Single Header Row -->
           <tr>
             <th class="time-header text-start">
-              <div class="mb-1">Departure: {{ formatDate(departureDate) }}</div>
+              <div class="mb-1">
+                {{ t("sharebus.departure") }}: {{ formatDate(departureDate) }}
+              </div>
               <div v-if="bookingReference" class="booking-reference">
                 <img src="/img/trip-info/signage.svg" />
                 <p class="mt-2">

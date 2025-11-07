@@ -28,10 +28,10 @@ export type SetupSharebusConfig = {
   country_iso_codes: object;
   TeqOrgInfo: {
     [key: string]: {
-      orgName: string;
-      orgNo: string;
-      country: string;
-      domain: string;
+      OrgName: string;
+      OrgNo: string;
+      Country: string;
+      Domain: string;
     };
   };
 };
@@ -68,7 +68,7 @@ interface Getters {
   getSharebusSetupConfig: () => SetupSharebusConfig & ScheduledConfig;
 }
 interface Actions {
-  fetchSetupSharebusConfig: (configId: string, unitTestCB?: () => void) => void;
+  fetchSetupSharebusConfig: (configId: string) => void;
 }
 
 /*

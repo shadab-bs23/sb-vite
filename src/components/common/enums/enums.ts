@@ -56,3 +56,8 @@ export enum SUPPORTED_REQUEST {
   TRIP = "TRIP",
   ACCOUNT_RESTORE = "ACCOUNT_RESTORE",
 }
+
+export enum UPDATE_SHAREBUS_PAX_LIMIT {
+  MIN = 5,
+  MAX = 999,
+}

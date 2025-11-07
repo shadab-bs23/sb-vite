@@ -1,4 +1,3 @@
-@use "variables" as *;
 .sb-btn-lg {
   height: 46px;
   font-size: 18px;
@@ -44,154 +43,137 @@
   }
 }
 .sb-btn-primary {
-  background-color: $primary;
-  color: #fefffe;
+  background-color: $color-primary-base;
+  color: $color-neutral-50;
   &:hover {
-    background-color: #159c49;
-    border-color: #159c49;
-    /* Grays/White */
-    color: #fefffe;
+    background-color: $color-primary-hover;
+    border-color: $color-primary-hover;
+    color: $color-neutral-50;
   }
   &:focus {
-    /* Primary/Green Jewel Lighter */
-    background: #159c49;
-    /* Grays/Text */
-    border: 2px solid #1a1b1a;
-    /* Grays/White */
-    color: #fefffe;
+    background: $color-primary-hover;
+    border: 2px solid $color-neutral-800;
+    color: $color-neutral-50;
   }
   &:disabled {
-    /* Primary/Green Jewel */
     cursor: not-allowed;
-    background: #138340;
+    background: $color-primary-base;
     opacity: 0.4;
-    color: #fefffe !important;
+    color: $color-neutral-50 !important;
   }
 }
 
 .sb-btn-primary-alt {
-  background-color: $primary-alt;
-  color: $ship-gray;
+  background-color: $color-primary-light;
+  color: $color-neutral-900;
   border: none;
   &:hover {
-    background-color: #61e897;
-    border-color: #61e897;
-    color: $ship-gray;
+    background-color: $color-primary-bright;
+    border-color: $color-primary-bright;
+    color: $color-neutral-900;
   }
   &:focus {
-    background: #61e897;
-    /* Primary/Ship Gray */
-    border: 2px solid #0c1026;
-    color: $ship-gray;
+    background: $color-primary-bright;
+    border: 2px solid $color-neutral-900;
+    color: $color-neutral-900;
   }
   &:disabled {
-    background: #a5f2c4;
+    background: $color-primary-light;
     opacity: 0.4;
   }
 }
 .sb-btn-secondary {
-  /* Grays/White */
-  background: #fefffe;
-  /* Grays/Medium gray */
-  border: 1px solid #8b9389;
-  color: #0c1026;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-400;
+  color: $color-neutral-900;
   border-radius: 25px;
   &:hover {
-    /* Extended greens/ Extended light green */
-    background: #e5fbee;
-    /* Primary/Green Jewel */
-    border: 1px solid #138340;
-    /* Primary/Green Jewel */
-    color: #138340;
+    background: $color-primary-lighter;
+    border: 1px solid $color-primary-base;
+    color: $color-primary-base;
   }
   &:focus {
-    /* Extended greens/ Extended light green */
-    background: #e5fbee;
-    /* Primary/Green Jewel */
-    color: #138340;
-    border: 2px solid #138340;
+    background: $color-primary-lighter;
+    color: $color-primary-base;
+    border: 2px solid $color-primary-base;
     border-radius: 25px;
   }
   &:disabled {
-    background: #fefffe;
+    background: $color-neutral-50;
     opacity: 0.4;
-    /* Grays/Medium gray */
-    color: #0c1026;
-    border: 1px solid #8b9389;
+    color: $color-neutral-900;
+    border: 1px solid $color-neutral-400;
   }
 }
 
 .sb-btn-danger {
-  color: #0c1026;
-  background: #ffffff;
-  border: 1px solid #d4001a;
+  color: $color-neutral-900;
+  background: $color-white;
+  border: 1px solid $color-error-base;
   &:hover {
-    background: #ffe6e9;
-    color: #d4001a;
-    border: 1px solid #d4001a;
+    background: $color-error-lighter;
+    color: $color-error-base;
+    border: 1px solid $color-error-base;
   }
   &:focus {
-    background: #ffe6e9;
-    border: 2px solid #d4001a;
-    color: #d4001a;
+    background: $color-error-lighter;
+    border: 2px solid $color-error-base;
+    color: $color-error-base;
   }
   &:disabled {
-    background: #ffffff;
+    background: $color-white;
     opacity: 0.4;
-    color: #0c1026;
-    border: 1px solid #d4001a;
+    color: $color-neutral-900;
+    border: 1px solid $color-error-base;
   }
 }
 
 .btn-menu-action-sharelead {
-  background-color: #fdedd3;
+  background-color: $color-warning-pale;
 }
 .btn-menu-action-joiner {
-  background-color: #ddedfd;
+  background-color: $color-secondary-pale;
 }
 .sb-btn-joiner {
-  background: #ffffff;
+  background: $color-white;
   &:hover {
-    background: #ddedfd;
+    background: $color-secondary-pale;
   }
   &:focus {
-    background: #eef6fe;
-    /* Secondary/Blue Malibu */
-    border: 2px solid #54a7f5;
+    background: $color-secondary-very-light;
+    border: 2px solid $color-secondary-base;
   }
 }
 .sb-btn-sharelead {
-  background: #ffffff;
+  background: $color-white;
   &:hover {
-    background: #fdedd3;
+    background: $color-warning-pale;
   }
   &:focus {
-    background: #fdedd3;
-    /* Secondary/Orange Buttercup */
-    border: 2px solid #f5a623;
+    background: $color-warning-pale;
+    border: 2px solid $color-warning-base;
   }
 }
 
 .sb-tertiary {
-  color: #138340;
+  color: $color-primary-base;
   // padding: 8px 24px;
   &:hover {
-    background: #e5fbee;
+    background: $color-primary-lighter;
     border-radius: 25px;
     // padding: 8px 24px;
     text-decoration: none;
   }
   &:active {
-    background: #ffff;
-    /* Primary/Green Jewel */
-    border-bottom: 2px solid #138340 !important;
+    background: $color-white;
+    border-bottom: 2px solid $color-primary-base !important;
     // padding: 8px 24px;
     border-radius: 25px;
     text-decoration: none;
     // padding: 8px 24px;
   }
   &:disabled {
-    background: #e5fbee;
+    background: $color-primary-lighter;
     // padding: 8px 24px;
     opacity: 0.4;
     padding: 8px 24px;
@@ -199,30 +181,29 @@
 }
 
 .sb-vipps-btn {
-  background-color: #ec6539;
+  background-color: $color-vipps-primary;
   color: white;
   &:hover {
-    background-color: #f9774b;
-    border: 2px solid #f9774b;
+    background-color: $color-vipps-hover;
+    border: 2px solid $color-vipps-hover;
     color: white;
   }
   &:disabled {
     cursor: not-allowed;
-    background-color: #f5beac;
-    border: 2px solid #f9774b;
+    background-color: $color-vipps-disabled;
+    border: 2px solid $color-vipps-hover;
     color: white !important;
   }
 }
 
 .language-menu-btn {
-  background: #ffffff;
-  border: 1px solid #8b9389;
+  background: $color-white;
+  border: 1px solid $color-neutral-400;
   &:hover {
-    background: #ddedfd;
+    background: $color-secondary-pale;
   }
   &:focus {
-    background: #eef6fe;
-    /* Secondary/Blue Malibu */
-    border: 2px solid #54a7f5;
+    background: $color-secondary-very-light;
+    border: 2px solid $color-secondary-base;
   }
 }

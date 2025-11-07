@@ -64,7 +64,7 @@ import TripFilterController from "../trip/controller/TripFilterController";
 import BaseButton from "@busgroup/vue3-base-button";
 import { countryType } from "@/core/plugin/countryPlugin";
 import { environmentLink } from "@/core/http";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import UriController from "@/components/controller/UriController";
 
 const props = defineProps({
@@ -77,7 +77,6 @@ const country = inject<ComputedRef<countryType>>("country");
 
 const emit = defineEmits(["onSearch"]);
 const route = useRoute();
-const router = useRouter();
 
 const { t } = useI18n();
 const searchText = ref("");
@@ -108,14 +107,7 @@ const handleSearch = (searchVal: string) => {
   });
   searchText.value = searchVal;
   category.value = "";
-  if (searchVal !== tripFilter.value.query_string) {
-    TripFilterController.setTripFilter(
-      "query_string",
-      searchText.value || null
-    );
-  } else {
-    emit("onSearch", searchText.value);
-  }
+  emit("onSearch", searchText.value);
 };
 
 const handleTripCategorySelection = (selectedCategory: string) => {
@@ -139,7 +131,7 @@ const linkToShare = computed(() => {
   const searchParam = searchText.value ? `&search=${searchText.value}` : "";
   const categoryParam = category.value ? `&search=${category.value}` : "";
 
-  return `${environmentLink[import.meta.env.MODE as string]}/rss-feed?country=${
+  return `${environmentLink[process.env.NODE_ENV as string]}/rss-feed?country=${
     country?.value.countryISO as string
   }${searchParam || categoryParam}${dateTimeParams}`;
 });

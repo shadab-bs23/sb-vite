@@ -62,7 +62,7 @@
       <div
         class="d-flex flex-column align-items-start justify-content-start gap-3"
       >
-        <span>{{ t("sales.reminder.passengers_will_notified") }}</span>
+        <span>{{ t("sales.reminder.passengers_will_notified_on") }}</span>
         <div class="reminder-time d-flex align-items-start gap-3 text-left">
           <strong>
             {{

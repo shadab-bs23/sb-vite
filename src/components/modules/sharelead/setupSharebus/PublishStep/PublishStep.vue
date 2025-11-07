@@ -15,6 +15,7 @@
         :discount-tiers="discountTiers"
         :trip-info-data="tripData"
         :trip-id="currenttrip.id"
+        :discount-header="t('discount.discounts')"
       />
     </div>
   </div>
@@ -27,11 +28,10 @@ import { useI18n } from "vue-i18n";
 import TripSummarySection from "@/components/common/TripSummarySection/TripSummarySection.vue";
 // Discount tiers for summary section
 import { computed as vueComputed } from "vue";
+import TripController from "../../controllers/TripController";
 const discountTiers = vueComputed(
   () => sharebus.getPassengerGoalAndPriceStepData.ticket_discounts || []
 );
-import TripInfo from "../TripInfo/TripInfo.vue";
-import TripController from "../../controllers/TripController";
 
 const emit = defineEmits(["validation-change", "request-next-step"]);
 
@@ -60,13 +60,14 @@ const routeData = computed(() => {
   return routeStepData?.route_points || { oneway: [], return: [] };
 });
 
+const tripControllerStore = TripController.getShareleadTripStore();
+
 // Set the publish step as valid by default on mount
 onMounted(() => {
   emit("validation-change", { step: 4, isValid: true });
   const tripId = sharebus.setup.createdTripId;
   if (tripId) {
-    // Use the store action directly - Pinia will handle the context
-    (tripStore as any).getTrip(tripId);
+    tripControllerStore.getTrip(tripId);
   }
 });
 </script>

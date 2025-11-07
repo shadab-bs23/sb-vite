@@ -134,7 +134,9 @@ interface Actions {
   getTripListForSalesBySearch: (filter: TripFilterUpdate) => Promise<void>;
   setEditor: (editor: TripEditor) => void;
 }
-
+/*
+ * store context define as summarize of store
+ */
 export type StoreContext = ReturnType<
   StoreDefinition<"trip", State, Getters, Actions>
 >;

@@ -1,0 +1,143 @@
+// ============================================
+// RESPONSIVE TYPOGRAPHY SYSTEM
+// ============================================
+// Fluid font sizing based on viewport width
+// Uses modern CSS range syntax for media queries
+// ============================================
+
+@use "sass:map";
+@use "variables" as vars;
+
+// ============================================
+// ROOT FONT SIZE - Responsive Scaling
+// ============================================
+// These media queries adjust the base font-size on <html>
+// All rem-based values throughout the app will scale proportionally
+
+// Also sets CSS custom property --font-size-base for dynamic calculations
+
+// Default font-size-base (desktop standard)
+:root {
+  --font-size-base: #{vars.$font-size-base}; // 16px
+}
+
+// Extra Small Devices (0 - 575px) - Mobile Portrait
+@media (width < map.get(vars.$grid-breakpoints, sm)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-0-575};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-0-575 !important;
+  }
+}
+
+// Small Devices (576px - 767px) - Mobile Landscape
+@media (map.get(vars.$grid-breakpoints, sm) <= width < map.get(vars.$grid-breakpoints, md)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-576-767};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-576-767 !important;
+  }
+}
+
+// Medium Devices (768px - 991px) - Tablets
+@media (map.get(vars.$grid-breakpoints, md) <= width < map.get(vars.$grid-breakpoints, lg)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-768-991};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-768-991 !important;
+  }
+}
+
+// Large Devices (992px - 1199px) - Desktop Small
+@media (map.get(vars.$grid-breakpoints, lg) <= width < map.get(vars.$grid-breakpoints, xl)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-992-1399};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-992-1399 !important;
+  }
+}
+
+// Extra Large Devices (1200px - 1399px) - Desktop Medium
+@media (map.get(vars.$grid-breakpoints, xl) <= width < map.get(vars.$grid-breakpoints, xxl)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-992-1399};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-992-1399 !important;
+  }
+}
+
+// 2X Large Devices (1400px - 1699px) - Desktop Large
+@media (map.get(vars.$grid-breakpoints, xxl) <= width < map.get(vars.$grid-breakpoints, xxxl)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-1400-1699};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-1400-1699 !important;
+  }
+}
+
+// 3X Large Devices (1700px - 2099px) - Desktop Extra Large
+@media (map.get(vars.$grid-breakpoints, xxxl) <= width < map.get(vars.$grid-breakpoints, xxxxl)) {
+  :root {
+    --font-size-base: #{vars.$one-rem-1700-2099};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem-1700-2099 !important;
+  }
+}
+
+// 4X Large Devices (2100px+) - Desktop Ultra Wide
+@media (width >= map.get(vars.$grid-breakpoints, xxxxl)) {
+  :root {
+    --font-size-base: #{vars.$one-rem};
+  }
+  
+  html,
+  body {
+    font-size: vars.$one-rem !important;
+  }
+}
+
+// ============================================
+// HELPER MIXINS (Optional)
+// ============================================
+// Use these mixins for custom breakpoint logic
+
+@mixin respond-to($breakpoint) {
+  @if map.has-key(vars.$grid-breakpoints, $breakpoint) {
+    @media (min-width: map.get(vars.$grid-breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Invalid breakpoint: #{$breakpoint}.";
+  }
+}
+
+@mixin respond-between($lower, $upper) {
+  @if map.has-key(vars.$grid-breakpoints, $lower) and map.has-key(vars.$grid-breakpoints, $upper) {
+    @media (map.get(vars.$grid-breakpoints, $lower) <= width < map.get(vars.$grid-breakpoints, $upper)) {
+      @content;
+    }
+  } @else {
+    @warn "Invalid breakpoints: #{$lower} or #{$upper}.";
+  }
+}

@@ -21,10 +21,10 @@
       </div>
       <div>
         <h4 class="mb-0 text-start fw-bold">
-          {{ $t("discount.time_based_discount") }}
+          {{ t("discount.time_based_discount") }}
         </h4>
         <p class="text-muted mb-0">
-          {{ $t("discount.give_discount_early_booking") }}
+          {{ t("discount.give_discount_early_booking") }}
         </p>
       </div>
     </div>
@@ -34,7 +34,7 @@
           class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3"
         >
           <label for="days-input" class="me-2 mb-1 mb-sm-0">{{
-            $t("discount.max_days_before_departure")
+            t("discount.max_days_before_departure")
           }}</label>
           <div class="d-flex align-items-center">
             <input
@@ -44,7 +44,7 @@
               v-model.number="daysInput"
               min="1"
             />
-            <span class="ms-2">{{ $t("discount.days") }}</span>
+            <span class="ms-2">{{ t("discount.days") }}</span>
           </div>
         </div>
 
@@ -52,7 +52,7 @@
           class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4"
         >
           <label for="discount-percentage-input" class="me-2 mb-1 mb-sm-0">{{
-            $t("discount.discount")
+            t("discount.discount")
           }}</label>
           <div class="d-flex align-items-center">
             <input
@@ -73,7 +73,7 @@
           class="btn btn-outline-success btn-sm rounded-pill d-flex align-items-center ps-2 pe-3 mb-4"
           @click="addDiscountTier"
         >
-          <span class="me-1">+</span> {{ $t("discount.add_discount") }}
+          <span class="me-1">+</span> {{ t("discount.add_discount") }}
         </button>
 
         <div v-if="errorMessage" class="text-danger mt-2 small">
@@ -109,7 +109,7 @@
                     d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"
                   />
                 </svg>
-                {{ $t("button.remove") }}
+                {{ t("button.remove") }}
               </button>
             </div>
           </template>
@@ -124,6 +124,7 @@ import { ref, onMounted, watch } from "vue";
 import { deepClone } from "@/utils";
 import DiscountTierList from "./DiscountTierList.vue";
 import type { TicketDiscount } from "@/store/sharebus/types";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   discountTiers: {
@@ -133,7 +134,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:discountTiers"]);
-
+const { t } = useI18n();
 // Reactive state with default values from props
 const discountTiers = ref<TicketDiscount[]>(
   deepClone(props.discountTiers || [])
@@ -155,14 +156,14 @@ const validateTier = (): { valid: boolean; message: string } => {
   ) {
     return {
       valid: false,
-      message: "Discount percentage must be between 1% and 100%",
+      message: t("discount.discount_percentage_range"),
     };
   }
 
   if (discountTiers.value.some((tier) => tier.days === daysInput.value)) {
     return {
       valid: false,
-      message: `A discount for ${daysInput.value} days already exists`,
+      message: t("discount.discount_exists"),
     };
   }
 

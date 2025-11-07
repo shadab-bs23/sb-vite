@@ -2,8 +2,8 @@
   .el-range-editor.is-active {
     outline: 0 none;
     outline-offset: 0;
-    box-shadow: 0 0 0 0.2rem #c7d2fe;
-    border-color: #138340 !important;
+    box-shadow: 0 0 0 0.2rem $color-focus-shadow-indigo;
+    border-color: $color-primary-base !important;
   }
 }
 

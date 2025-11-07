@@ -1,10 +1,10 @@
 export const TRIP_CATEGORY = {
+  none: "none",
   sport: "sport",
   music: "music",
   wellness: "wellness",
   vacation: "vacation",
   other: "other",
-  none: "none",
 };
 
 export const tripCategoryClickSchema = {

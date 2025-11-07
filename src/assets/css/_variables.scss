@@ -1,57 +1,57 @@
-$color-ferdia-white: #fefffe;
+// ============================================
+// SHAREBUS DESIGN SYSTEM - VARIABLES
+// ============================================
+// Responsive breakpoints and typography settings
+// ============================================
 
-$light-gray-2: #d5d6d5;
-$light-gray: #f4f5f4;
-$medium-gray: #8b9389;
+// ============================================
+// GRID BREAKPOINTS
+// ============================================
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+  xxxl: 1700px,
+  xxxxl: 2100px,
+) !default;
 
-$light-mid-gray: #bcc1bb;
-$secondary-red-carnation: #d5d6d5;
-$ship-gray: #0c1026;
-$info-yellow: #fdf292;
-$info-yellow-2: #fffce9;
-$error-card: #feebe7;
-$light-red: #f7efed;
-$error-input: #d4001a;
-$red-carnation: #f64b60;
-$custom-yellow: #fdf292;
-$info-Turquoise: #9ce8f5;
-$info-ongoing: #b0f0d2;
+// ============================================
+// RESPONSIVE FONT SIZES (Base rem values)
+// ============================================
+// These control the root font-size at different breakpoints
+// All rem-based values in the app will scale accordingly
 
-$primary: #138340;
-$primary-alt: #a5f2c4;
+$one-rem-0-575: 14px !default; // Mobile portrait
+$one-rem-576-767: 15px !default; // Mobile landscape
+$one-rem-768-991: 15px !default; // Tablet
+$one-rem-992-1399: 16px !default; // Desktop small/medium (reference base)
+$one-rem-1400-1699: 16px !default; // Desktop large
+$one-rem-1700-2099: 17px !default; // Desktop extra large
+$one-rem: 18px !default; // Desktop ultra wide (2100+)
 
-$secondary: #54a7f5;
-$secondary-c11: #e5f8fa;
-$secondary-c10: #cfe6fc;
-$secondary-c5: #e7f3fe;
-$secondary-c2: #f5fafe;
+// Reference base for rem calculations (Desktop standard)
+$font-size-base: $one-rem-992-1399;
 
-$warning: #f5a623;
-$warning-c10: #fdebce;
-$warning-c7: #fcecc0;
-$warning-c6: #fef8c8;
-$warning-c5: #fef5e7;
-$warning-c2: #fffbf5;
+// ============================================
+// REM CALCULATION HELPER
+// ============================================
+// Convert px to rem based on reference base (16px)
+// Usage: font-size: to-rem(14px);
+@function to-rem($px-value) {
+  @return calc($px-value / $font-size-base) * 1rem;
+}
 
-$danger: #f64b60;
-
-$buttercup-orange: #f5a623;
-$buttercup-orange-10: #fdebce;
-$buttercup-orange-5: #fef5e7;
-$buttercup-orange-2: #fffbf5;
-
-$blue-malibu: #54a7f5;
-$blue-malibu-10: #cfe6fc;
-$blue-malibu-5: #e7f3fe;
-$blue-malibu-2: #f5fafe;
-
-$venetian-red: #d4001a;
-$venetian-red-10: #ffccd2;
-$venetian-red-5: #ffe5e9;
-$venetian-red-2: #fff5f6;
-
-$text-color: #1a1b1a;
-$gray-dark: #757675;
-$gray-medium: #999999;
-$gray-light-medium: #bfbfbf;
-$gray-light: #f4f5f4;
+// ============================================
+// CONTAINER MAX WIDTHS (Optional)
+// ============================================
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1320px,
+  xxxl: 1620px,
+) !default;

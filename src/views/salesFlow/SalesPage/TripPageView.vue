@@ -249,7 +249,6 @@ import {
   Passenger,
   SalesEditGroup,
   TripEditor,
-  TripLocationTime,
 } from "@/store/salesConsole/types";
 import {
   isoFormatDateTime,
@@ -267,12 +266,11 @@ import { useRedirect } from "@/services/auth/redirect.service";
 import { ROLE } from "@/components/common/enums/enums";
 import { SHAREBUS_CONFIG } from "@/services/graphql/enums/sharebus-config";
 import { handleUnauthorizedError } from "@/core/http/graphql/handleResponse";
-import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const { t } = useI18n();
 const route = useRoute();
 const user = useUserStore();
-const tripStore = useTripStore() as unknown as StoreContext;
+const tripStore = useTripStore();
 const salesStore = useSalesStore();
 const config = useConfigStore();
 const confirmationModal = useToggle();
@@ -356,12 +354,10 @@ const fetchAndSetEditor = (salesPerson: string | TripEditor) => {
   if (salesPersonId) {
     useUserStore()
       .fetchUserById(salesPersonId)
-      .then((res: any) => {
-        if (res?.data?.getUserInfo) {
-          const editor = JSON.parse(res.data.getUserInfo);
-          if (editor) {
-            tripStore.setEditor({ id: salesPersonId, name: editor.name });
-          }
+      .then((res) => {
+        const editor = JSON.parse(res.data.getUserInfo);
+        if (editor) {
+          tripStore.setEditor({ id: salesPersonId, name: editor.name });
         }
       })
       .catch((err) => console.log(err));
@@ -534,19 +530,21 @@ const publishChanges = async (isLeavePage = false) => {
   }
 
   if (changes.trip_location_time) {
-    const tripLocationTime = changes.trip_location_time as TripLocationTime;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes.trip_location_time as any).route_points = JSON.stringify({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      oneway: tripLocationTime.route_points.oneway.map((item, index) => {
-        return { ...item, sequence: index };
-      }),
-      return: tripLocationTime.route_points.return.map((item, index) => {
-        return { ...item, sequence: index };
-      }),
+      oneway: (changes.trip_location_time as any).route_points.oneway.map(
+        (item, index) => {
+          return { ...item, sequence: index };
+        }
+      ),
+      return: changes.trip_location_time.route_points.return.map(
+        (item, index) => {
+          return { ...item, sequence: index };
+        }
+      ),
     });
-    delete (changes.trip_location_time as Partial<TripLocationTime>)
-      .bus_signage;
+    delete changes.trip_location_time.bus_signage;
   }
 
   const newPayload = prepareNewFlowPayload(changes);
@@ -590,17 +588,28 @@ const revertChanges = () => {
   publishChanges(true);
 };
 
-const textMapChangesList = {
-  [SalesEditGroup.MAX_PAX]: "Edited max pax",
-  [SalesEditGroup.PASSENGER_GOAL]: "Edited passenger goal",
-  [SalesEditGroup.TRIP_GOAL_DEADLINE]: "Edited passenger goal deadline",
-  [SalesEditGroup.TRIP_TICKET_PRICING]: "Edited pricing",
-  [SalesEditGroup.TRIP_LOCATION_TYPE]: "Edited trip itinerary",
-  [SalesEditGroup.TRIP_GENERAL_INFO]: "Trip Published Info",
-  [SalesEditGroup.TRIP_TICKET_DISCOUNTS]: "Edited ticket discounts",
-  [SalesEditGroup.SHOW_TRIP_AVAILABLE_SEATS]:
-    "Edited trip available seats show status",
-};
+const textMapChangesList = computed(() => ({
+  [SalesEditGroup.MAX_PAX]: t("sales.changes_list.edited_max_pax"),
+  [SalesEditGroup.PASSENGER_GOAL]: t(
+    "sales.changes_list.edited_passenger_goal"
+  ),
+  [SalesEditGroup.TRIP_GOAL_DEADLINE]: t(
+    "sales.changes_list.edited_passenger_goal_deadline"
+  ),
+  [SalesEditGroup.TRIP_TICKET_PRICING]: t("sales.changes_list.edited_pricing"),
+  [SalesEditGroup.TRIP_LOCATION_TYPE]: t(
+    "sales.changes_list.edited_trip_itinerary"
+  ),
+  [SalesEditGroup.TRIP_GENERAL_INFO]: t(
+    "sales.changes_list.trip_published_info"
+  ),
+  [SalesEditGroup.TRIP_TICKET_DISCOUNTS]: t(
+    "sales.changes_list.edited_ticket_discounts"
+  ),
+  [SalesEditGroup.SHOW_TRIP_AVAILABLE_SEATS]: t(
+    "sales.changes_list.edited_trip_available_seats"
+  ),
+}));
 
 const confirmTripDialogAction = () => {
   const content = {
@@ -618,29 +627,18 @@ onMounted(() => {
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
   tripStore.getTrip(route.params.tag as string).then((trip) => {
-    const tripData = trip as unknown as {
-      errors?: import("@apollo/client/errors").GraphQLErrors;
-      getTrip: {
-        country: string;
-        update_history: {
-          updated_by_ferdia_sales: string;
-        } | null;
-      };
-    };
-    const errors = tripData.errors;
-    if (errors && errors.length > 0) {
+    const errors = trip.errors;
+    if (errors) {
       handleUnauthorizedError(errors);
     }
 
-    if (tripData.getTrip.country !== country?.value.countryISO) {
+    if (trip.getTrip.country !== country?.value.countryISO) {
       showToast("error", t("sales.permission_denied"));
       useRedirect().redirect();
     }
 
-    if (tripData.getTrip.update_history !== null) {
-      fetchAndSetEditor(
-        tripData.getTrip.update_history.updated_by_ferdia_sales
-      );
+    if (trip.getTrip.update_history !== null) {
+      fetchAndSetEditor(trip.getTrip.update_history.updated_by_ferdia_sales);
     }
   });
 });

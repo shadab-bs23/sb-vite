@@ -1,3 +1,4 @@
+import { URIState } from "@/components/controller/types";
 import { TripFilterTypeController } from "@/store/trip/privateTrip/types";
 import { ref } from "vue";
 
@@ -42,5 +43,16 @@ export default class TripFilterController {
 
   static getFilterActive() {
     return this._isFilterActive.value;
+  }
+
+  static setTripFilterObject(filterObj: URIState): void {
+    this._tripFilter.value = {
+      ...this._tripFilter.value,
+      ...filterObj,
+    };
+    this.setFilterActive(true);
+    this._activeFilters.value = Object.keys(filterObj).filter(
+      (key) => filterObj[key] !== null && filterObj[key] !== undefined
+    );
   }
 }

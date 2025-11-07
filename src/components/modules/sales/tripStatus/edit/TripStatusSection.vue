@@ -39,27 +39,9 @@
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
-// Safely parse planned departure time from route_points
-const plannedDepartureTime = computed(() => {
-  try {
-    return JSON.parse(props.tripInfo.route_points).oneway[0]
-      ?.planned_departure_time;
-  } catch {
-    return null;
-  }
-});
 import { Trip } from "@/store/trip/privateTrip/types";
 import { useI18n } from "vue-i18n";
 import { routePush } from "@/utils";
-
-// Only pass the required info as an object
-const statusBannerData = computed(() => ({
-  status: props.tripInfo.trip_status,
-  passengerGoal: props.tripInfo.passenger_goal,
-  maxPax: props.tripInfo.max_pax,
-  soldTickets: totalSoldTickets.value,
-  deadline: props.tripInfo.deadline_passenger_goal,
-}));
 import {
   dismissToast,
   toastWithActionable,
@@ -69,10 +51,27 @@ import PassengerGoalReach from "./PassengerGoalReach.vue";
 import BaseButton from "@busgroup/vue3-base-button";
 import { TRIP_STATUS } from "@/components/modules/sharelead/trip/tripStatus/tripStatusEnum";
 import { useSalesStore, useSharebusStore, useConfigStore } from "@/store";
-import { SetupSharebusConfig, ScheduledConfig } from "@/store/config/types";
 import DecisionDialog from "@/components/common/dialog/DecisionDialog.vue";
 import ReminderInfo from "../../ReminderInfo.vue";
 import TripStatusBanner from "@/components/common/info/TripStatusBanner.vue";
+// Safely parse planned departure time from route_points
+const plannedDepartureTime = computed(() => {
+  try {
+    return JSON.parse(props.tripInfo.route_points).oneway[0]
+      ?.planned_departure_time;
+  } catch {
+    return null;
+  }
+});
+
+// Only pass the required info as an object
+const statusBannerData = computed(() => ({
+  status: props.tripInfo.trip_status,
+  passengerGoal: props.tripInfo.passenger_goal,
+  maxPax: props.tripInfo.max_pax,
+  soldTickets: totalSoldTickets.value,
+  deadline: props.tripInfo.deadline_passenger_goal,
+}));
 
 const props = defineProps({
   tripInfo: {
@@ -88,10 +87,7 @@ const salesStore = useSalesStore();
 const shareBusStore = useSharebusStore();
 const config = useConfigStore();
 const editingMode = computed(() => salesStore.$state.editing_mode);
-const configuration = computed(() => {
-  const configValue = config.getSharebusSetupConfig as SetupSharebusConfig & ScheduledConfig;
-  return configValue;
-});
+const configuration = computed(() => config.getSharebusSetupConfig);
 
 const { t } = useI18n();
 const totalSoldTickets = computed(() => {
@@ -99,6 +95,41 @@ const totalSoldTickets = computed(() => {
     props.tripInfo;
 
   return max_pax - (available_earlybird_tickets + available_regular_tickets);
+});
+
+const maxPaxValue = computed(() => {
+  const tripEdit = salesStore.$state.salesEditTrip?.[props.tripInfo.id] as
+    | {
+        trip_pax?: { max_pax?: number };
+      }
+    | undefined;
+
+  if (
+    tripEdit &&
+    tripEdit.trip_pax &&
+    typeof tripEdit.trip_pax.max_pax === "number" &&
+    tripEdit.trip_pax.max_pax > 0
+  ) {
+    return tripEdit.trip_pax.max_pax;
+  }
+  return props.tripInfo.max_pax;
+});
+
+const passengerGoalValue = computed(() => {
+  const tripEdit = salesStore.$state.salesEditTrip?.[props.tripInfo.id] as
+    | {
+        trip_goal?: { passenger_goal?: number };
+      }
+    | undefined;
+  if (
+    tripEdit &&
+    tripEdit.trip_goal &&
+    typeof tripEdit.trip_goal.passenger_goal === "number" &&
+    tripEdit.trip_goal.passenger_goal > 0
+  ) {
+    return tripEdit.trip_goal.passenger_goal;
+  }
+  return props.tripInfo.passenger_goal;
 });
 
 const tripCancelAction = () => {

@@ -1,10 +1,9 @@
-@use "variables" as *;
 /**
   Design for cards
 */
 .card-default {
-  background: linear-gradient(0deg, #ffffff, #ffffff), #ffffff;
-  border: 1px solid $medium-gray;
+  background: linear-gradient(0deg, $color-white, $color-white), $color-white;
+  border: 1px solid $color-neutral-400;
 }
 
 .card-hover {

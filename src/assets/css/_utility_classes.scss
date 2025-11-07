@@ -1,5 +1,174 @@
-@use "variables" as *;
+// ============================================
+// SHAREBUS DESIGN SYSTEM - COLOR TOKENS
+// ============================================
+// Version: 1.0.0
+// Last Updated: October 2025
+// ============================================
 
+@use "variables" as vars;
+
+// ============================================
+// CSS CUSTOM PROPERTIES (Fallback for CDN)
+// ============================================
+// Define locally as fallback for Ferdia CDN variables
+// CDN Source: https://style.ferdia.no/latest/css/
+// ============================================
+
+:root {
+  --ferdia-c1-green-jewel1: #138340;
+  --ferdia-c2-buttercup: #f5a623;
+  --ferdia-c1-malibu: #54a7f5;
+}
+
+// ============================================
+// PRIMARY COLOR TOKENS
+// ============================================
+// Use these variables for all new code
+// Organized by color family with clear hierarchy
+// ============================================
+
+// PRIMARY (Brand Green)
+$color-primary-base: #138340;
+$color-primary-light: #a5f2c4;
+$color-primary-lighter: #e5fbee;
+$color-primary-hover: #159c49;
+$color-primary-bright: #61e897;
+
+// SECONDARY (Blue - Joiner actions)
+$color-secondary-base: #54a7f5;
+$color-secondary-tint: #e5f8fa;
+$color-secondary-light: #cfe6fc;
+$color-secondary-lighter: #e7f3fe;
+$color-secondary-lightest: #f5fafe;
+$color-secondary-pale: #ddedfd;
+$color-secondary-very-light: #eef6fe;
+
+// WARNING (Orange - ShareLead actions)
+$color-warning-base: #f5a623;
+$color-warning-light: #fdebce;
+$color-warning-medium: #fcecc0;
+$color-warning-bright: #fef8c8;
+$color-warning-lighter: #fef5e7;
+$color-warning-lightest: #fffbf5;
+$color-warning-pale: #fdedd3;
+
+// DANGER/ERROR (Red)
+$color-danger-base: #f64b60;
+$color-error-base: #d4001a;
+$color-error-light: #ffccd2;
+$color-error-lighter: #ffe5e9;
+$color-error-lightest: #fff5f6;
+$color-error-bg: #feebe7;
+$color-error-light-bg: #f7efed;
+
+// NEUTRALS (Grays - numbered scale for clarity)
+$color-neutral-900: #0c1026; // Darkest - primary text
+$color-neutral-800: #1a1b1a; // Text color
+$color-neutral-600: #757675; // Secondary text
+$color-neutral-500: #999999; // Medium gray
+$color-neutral-400: #8b9389; // Border gray
+$color-neutral-350: #bfbfbf; // Light medium gray
+$color-neutral-300: #bcc1bb; // Light mid gray
+$color-neutral-250: #dedede; // Light border gray
+$color-neutral-200: #d5d6d5; // Light gray 2
+$color-neutral-100: #f4f5f4; // Light gray
+$color-neutral-50: #fefffe; // Almost white
+$color-white: #ffffff; // Pure white
+
+// INFO/STATUS
+$color-info-base: #9ce8f5;
+$color-info-yellow: #fdf292;
+$color-info-yellow-light: #fffce9;
+$color-success-light: #b0f0d2;
+$color-success-bright: #79c142;
+
+// SPECIAL/OVERLAY
+$color-overlay-gray: rgba(187, 182, 182, 0.8);
+
+// THIRD-PARTY COLORS
+$color-vipps-primary: #ec6539;
+$color-vipps-hover: #f9774b;
+$color-vipps-disabled: #f5beac;
+$color-focus-shadow-indigo: #c7d2fe;
+
+// ============================================
+// LEGACY VARIABLES - BACKWARDS COMPATIBILITY
+// ============================================
+// ⚠️ DEPRECATED: These map to new token system above
+// Preserved for backwards compatibility - DO NOT DELETE
+// Use PRIMARY COLOR TOKENS for new code
+// ============================================
+
+// Legacy Primary
+$primary: $color-primary-base;
+$primary-alt: $color-primary-light;
+
+// Legacy Secondary
+$secondary: $color-secondary-base;
+$secondary-c11: $color-secondary-tint;
+$secondary-c10: $color-secondary-light;
+$secondary-c5: $color-secondary-lighter;
+$secondary-c2: $color-secondary-lightest;
+
+// Legacy Blue (Duplicates of Secondary)
+$blue-malibu: $color-secondary-base;
+$blue-malibu-10: $color-secondary-light;
+$blue-malibu-5: $color-secondary-lighter;
+$blue-malibu-2: $color-secondary-lightest;
+
+// Legacy Warning
+$warning: $color-warning-base;
+$warning-c10: $color-warning-light;
+$warning-c7: $color-warning-medium;
+$warning-c6: $color-warning-bright;
+$warning-c5: $color-warning-lighter;
+$warning-c2: $color-warning-lightest;
+
+// Legacy Orange (Duplicates of Warning)
+$buttercup-orange: $color-warning-base;
+$buttercup-orange-10: $color-warning-light;
+$buttercup-orange-5: $color-warning-lighter;
+$buttercup-orange-2: $color-warning-lightest;
+
+// Legacy Danger/Error
+$danger: $color-danger-base;
+$red-carnation: $color-danger-base;
+$venetian-red: $color-error-base;
+$venetian-red-10: $color-error-light;
+$venetian-red-5: $color-error-lighter;
+$venetian-red-2: $color-error-lightest;
+
+// Legacy Neutrals
+$color-ferdia-white: $color-neutral-50;
+$ship-gray: $color-neutral-900;
+$text-color: $color-neutral-800;
+$gray-dark: $color-neutral-600;
+$gray-medium: $color-neutral-500;
+$gray-light-medium: $color-neutral-350;
+$light-mid-gray: $color-neutral-300;
+$light-gray-2: $color-neutral-200;
+$light-gray: $color-neutral-100;
+$medium-gray: $color-neutral-400;
+$secondary-red-carnation: $color-neutral-200;
+$gray-light: $color-neutral-100;
+
+// Legacy Info/Status
+$info-yellow: $color-info-yellow;
+$info-yellow-2: $color-info-yellow-light;
+$custom-yellow: $color-info-yellow;
+$info-Turquoise: $color-info-base;
+$info-ongoing: $color-success-light;
+$error-card: $color-error-bg;
+$light-red: $color-error-light-bg;
+$error-input: $color-error-base;
+
+// ============================================
+// END LEGACY SECTION
+// ============================================
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
 .blue-malibu {
   color: $blue-malibu;
 }
@@ -22,7 +191,7 @@
   background-color: var(--ferdia-c2-buttercup) !important;
 }
 .orange-buttercup-bg-rgba {
-  background-color: rgba(#f5a623, 0.2) !important;
+  background-color: rgba($color-warning-base, 0.2) !important;
 }
 .green-jewel {
   color: var(--ferdia-c1-green-jewel1) !important;
@@ -40,19 +209,19 @@
   background-color: var(--ferdia-c1-malibu) !important;
 }
 .malibu-bg-rgba {
-  background-color: rgba(#54a7f5, 0.2) !important;
+  background-color: rgba($color-secondary-base, 0.2) !important;
 }
 .extended-green-bg {
-  background: #a5f2c4;
+  background: $color-primary-light;
 }
 .extended-green {
-  color: #a5f2c4;
+  color: $color-primary-light;
 }
 .extended-light-green-bg {
-  background: #e5fbee !important;
+  background: $color-primary-lighter !important;
 }
 .extended-light-green-bg-rgba {
-  background-color: rgba(#e5fbee, 0.4);
+  background-color: rgba($color-primary-lighter, 0.4);
 }
 .light-gray-2 {
   color: $light-gray-2;
@@ -91,7 +260,7 @@
   background: $secondary-c11;
 }
 .auth-error {
-  background: #feebe7;
+  background: $color-error-bg;
 }
 .warning-c7-bg {
   background: $warning-c7;
@@ -105,29 +274,38 @@
 .fw-600 {
   font-weight: 600;
 }
+// ============================================
+// RESPONSIVE FONT SIZE UTILITIES
+// ============================================
+// These scale automatically with viewport using rem units
+// Calculated relative to $font-size-base (16px from _variables.scss)
+// Mobile (14px root): .fs-14 = 12.25px
+// Desktop (16px root): .fs-14 = 14px
+// Ultra-wide (18px root): .fs-14 = 15.75px
+
 .fs-14 {
-  font-size: 14px;
+  font-size: vars.to-rem(14px);
 }
 .fs-18 {
-  font-size: 18px;
+  font-size: vars.to-rem(18px);
 }
 .fs-19 {
-  font-size: 19px;
+  font-size: vars.to-rem(19px);
 }
 .fs-20 {
-  font-size: 20px;
+  font-size: vars.to-rem(20px);
 }
 .fs-22 {
-  font-size: 22px;
+  font-size: vars.to-rem(22px);
 }
 .fs-24 {
-  font-size: 24px;
+  font-size: vars.to-rem(24px);
 }
 .fs-26 {
-  font-size: 26px;
+  font-size: vars.to-rem(26px);
 }
 .fs-36 {
-  font-size: 36px;
+  font-size: vars.to-rem(36px);
 }
 .error-bg {
   background-color: $error-card;

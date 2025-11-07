@@ -84,7 +84,7 @@ import BaseButton from "@busgroup/vue3-base-button";
 import GoogleSignUp from "@/components/modules/auth/signUp/GoogleSignUpButton.vue";
 import { checkRolePermissions, routePushTag } from "@/utils";
 import { useI18n } from "vue-i18n";
-import { useUserStore, useSignUpStore } from "@/store/index";
+import { useUserStore, useSignUpStore, useConfigStore } from "@/store/index";
 import { useToggle } from "@/composables/useToggle";
 import { computed } from "@vue/reactivity";
 import { UserSignIn } from "types/auth/user.type";
@@ -93,6 +93,7 @@ import FormError from "@/components/common/error/FormError.vue";
 import { showToast } from "@/services/toast/toast.service";
 import { useRoute } from "vue-router";
 import { useRedirect } from "@/services/auth/redirect.service";
+import { SHAREBUS_CONFIG } from "@/services/graphql/enums/sharebus-config";
 
 const { t } = useI18n();
 const user = useUserStore();
@@ -101,7 +102,7 @@ const error = ref<GeneralError>({ message: "", type: "" });
 const loginData = reactive<UserSignIn>({ email: "", password: "" });
 const { show, toggleShow } = useToggle();
 const route = useRoute();
-
+const config = useConfigStore();
 /*
  * Set query to localstorage for redirecting after authenticate
  * */
@@ -122,6 +123,7 @@ const handleSubmit = () => {
   user
     .signInAction(loginData)
     .then((res) => {
+      config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SETUP);
       if (res) {
         user
           .fetchingUserInfo()

@@ -60,18 +60,13 @@ const isLoading = ref(true);
 onMounted(() => {
   if (route.query.search) {
     filtering.toggleShowByValue(true);
-    TripFilterController.setTripFilter(
-      "query_string",
-      route.query.search as string
-    );
-  } else {
-    handleTrips();
   }
+  // Do not call handleTrips() here; wait for TripFilterController to update the filter
+  // The watcher on TripFilterController.getTripFilter() will handle the initial API call
 });
 // handle search from input
 const handleSearch = () => {
   filtering.toggleShowByValue(true);
-  handleTrips();
 };
 // reset category on unmounted
 onUnmounted(() => {
@@ -115,6 +110,10 @@ watch(
     if (newValue != oldValue) {
       tripFilter.value.country = newValue as string;
       TripFilterController.resetTripFilter();
+      nextPage.value = null;
+      console.log(
+        `Country changed from ${oldValue} to ${newValue}, resetting trip filter and fetching trips.`
+      );
       handleTrips();
     }
   },
@@ -137,10 +136,15 @@ Watches for changes in the filter variable inside TripFilterController and updat
 watch(
   () => TripFilterController.getTripFilter(),
   (newFilter) => {
+    // If query_string (from search) exists, show filtering UI
+    if (newFilter.query_string) {
+      filtering.toggleShowByValue(true);
+    }
     tripFilter.value = {
       ...tripFilter.value,
       ...newFilter,
     };
+    console.log("Trip filter updated:", tripFilter.value);
     nextPage.value = null;
     handleTrips();
   },

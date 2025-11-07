@@ -48,7 +48,7 @@
         >
           {{ translations.waiting_time }}:
           <span v-if="waitingTime.days">{{ waitingTime.days }} d</span>
-          <span v-if="waitingTime.hours" class="mx-2"
+          <span v-if="waitingTime.hours" class="mx-1"
             >{{ waitingTime.hours }} h</span
           >
           <span>{{ waitingTime?.minutes }}m</span>

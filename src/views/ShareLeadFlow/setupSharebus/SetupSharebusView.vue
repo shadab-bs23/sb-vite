@@ -181,12 +181,12 @@ const handleStepBack = () => {
 };
 
 // NEW STEP FLOW
-const stepsOption = [
+const stepsOption = computed(() => [
   { label: t("setup.route") },
   { label: t("setup.passenger_goal_and_prices") },
   { label: t("setup.trip_info") },
   { label: t("setup.publish") },
-];
+]);
 
 const currentStep = ref(1);
 // Define component refs with the simplified interface
@@ -326,9 +326,9 @@ const initValues = computed(() => {
     return {
       bus_availability: sharebus.getRouteStepData.busAvailability,
       route_points: sharebus.getRouteStepData.route_points,
-    } as any;
+    };
   }
-  return undefined;
+  return {};
 });
 
 //it will be used while backend give us api we will send information to them
@@ -589,6 +589,7 @@ const publishSharebus = () => {
       });
   } else {
     // No image_url to upload, publish directly
+    // performPublish(tripId, tripInfoData, tripInfoData.photoPreview || "");
     console.log("Publishing sharebus without image upload");
     performPublish(tripId, tripInfoData, tripInfoData.image_url || "");
   }

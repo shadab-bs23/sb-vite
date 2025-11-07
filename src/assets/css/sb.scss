@@ -1,11 +1,11 @@
-@use "variables" as *;
-@use "utility_classes" as *;
-@use "media_query" as *;
-@use "setupShareBus" as *;
-@use "card" as *;
-@use "breadcrumb_menu" as *;
-@use "button" as *;
-// @use "./custom-element-plus/element_date_picker" as *;
+@import "utility_classes";
+@import "responsive_typography";
+@import "media_query";
+@import "setupShareBus";
+@import "card";
+@import "breadcrumb_menu";
+@import "button";
+// @import "./custom-element-plus/element_date_picker";
 /*
 To fix issue of the google place autocomplete pac-container fixed to the input field.
 */
@@ -15,13 +15,13 @@ body {
 }
 .signup-input {
   align-items: flex-start;
-  border: 1px solid #dedede;
+  border: 1px solid $color-neutral-250;
   padding: 16px;
   label {
     font-weight: 600;
     font-size: 16px;
     line-height: 19px;
-    color: #000000;
+    color: $color-neutral-800;
   }
   input {
     height: 100%;
@@ -30,7 +30,7 @@ body {
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
-    color: #000000;
+    color: $color-neutral-800;
     padding-left: 0;
   }
 }
@@ -52,13 +52,13 @@ body {
 }
 
 .sb-bg-warning {
-  background: #fdf292;
+  background: $color-info-yellow;
 }
 
 .sb-loader-size {
   height: 100px;
   width: 100px;
-  border-color: #79c142;
+  border-color: $color-success-bright;
 }
 
 input::placeholder,
@@ -94,7 +94,7 @@ See here: https://stackoverflow.com/questions/70483510/bootstrap5-icons-font-wei
 }
 
 .overlay-primary-background {
-  background-color: rgba(187, 182, 182, 0.8);
+  background-color: $color-overlay-gray;
 }
 
 .vertical-line {
@@ -127,6 +127,7 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Border and placeholder text color on error */
@@ -142,7 +143,7 @@ input[type="number"] {
 }
 
 .total-payment-line {
-  border-bottom: 1px solid #000000;
+  border-bottom: 1px solid $color-neutral-800;
   opacity: 1;
 }
 
@@ -191,21 +192,20 @@ input[type="number"] {
 }
 
 .sb-dropdown {
-  color: $ship-gray;
-  border-bottom: 1px solid #0c1026;
+  color: $color-neutral-900;
+  border-bottom: 1px solid $color-neutral-900;
   &:hover {
-    background: #e5fbee;
-    border-color: #61e897;
-    color: $ship-gray;
+    background: $color-primary-lighter;
+    border-color: $color-primary-bright;
+    color: $color-neutral-900;
   }
   &:focus {
-    background: #e5fbee;
-    /* Primary/Ship Gray */
-    border: 2px solid #0c1026;
-    color: $ship-gray;
+    background: $color-primary-lighter;
+    border: 2px solid $color-neutral-900;
+    color: $color-neutral-900;
   }
   &:disabled {
-    background: #e5fbee;
+    background: $color-primary-lighter;
     opacity: 0.4;
   }
 }

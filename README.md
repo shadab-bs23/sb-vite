@@ -11,6 +11,8 @@ The Ferdia Sharebus Vue 3 Frontend. See also our [Confluence page for this repo]
 - CI/CD and git workflow: [general documentation](https://ferdia.atlassian.net/l/c/nhdmKj92) and [specifically for FE](https://ferdia.atlassian.net/l/c/Jp12rxnJ) (Confluence)
 - Local Docs
   - [Setup](docs/Setup.md)
+  - [Docker Setup](docs/Docker.md)
+  - [NVM](docs/nvm.md)
   - [IDE Configuration](docs/IDE_configuration.md)
   - [Maintenance](docs/Maintenance.md)
   - [MSW](docs/MSW.md) (Mock Service Worker)

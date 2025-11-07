@@ -32,7 +32,14 @@
             height: '33px',
           }"
         >
-          {{ formatDepartureTime(pointData.planned_departure_time) }}
+          {{
+            formatDepartureTime(
+              index === 0
+                ? pointData.planned_departure_time
+                : pointData.planned_arrival_time ||
+                    pointData.planned_departure_time
+            )
+          }}
         </div>
 
         <!-- Timeline visualization -->

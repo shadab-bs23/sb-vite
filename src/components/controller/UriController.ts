@@ -3,6 +3,8 @@ import router from "@/router";
 import { URIState } from "./types";
 import { computed, ref, watchEffect } from "vue";
 import { useConfigStore } from "@/store";
+import TripFilterController from "@/components/modules/trip/controller/TripFilterController";
+import { deepEqual } from "@/utils";
 
 /**
  * Helper class, to isolate functionality concerning uri query management.
@@ -13,10 +15,17 @@ import { useConfigStore } from "@/store";
  * We also considered using [query-string](https://www.npmjs.com/package/query-string). Benifits that we will get from it is that, this package takes care of type checking of the properties.
  */
 export default class UriController {
-  private static _is_in_mode_prod = import.meta.env.MODE === "production";
+  private static _is_in_mode_prod = import.meta.env.NODE_ENV === "production";
 
-  private static _validQueryParams = ["country", "tabindex", "search"];
+  private static _validQueryParams = [
+    "country",
+    "tabindex",
+    "search",
+    "operator",
+  ];
   private static _country = ref<string>("");
+  private static _operator = ref<string>("");
+
   /*
    * default URI
    */
@@ -49,8 +58,17 @@ export default class UriController {
       this._updateState(validatedQuery);
     };
 
+    let lastCountryMap: Record<string, unknown> = {};
     watchEffect(() => {
-      if (Object.keys(this.countryMap.value).length) {
+      const currentCountryMap = this.countryMap.value as Record<
+        string,
+        unknown
+      >;
+      if (
+        Object.keys(currentCountryMap).length &&
+        !deepEqual(currentCountryMap, lastCountryMap)
+      ) {
+        lastCountryMap = JSON.parse(JSON.stringify(currentCountryMap));
         return call();
       }
     });
@@ -78,13 +96,17 @@ export default class UriController {
    */
   static setQuery(query_obj: URIState): void {
     try {
+      // Compose the final query object as it will appear in the URL
+      const finalQuery = {
+        ...router.currentRoute.value.query,
+        ...this._validateQueryStructure(query_obj),
+      };
       router.replace({
         ...router.currentRoute,
-        query: {
-          ...router.currentRoute.value.query,
-          ...this._validateQueryStructure(query_obj),
-        },
+        query: finalQuery,
       });
+      // Sync TripFilterController with the final query object
+      this._syncTripFilterWithQuery(finalQuery);
     } catch (error) {
       if (!this._is_in_mode_prod) console.log("setQuery error: ", error);
     }
@@ -109,16 +131,40 @@ export default class UriController {
   }
 
   /**
-   *validating the country here if the received query params match with country map then returning it otherwise returning default
-   * @param {URIState} value - value that need to validate
-   * @returns {string} - returning validated country
+   * Helper to get TeqOrgInfo entry for a given operator if valid, otherwise undefined
+   */
+  private static _getTeqOrgInfoEntry(operator?: string) {
+    if (!operator) return undefined;
+    const configStore = useConfigStore();
+    const teqOrgInfo = configStore.$state.setupSharebus.TeqOrgInfo || {};
+    if (Object.prototype.hasOwnProperty.call(teqOrgInfo, operator)) {
+      return teqOrgInfo[operator];
+    }
+    return undefined;
+  }
+
+  /**
+   * Validates the country, prioritizing the operator's country if operator is valid
    */
   static getValidatedCountry(value: URIState): string {
+    const teqOrg = this._getTeqOrgInfoEntry(value.operator);
+    if (teqOrg) {
+      return teqOrg.Country;
+    }
     if (this.countryMap.value[value.country as string]) {
       return value.country as string;
     } else {
       return this.defaultURI.country;
     }
+  }
+
+  /**
+   * Validates the operator, returns operator if valid, otherwise empty string
+   */
+  static getValidatedOperator(value: URIState): string {
+    return this._getTeqOrgInfoEntry(value.operator)
+      ? (value.operator as string)
+      : "";
   }
 
   /**
@@ -130,8 +176,13 @@ export default class UriController {
   private static _validateQueryData(query: URIState): URIState {
     const validatedQuery = {
       country: "",
+      operator: "",
+      search: "",
     };
     validatedQuery.country = this.getValidatedCountry(query);
+    validatedQuery.operator = this.getValidatedOperator(query);
+    validatedQuery.search = query.search || "";
+
     return validatedQuery;
   }
 
@@ -147,6 +198,17 @@ export default class UriController {
   }
 
   /**
+   *set operator
+   *
+   * @param {string} value - value that want to set
+   * @param {boolean} updateURI -should update the URI instantly
+   */
+  private static _setOperator(value: string, updateURI = false) {
+    if (value !== this._operator.value) this._operator.value = value;
+    if (updateURI) this._updateUri();
+  }
+
+  /**
    * update the state
    *
    * @param {string} query - query is for updating
@@ -154,6 +216,7 @@ export default class UriController {
    */
   private static _updateState(query: URIState): void {
     if (query.country) this._setCountry(query.country);
+    if (query.operator) this._setOperator(query.operator);
     this._updateUri();
   }
 
@@ -165,6 +228,7 @@ export default class UriController {
   private static _getStateQuery(): URIState {
     return {
       country: this._country.value,
+      operator: this._operator.value,
     };
   }
 
@@ -175,5 +239,37 @@ export default class UriController {
    */
   private static _updateUri(query: URIState = this._getStateQuery()): void {
     UriController.setQuery(query);
+  }
+
+  /**
+   * Filters a query object to only include allowed trip filter keys and renames 'search' to 'query_string'
+   */
+  private static _getTripFilterObject(query: { [key: string]: unknown }) {
+    const allowedFilterKeys = ["country", "operator", "query_string"];
+    // Rename 'search' to 'query_string' if present
+    const normalizedQuery = { ...query };
+    if (normalizedQuery.search) {
+      normalizedQuery.query_string = normalizedQuery.search;
+      delete normalizedQuery.search;
+    }
+    return Object.fromEntries(
+      Object.entries(normalizedQuery).filter(
+        ([key, value]) =>
+          allowedFilterKeys.includes(key) &&
+          value !== undefined &&
+          value !== null &&
+          value !== ""
+      )
+    );
+  }
+
+  /**
+   * Syncs the TripFilterController with the given query object
+   */
+  private static _syncTripFilterWithQuery(query: URIState) {
+    const tripFilterObj = this._getTripFilterObject(
+      query as Record<string, unknown>
+    );
+    TripFilterController.setTripFilterObject(tripFilterObj);
   }
 }
