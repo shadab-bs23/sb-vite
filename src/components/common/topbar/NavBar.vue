@@ -451,6 +451,7 @@ watch(
 );
 const roleChangeAction = async (role: string, redirectTo: string) => {
   await user.setUserRoleAction(role);
+  await new Promise((resolve) => setTimeout(resolve, 100));
   if (redirectTo) routePush(redirectTo);
 };
 
