@@ -313,7 +313,6 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { CTA, ROLE } from "@/components/common/enums/enums";
 import LanguageSelector from "./LanguageSelector.vue";
-import UriController from "@/components/controller/UriController";
 import { toastWithActionable } from "@/services/toast/toast.service";
 import NavController from "./controller/NavController";
 import { ROUTE } from "@/router/enum/routeEnums";
@@ -324,7 +323,6 @@ const user = useUserStore();
 const route = useRoute();
 
 onMounted(() => {
-  UriController.onInitialLoad();
   const currentLocale = localStorage.getItem("locale") as string;
   if (currentLocale?.length) locale.value = currentLocale;
   else {
@@ -451,8 +449,8 @@ watch(
     }
   }
 );
-const roleChangeAction = (role: string, redirectTo: string) => {
-  user.setUserRoleAction(role);
+const roleChangeAction = async (role: string, redirectTo: string) => {
+  await user.setUserRoleAction(role);
   if (redirectTo) routePush(redirectTo);
 };
 

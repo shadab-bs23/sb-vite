@@ -119,6 +119,7 @@ watch(
   },
   {
     deep: true,
+    immediate: true,
   }
 );
 // load more trips if have paginated data

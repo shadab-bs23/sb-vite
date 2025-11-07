@@ -272,8 +272,11 @@ const publishSharebusForm = useForm({
 
 const { value: tripName, errorMessage: tripNameErrMsg } =
   useField<string>("name");
-const { value: tripCategory, errorMessage: tripCategoryErrMsg } =
-  useField<string>("category");
+const {
+  value: tripCategory,
+  errorMessage: tripCategoryErrMsg,
+  setErrors: setTripCategoryErrors,
+} = useField<string>("category");
 const { value: travelerInfo, errorMessage: travelerInfoErrMsg } =
   useField<string>("info_to_travellers");
 const { value: eventLink, errorMessage: eventLinkErrMsg } =

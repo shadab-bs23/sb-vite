@@ -117,8 +117,8 @@ const hasPartnerShareleadPermission = computed(
   () => user.getPartnerShareleadPermission
 );
 
-const handleRoleSelection = (role: string) => {
-  user.setUserRoleAction(role);
+const handleRoleSelection = async (role: string) => {
+  await user.setUserRoleAction(role);
   let redirectLink =
     localStorageGetItem("redirectLink") || getRedirectLink(role);
 

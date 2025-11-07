@@ -101,6 +101,10 @@ export default class UriController {
         ...router.currentRoute.value.query,
         ...this._validateQueryStructure(query_obj),
       };
+      const validatedQuery = this._validateQueryData(finalQuery);
+
+      // Update the final query with validated values
+      Object.assign(finalQuery, validatedQuery);
       router.replace({
         ...router.currentRoute,
         query: finalQuery,

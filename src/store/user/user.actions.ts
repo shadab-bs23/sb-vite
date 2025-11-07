@@ -174,14 +174,17 @@ export default {
 
   /**
    * Set current user's role
-   * @param {string} username
+   * @param {string} role
    */
-  setUserRoleAction(this: StoreContext, role: string) {
-    this.$state = {
-      ...this.$state,
-      currentRole: role,
-    };
-    localStorage.setItem("userRole", role);
+  async setUserRoleAction(this: StoreContext, role: string): Promise<void> {
+    return new Promise((resolve) => {
+      this.$state = {
+        ...this.$state,
+        currentRole: role,
+      };
+      localStorage.setItem("userRole", role);
+      resolve();
+    });
   },
 
   /**

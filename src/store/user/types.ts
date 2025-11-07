@@ -27,7 +27,7 @@ interface Getters {
 interface Actions {
   signInAction: (signInData: UserSignIn) => void;
   signOutAction: () => void;
-  setUserRoleAction: (role: string) => void;
+  setUserRoleAction: (role: string) => Promise<void>;
   setCognitoUserRoles: () => void;
   handleSignUp: (payload: UserSignUp) => void;
   handleConfirmSignUp: (username: string, code: string) => void;

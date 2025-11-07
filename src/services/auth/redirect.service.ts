@@ -46,25 +46,25 @@ export const useRedirect = () => {
     }
   };
 
-  const roleBasedRedirect = (role: string) => {
+  const roleBasedRedirect = async (role: string) => {
     const path = getRedirectLink(role);
-    user.setUserRoleAction(role);
+    await user.setUserRoleAction(role);
     return routerPushHash(path);
   };
 
-  const landingRoleRedirect = (role: string) => {
+  const landingRoleRedirect = async (role: string) => {
     deleteFromLocalStorage(LOCAL_VAR.LANDING_ROLE);
     const path = getRedirectLinkForLandingRole(role);
-    user.setUserRoleAction(role);
+    await user.setUserRoleAction(role);
     return routerPushHash(path);
   };
 
-  const urlBasedRedirect = (url: string) => {
+  const urlBasedRedirect = async (url: string) => {
     deleteFromLocalStorage(LOCAL_VAR.REDIRECT_URL);
     if (url.toLowerCase().includes("book-ticket")) {
-      user.setUserRoleAction("joiner");
+      await user.setUserRoleAction("joiner");
     } else if (url.toLowerCase().includes("setup-sharebus")) {
-      user.setUserRoleAction("sharelead");
+      await user.setUserRoleAction("sharelead");
     }
     return routerPushHash(url);
   };
