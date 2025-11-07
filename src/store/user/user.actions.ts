@@ -26,6 +26,7 @@ import {
 import { useApolloQueryAsync } from "@/composables/useApolloQueryAsync";
 import { ROLE } from "@/components/common/enums/enums";
 import { useMutation } from "@vue/apollo-composable";
+import type { ApolloQueryResult } from "@apollo/client";
 
 export default {
   /**
@@ -291,14 +292,20 @@ export default {
     });
   },
 
-  fetchUserById(this: StoreContext, userId: string): Promise<void> {
+  fetchUserById(
+    this: StoreContext,
+    userId: string
+  ): Promise<ApolloQueryResult<{ getUserInfo: string }>> {
     const loader = useLoaderStore();
 
     loader.changeLoadingStatus({ isLoading: true });
 
-    const { apolloQuery } = useApolloQueryAsync(getUserInfo, () => ({
-      id: userId,
-    }));
+    const { apolloQuery } = useApolloQueryAsync<{ getUserInfo: string }>(
+      getUserInfo,
+      () => ({
+        id: userId,
+      })
+    );
 
     return apolloQuery()
       .then((res) => {

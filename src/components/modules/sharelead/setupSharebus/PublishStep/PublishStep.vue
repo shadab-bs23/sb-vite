@@ -29,6 +29,7 @@ import TripSummarySection from "@/components/common/TripSummarySection/TripSumma
 // Discount tiers for summary section
 import { computed as vueComputed } from "vue";
 import TripController from "../../controllers/TripController";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 const discountTiers = vueComputed(
   () => sharebus.getPassengerGoalAndPriceStepData.ticket_discounts || []
 );
@@ -60,7 +61,8 @@ const routeData = computed(() => {
   return routeStepData?.route_points || { oneway: [], return: [] };
 });
 
-const tripControllerStore = TripController.getShareleadTripStore();
+const tripControllerStore =
+  TripController.getShareleadTripStore() as unknown as StoreContext;
 
 // Set the publish step as valid by default on mount
 onMounted(() => {

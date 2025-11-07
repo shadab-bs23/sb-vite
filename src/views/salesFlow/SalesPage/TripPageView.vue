@@ -249,6 +249,7 @@ import {
   Passenger,
   SalesEditGroup,
   TripEditor,
+  TripLocationTime,
 } from "@/store/salesConsole/types";
 import {
   isoFormatDateTime,
@@ -266,11 +267,12 @@ import { useRedirect } from "@/services/auth/redirect.service";
 import { ROLE } from "@/components/common/enums/enums";
 import { SHAREBUS_CONFIG } from "@/services/graphql/enums/sharebus-config";
 import { handleUnauthorizedError } from "@/core/http/graphql/handleResponse";
+import type { StoreContext } from "@/store/trip/privateTrip/types";
 
 const { t } = useI18n();
 const route = useRoute();
 const user = useUserStore();
-const tripStore = useTripStore();
+const tripStore = useTripStore() as unknown as StoreContext;
 const salesStore = useSalesStore();
 const config = useConfigStore();
 const confirmationModal = useToggle();
@@ -530,21 +532,17 @@ const publishChanges = async (isLeavePage = false) => {
   }
 
   if (changes.trip_location_time) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (changes.trip_location_time as any).route_points = JSON.stringify({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      oneway: (changes.trip_location_time as any).route_points.oneway.map(
-        (item, index) => {
-          return { ...item, sequence: index };
-        }
-      ),
-      return: changes.trip_location_time.route_points.return.map(
-        (item, index) => {
-          return { ...item, sequence: index };
-        }
-      ),
+    const tripLocationTime = changes.trip_location_time as TripLocationTime;
+    // Mutate route_points from object to string for API
+    (tripLocationTime.route_points as unknown as string) = JSON.stringify({
+      oneway: tripLocationTime.route_points.oneway.map((item, index) => {
+        return { ...item, sequence: index };
+      }),
+      return: tripLocationTime.route_points.return.map((item, index) => {
+        return { ...item, sequence: index };
+      }),
     });
-    delete changes.trip_location_time.bus_signage;
+    delete (tripLocationTime as Partial<TripLocationTime>).bus_signage;
   }
 
   const newPayload = prepareNewFlowPayload(changes);
@@ -626,19 +624,20 @@ const confirmTripDialogAction = () => {
 onMounted(() => {
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
   config.fetchSetupSharebusConfig(SHAREBUS_CONFIG.SCHEDULED_CONFIG);
-  tripStore.getTrip(route.params.tag as string).then((trip) => {
+  tripStore.getTrip(route.params.tag as string).then((trip: any) => {
     const errors = trip.errors;
     if (errors) {
       handleUnauthorizedError(errors);
     }
 
-    if (trip.getTrip.country !== country?.value.countryISO) {
+    const tripData = trip.getTrip || trip;
+    if (tripData.country !== country?.value.countryISO) {
       showToast("error", t("sales.permission_denied"));
       useRedirect().redirect();
     }
 
-    if (trip.getTrip.update_history !== null) {
-      fetchAndSetEditor(trip.getTrip.update_history.updated_by_ferdia_sales);
+    if (tripData.update_history !== null) {
+      fetchAndSetEditor(tripData.update_history.updated_by_ferdia_sales);
     }
   });
 });

@@ -4,3 +4,10 @@ export interface URIState {
   search?: string;
   operator?: string;
 }
+
+export type CountryInfo = {
+  name: string;
+  currency: string;
+};
+
+export type CountryMap = Record<string, CountryInfo>;

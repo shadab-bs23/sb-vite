@@ -91,6 +91,7 @@ import {
 import BaseButton from "@busgroup/vue3-base-button";
 import BaseOffCanvas from "../reusable/BaseOffCanvas.vue";
 import UriController from "@/components/controller/UriController";
+import type { URIState, CountryMap } from "@/components/controller/types";
 import DecisionDialog from "../dialog/DecisionDialog.vue";
 import { toastWithActionable } from "@/services/toast/toast.service";
 import { useRoute } from "vue-router";
@@ -162,13 +163,13 @@ watch(
 );
 
 watch(
-  () => [query.value, countryMap.value],
-  (value) => {
-    if (!isEmptyObject(value[1])) {
+  (): [URIState, CountryMap] => [query.value, countryMap.value as CountryMap],
+  ([queryValue, countryMapValue]: [URIState, CountryMap]) => {
+    if (!isEmptyObject(countryMapValue) && queryValue.country) {
       selectedCountry.value = {
-        name: countryMap.value[value[0].country as string].name,
-        currency: countryMap.value[value[0].country as string].currency,
-        flag: countriesFlag[value[0].country as string].flag,
+        name: countryMap.value[queryValue.country].name,
+        currency: countryMap.value[queryValue.country].currency,
+        flag: countriesFlag[queryValue.country].flag,
       };
     }
   },

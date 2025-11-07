@@ -58,7 +58,7 @@ export type TripGeneralInfo = PickTripFields<
  */
 export type TripLocationTime = PickTripFields<"bus_availability"> & {
   bus_signage: string;
-  route_points: RoutePoints;
+  route_points: RoutePoints & string;
 };
 
 /**

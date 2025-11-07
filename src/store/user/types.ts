@@ -1,6 +1,7 @@
 import { StoreDefinition } from "pinia";
 import { User, UserSignIn } from "types/auth/user.type";
 import { UserSignUp } from "types/auth/user.type";
+import type { ApolloQueryResult } from "@apollo/client";
 // import { GeneralError } from "types/errors/errors.type";
 export interface State {
   data: User;
@@ -38,7 +39,9 @@ interface Actions {
   handleVerifyUserAttribute(attribute: string);
   handleForgotPasswordCode(userName: string): Promise<object>;
   handleForgotPasswordSubmit(payload: ForgotPassword);
-  fetchUserById(userId: string): Promise<void>;
+  fetchUserById(
+    userId: string
+  ): Promise<ApolloQueryResult<{ getUserInfo: string }>>;
   deleteUser(): void;
 }
 /*

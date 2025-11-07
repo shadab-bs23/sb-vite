@@ -3,8 +3,8 @@ import {
   CreateShareBus,
   publishSharebus,
 } from "types/sharebus/ShareBusCreationProcess";
-import { TViaPoints } from "@/components/ViaPointsPackage/types/types";
 import { Trip } from "../trip/privateTrip/types";
+import { RoutePoints } from "@/components/modules/sharelead/setupSharebus/TripDetailsStepOne.vue";
 
 /**
  * Setup types
@@ -38,10 +38,7 @@ export type TicketDiscount = {
 export type RouteStepData = {
   busAvailability: boolean;
   no_return_trip_needed?: boolean;
-  route_points: {
-    oneway: TViaPoints[];
-    return: TViaPoints[];
-  };
+  route_points: RoutePoints;
 };
 
 export type OrganizationStepData = {

@@ -123,6 +123,7 @@ import {
   routePushTagQuery,
   formatRoutePointsForAPI,
 } from "../../../../utils";
+import { RoutePoints } from "./TripDetailsStepOne.vue";
 
 const props = defineProps({
   formClass: {
@@ -135,7 +136,7 @@ const props = defineProps({
   },
   initValues: {
     type: Object as PropType<ValidationSchemaType>,
-    default: () => undefined,
+    default: () => ({ route_points: { oneway: [], return: [] } }),
   },
 });
 
@@ -218,26 +219,12 @@ const stepOneValidationSchema = computed(() =>
   })
 );
 
-export type TViaPoints = {
-  id: number;
-  point: string;
-  point_latitude: string | number;
-  point_longitude: string | number;
-  point_formal: string;
-  sequence: number;
-  type: string;
-  planned_arrival_time: Date | string;
-  planned_departure_time: Date | string;
-  actual_departure_time: Date | string;
-  pause_duration: number;
-};
+export type {
+  TViaPoints,
+  RoutePoints,
+} from "@/components/ViaPointsPackage/types/types";
 
-export type RoutePoints = {
-  oneway: TViaPoints[];
-  return: TViaPoints[];
-};
-
-type ValidationSchemaType = {
+export type ValidationSchemaType = {
   tripId: string;
   signage: string;
   origin: string;
@@ -407,16 +394,22 @@ const fetchBusPrice = async () => {
 
   return busStore
     .fetchBusInfoData(queryPayload)
-    .then((res: { errors?: unknown; loading?: boolean; data?: { getBusPrice?: unknown } }) => {
-      busPriceApiResponse.error = res.errors || {};
-      busPriceApiResponse.isLoading = res.loading || false;
-      if (res?.data?.getBusPrice) {
-        hasBusPriceError.value = false;
-      } else {
-        hasBusPriceError.value = true;
+    .then(
+      (res: {
+        errors?: unknown;
+        loading?: boolean;
+        data?: { getBusPrice?: unknown };
+      }) => {
+        busPriceApiResponse.error = res.errors || {};
+        busPriceApiResponse.isLoading = res.loading || false;
+        if (res?.data?.getBusPrice) {
+          hasBusPriceError.value = false;
+        } else {
+          hasBusPriceError.value = true;
+        }
+        return res;
       }
-      return res;
-    })
+    )
     .catch((error) => {
       console.error("Error in fetchBusPrice:", error);
       throw error;

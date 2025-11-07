@@ -150,6 +150,7 @@ import { useRouter, onBeforeRouteLeave } from "vue-router";
 import PassengerGoalAndPricesStep from "@/components/modules/sharelead/setupSharebus/PassengerGoalAndPrices/PassengerGoalAndPricesStep.vue";
 import { TripInfoData } from "@/store/sharebus/types";
 import { useCompanyTimeFormat } from "@/composables/useCompanyTimeFormat";
+import type { ValidationSchemaType } from "@/components/modules/sharelead/setupSharebus/RouteStep.vue";
 const { t } = useI18n();
 const router = useRouter();
 
@@ -320,15 +321,52 @@ const prevStep = () => {
 
 // Just keeping the implementation simple since we're now handling steps directly
 
-// Cast the initValues to any to avoid strict type checking issues
-const initValues = computed(() => {
+const initValues = computed((): ValidationSchemaType => {
   if (sharebus.getRouteStepData.route_points.oneway.length > 0) {
+    const onewayPoints = sharebus.getRouteStepData.route_points.oneway;
     return {
+      tripId: "",
+      signage: "",
+      origin: onewayPoints[0]?.point || "",
+      originLatLng: {
+        lat: parseFloat(String(onewayPoints[0]?.point_latitude || 0)),
+        lng: parseFloat(String(onewayPoints[0]?.point_longitude || 0)),
+      },
+      destination: onewayPoints[onewayPoints.length - 1]?.point || "",
+      destinationLatLng: {
+        lat: parseFloat(
+          String(onewayPoints[onewayPoints.length - 1]?.point_latitude || 0)
+        ),
+        lng: parseFloat(
+          String(onewayPoints[onewayPoints.length - 1]?.point_longitude || 0)
+        ),
+      },
+      departureDate: onewayPoints[0]?.planned_departure_time
+        ? new Date(onewayPoints[0].planned_departure_time)
+        : new Date(),
+      departureTime: onewayPoints[0]?.planned_departure_time
+        ? new Date(onewayPoints[0].planned_departure_time)
+        : new Date(),
+      returnDate: null,
+      returnTime: null,
       bus_availability: sharebus.getRouteStepData.busAvailability,
       route_points: sharebus.getRouteStepData.route_points,
     };
   }
-  return {};
+  return {
+    tripId: "",
+    signage: "",
+    origin: "",
+    originLatLng: { lat: 0, lng: 0 },
+    destination: "",
+    destinationLatLng: { lat: 0, lng: 0 },
+    departureDate: new Date(),
+    departureTime: new Date(),
+    returnDate: null,
+    returnTime: null,
+    bus_availability: false,
+    route_points: { oneway: [], return: [] },
+  };
 });
 
 //it will be used while backend give us api we will send information to them
@@ -418,29 +456,21 @@ const tripPayload = computed((): CreateShareBus => {
     {
       Type: "Outbound",
       "Departure (Client Time)": outboundFromDatetime,
-      "Departure (Company Time)": formatInCompanyTimezone(
-        outboundFromDatetime as string
-      ),
+      "Departure (Company Time)": formatInCompanyTimezone(outboundFromDatetime),
       "Departure (UTC)": outboundFromDatetimeUTC,
       "Arrival (Client Time)": outboundToDatetime,
-      "Arrival (Company Time)": formatInCompanyTimezone(
-        outboundToDatetime as string
-      ),
+      "Arrival (Company Time)": formatInCompanyTimezone(outboundToDatetime),
       "Arrival (UTC)": outboundToDatetimeUTC,
     },
     {
       Type: "Return",
       "Departure (Client Time)": returnFromDatetime,
-      "Departure (Company Time)": formatInCompanyTimezone(
-        returnFromDatetime as string
-      ),
+      "Departure (Company Time)": formatInCompanyTimezone(returnFromDatetime),
       "Departure (UTC)": returnFromDatetimeUTC,
       "Arrival (Client Time)": returnToDatetime
         ? new Date(returnToDatetime).toUTCString()
         : "N/A",
-      "Arrival (Company Time)": formatInCompanyTimezone(
-        returnToDatetime as string
-      ),
+      "Arrival (Company Time)": formatInCompanyTimezone(returnToDatetime),
       "Arrival (UTC)": returnToDatetimeUTC,
     },
   ]);
