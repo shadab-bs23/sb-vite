@@ -17,7 +17,7 @@
       </h4>
       <p class="ship-gray">{{ t("sharebus.publish.trip_name_desc") }}</p>
       <BaseInput
-        v-model="publishSharebusForm.values.name"
+        v-model="tripName"
         id="name"
         :modifier-class="`rounded ${tripNameErrMsg ? 'is-invalid' : ''}`"
       />
@@ -33,7 +33,7 @@
         {{ t("common.category") }}*
       </h4>
       <TripCategory
-        :selected-category="formValue.category"
+        :selected-category="tripCategory"
         @on-select-trip-category="handleTripCategorySelection"
       />
       <p
@@ -46,7 +46,7 @@
     <div class="my-2 col-sm-12 col-md-5 ship-gray my-3">
       <p>{{ t("sharebus.publish.who_organizes") }}</p>
       <BaseInput
-        v-model="publishSharebusForm.values.trip_organizer"
+        v-model="organizer"
         id="trip_organizer"
         modifier-class="rounded"
       />
@@ -71,7 +71,7 @@
             :class="`border-light w-100 rounded ${
               travelerInfoErrMsg ? 'border-error' : 'ship-gray'
             }`"
-            v-model="publishSharebusForm.values.info_to_travellers"
+            v-model="travelerInfo"
           ></textarea>
           <p
             class="text-start ship-gray py-3 ps-2 fw-600 auth-error fs-6 rounded"
@@ -84,7 +84,7 @@
       <div class="my-2 col-sm-12 col-md-8 ship-gray">
         <p>{{ t("sharebus.publish.link_to_event") }}</p>
         <BaseInput
-          v-model="publishSharebusForm.values.website_url"
+          v-model="eventLink"
           id="website_url"
           modifier-class="rounded"
         />
@@ -270,14 +270,18 @@ const publishSharebusForm = useForm({
   initialValues: initialValue,
 });
 
-const { errorMessage: tripNameErrMsg } = useField("name");
-const { errorMessage: tripCategoryErrMsg, setErrors: setTripCategoryErrors } =
-  useField("category");
-const { errorMessage: travelerInfoErrMsg } = useField("info_to_travellers");
-const { errorMessage: eventLinkErrMsg } = useField("website_url");
-const { errorMessage: organizerErrMsg } = useField("trip_organizer");
+const { value: tripName, errorMessage: tripNameErrMsg } =
+  useField<string>("name");
+const { value: tripCategory, errorMessage: tripCategoryErrMsg } =
+  useField<string>("category");
+const { value: travelerInfo, errorMessage: travelerInfoErrMsg } =
+  useField<string>("info_to_travellers");
+const { value: eventLink, errorMessage: eventLinkErrMsg } =
+  useField<string>("website_url");
+const { value: organizer, errorMessage: organizerErrMsg } =
+  useField<string>("trip_organizer");
 const { errorMessage: photoErrMsg, setErrors: setPhotoErr } =
-  useField("image_url");
+  useField<File | null>("image_url");
 
 watch(
   () => props.formValue,

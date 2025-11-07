@@ -29,9 +29,6 @@
         {{ t("sharebus.publish.trip_name") }}*
       </h4>
       <p class="ship-gray">{{ t("sharebus.publish.trip_name_desc") }}</p>
-      <pre>
-        {{ tripInfoForm.values }}
-      </pre>
       <BaseInput
         v-model="tripName"
         id="name"
