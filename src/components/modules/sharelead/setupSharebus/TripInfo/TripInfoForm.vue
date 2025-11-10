@@ -232,7 +232,9 @@ const tripInfoFormSchema = computed(() =>
     category: yup
       .string()
       .required(t("sharebus.publish.trip_category_missing")),
-    trip_organizer: yup.string().required(),
+    trip_organizer: yup
+      .string()
+      .required(t("form.validation.this_field_required")),
     info_to_travellers: yup
       .string()
       .max(300, t("form.validation.max_length", { max: 300 })),
@@ -538,11 +540,6 @@ watch(
       // The image_url field should only be managed by handleFileSelection
       delete formData.image_url;
 
-      // Ensure trip_organizer is prefilled if empty
-      if (!formData.trip_organizer) {
-        formData.trip_organizer = userStore.getUserInfo?.attributes?.name || "";
-      }
-
       // Use setFieldValue for individual fields to avoid overriding image_url
       const allowedFields = [
         "name",
@@ -563,6 +560,19 @@ watch(
     }
   },
   { immediate: true, deep: true }
+);
+
+/**
+ * Watches the current user's name and populates the trip organizer form field.
+ */
+watch(
+  () => userStore.getUserInfo?.attributes?.name,
+  (newName) => {
+    if (newName) {
+      tripInfoForm.setFieldValue("trip_organizer", newName || "");
+    }
+  },
+  { immediate: true }
 );
 
 // Watch form validity to reset submit state when form becomes valid

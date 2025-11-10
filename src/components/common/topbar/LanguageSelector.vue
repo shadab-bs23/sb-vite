@@ -37,7 +37,7 @@
       <h3>{{ t("common.country") }}</h3>
       <div>
         <p>
-          <img :src="`/img/locales/${selectedCountry.flag}`" class="me-2" />
+          <img :src="`/img/locales/${selectedCountry?.flag}`" class="me-2" />
           {{ selectedCountry.name }}
         </p>
         <hr />
@@ -49,7 +49,7 @@
             @click="changeCountry(country)"
           >
             <img
-              :src="`/img/locales/${countriesFlag[country].flag}`"
+              :src="`/img/locales/${countriesFlag[country]?.flag}`"
               class="me-2"
             />
             Sharebus {{ countryMap[country].name }}
@@ -97,7 +97,10 @@ import { toastWithActionable } from "@/services/toast/toast.service";
 import { useRoute } from "vue-router";
 import { useConfigStore, useUserStore } from "@/store";
 import NavController from "./controller/NavController";
-import { localStorageSetItem } from "@/core/localStorage/LocalStorage";
+import {
+  localStorageGetItem,
+  localStorageSetItem,
+} from "@/core/localStorage/LocalStorage";
 import { ROLE } from "../enums/enums";
 
 defineProps({
@@ -128,17 +131,20 @@ const isJoiner = computed(() => user.currentRole === ROLE.JOINER);
 
 const setSelectedCountry = (country) => {
   localStorageSetItem("country_selected", country);
-  UriController.setQuery({
-    country: country,
-    operator: "",
-  });
-  selectedCountry.value = {
-    name: countryMap.value[country].name,
-    currency: countryMap.value[country as string],
-    flag: countriesFlag[country].flag,
-  };
+  const alreadySelected = localStorageGetItem("country_selected");
+  if (isJoiner.value || alreadySelected !== country) {
+    UriController.setQuery({
+      country: country,
+      operator: "",
+    });
+    selectedCountry.value = {
+      name: countryMap.value[country]?.name,
+      currency: countryMap?.value[country as string],
+      flag: countriesFlag[country]?.flag,
+    };
 
-  clearDataAndRedirect(route.name, country);
+    clearDataAndRedirect(route.name, country);
+  }
 };
 
 watch(
@@ -167,9 +173,9 @@ watch(
   ([queryValue, countryMapValue]: [URIState, CountryMap]) => {
     if (!isEmptyObject(countryMapValue) && queryValue.country) {
       selectedCountry.value = {
-        name: countryMap.value[queryValue.country].name,
-        currency: countryMap.value[queryValue.country].currency,
-        flag: countriesFlag[queryValue.country].flag,
+        name: countryMap.value[queryValue.country as string]?.name,
+        currency: countryMap.value[queryValue.country as string]?.currency,
+        flag: countriesFlag[queryValue.country as string]?.flag,
       };
     }
   },
