@@ -6,14 +6,108 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 For more info, see [Notion page for CHANGELOG.md](https://www.notion.so/CHANGELOG-md-5f247dbf8cfc4cb9b8cfc21d5b6dafa5).
 
-## [Unreleased], [v1.3.3]
-- [SB-224]((https://ferdia.atlassian.net/browse/SB-224) : Payment system for Sweden.
-  - [SB-289]((https://ferdia.atlassian.net/browse/SB-289) : generate payment intent stripe using BE endpoint.
+## [Released], [v2.1.0]
+- [SB-366]((https://ferdia.atlassian.net/browse/SB-366) : CR - improvement when sharing a trip in so-me FE
+- [SB-379]((https://ferdia.atlassian.net/browse/SB-379) : Improvement on reset password function FE
+- [SB-550]((https://ferdia.atlassian.net/browse/SB-550) : UI Improvements May 2023
+- [SB-571]((https://ferdia.atlassian.net/browse/SB-571) : Remove Sharelead access for regular users FE
+- [SB-579]((https://ferdia.atlassian.net/browse/SB-579) : Remove VAT order line from last step of the pre-payment
+- [SB-580]((https://ferdia.atlassian.net/browse/SB-580) : UI Corrections in checkout
+- [SB-586]((https://ferdia.atlassian.net/browse/SB-586) : Ticket info to be added to the ticket page
+- [SB-592]((https://ferdia.atlassian.net/browse/SB-592) : History for joiner bookings FE
+## [Released], [v2.0.2]
+- [SB-676]((https://ferdia.atlassian.net/browse/SB-676) :  Password field does not accept many special characters
+## [Released], [v2.0.1]
+- [SB-674]((https://ferdia.atlassian.net/browse/SB-674) :  Revising Swedish number validation min length  .
+## [Released], [v2.0.0]
+- [SB-223]((https://ferdia.atlassian.net/browse/SB-223) :  Support for Swedish locale .
+- [SB-224]((https://ferdia.atlassian.net/browse/SB-224) :  Payment system for Sweden .
+- [SB-340]((https://ferdia.atlassian.net/browse/SB-340) :  Extended work for country's payment  and support locale
+- [SB-343]((https://ferdia.atlassian.net/browse/SB-343) :  Facilating Ferdia Swedish & Denmark teq instance of sharebus Sweden & denmark for staging & production
+- [SB-429]((https://ferdia.atlassian.net/browse/SB-429) :  Country support necessary API modifications Frontend sprint 6
+- [SB-438]((https://ferdia.atlassian.net/browse/SB-438) :  Country switch behavior
+- [SB-459]((https://ferdia.atlassian.net/browse/SB-459) :  Revisit webpackBundleAnalyzer configuration
+- [SB-521]((https://ferdia.atlassian.net/browse/SB-521) :  Sweden support for sprint 7 front-end
+- [SB-603]((https://ferdia.atlassian.net/browse/SB-603) :  QA  dev support sharebus Sweden on testing FE
+- [SB-604]((https://ferdia.atlassian.net/browse/SB-604) :  Swedish phrase translation support
+## [Released], [v1.4.9]
+- [SB-651]((https://ferdia.atlassian.net/browse/SB-651) :  SB - New users cannot create an account .
+
+## [Released], [v1.4.8]
+- [SB-459]((https://ferdia.atlassian.net/browse/SB-459) :  Revisit webpackBundleAnalyzer configuration.
+- [SB-640]((https://ferdia.atlassian.net/browse/SB-640) :  Joiner next token is not getting for pagination
+## [Released], [v1.4.7]
+- [SB-649]((https://ferdia.atlassian.net/browse/SB-649) :  Trips with early-bird discount are wrongly priced 
+## [Released], [v1.4.6]
+- [SB-614]((https://ferdia.atlassian.net/browse/SB-614) :  Pagination key not removing while moving another page.
+## [Released], [v1.4.5]
+- [SB-192]((https://ferdia.atlassian.net/browse/SB-192) :  RSS feed for searching trips.
+- [SB-424]((https://ferdia.atlassian.net/browse/SB-424) :  Navigation improvements.
+- [SB-549]((https://ferdia.atlassian.net/browse/SB-549) :  Cancelling trip does not refresh the page.
+- [SB-589]((https://ferdia.atlassian.net/browse/SB-589) :  FE button functionality and ticket tab message fix.
+## [Released], [v1.4.4]
+- [SB-584]((https://ferdia.atlassian.net/browse/SB-584) : Trip is not appearing in sales console active trip list.
+## [Released], [v1.4.3]
+- [SB-398]((https://ferdia.atlassian.net/browse/SB-398) : Release Stripe for Norway FE Work
+- [SB-552]((https://ferdia.atlassian.net/browse/SB-552) : FIX the error found in sentry LOG
+- [SB-566]((https://ferdia.atlassian.net/browse/SB-566) : Publish button not visible in my busess[only if buy tickets sharelead]
+- [SB-443]((https://ferdia.atlassian.net/browse/SB-443) : CR - Rename trip cancellation button in prompt
+- [SB-487]((https://ferdia.atlassian.net/browse/SB-487) : Call stripe view after clicking button name [logo]pay with cards and then pay
+- [SB-536]((https://ferdia.atlassian.net/browse/SB-536) : Minor improvement: this should link to tickets tab in My Trips. Currently it's linking to Status tab
+
+## [Released], [v1.4.2]
+- [SB-168]((https://ferdia.atlassian.net/browse/SB-168) : Trip booking page - responsive layout
+- [SB-450]((https://ferdia.atlassian.net/browse/SB-450) : Introduce feature to confirm a trip in Sales Console FE work
+- [SB-452]((https://ferdia.atlassian.net/browse/SB-452) : QA for SB-168: Trip booking page - responsive layout
+- [SB-455]((https://ferdia.atlassian.net/browse/SB-455) : Remove domain from bus price API request body  FE
+- [SB-506]((https://ferdia.atlassian.net/browse/SB-506) : After searching with date range filter and keyword then searching with only date range filter sends empty Quary string insterd of NULL
+## [Released], [v1.4.1]
+- [SB-135]((https://ferdia.atlassian.net/browse/SB-135) : Parse Json logic from config api
+- [SB-319]((https://ferdia.atlassian.net/browse/SB-319) : Add pagination on my buses and my trips FE
+- [SB-337]((https://ferdia.atlassian.net/browse/SB-337) :  Provide date filter for trip listing for joiners, as is for Sales users FE By elastic search
+- [SB-367]((https://ferdia.atlassian.net/browse/SB-367) : Implement elastic search API for sales in FE
+- [SB-399]((https://ferdia.atlassian.net/browse/SB-399) : Change the picture in all environments
+- [SB-412]((https://ferdia.atlassian.net/browse/SB-412) : Remove filter query from public trip list API
+- [SB-427]((https://ferdia.atlassian.net/browse/SB-427) : Category filter does not reset when show upcoming sharebuses is clicked on filtered trip on public page
+## [Released], [v1.4.0]
+- [SB-284]((https://ferdia.atlassian.net/browse/SB-284) : Order trip list with active, archived and unpublished in sales FE.
+## [Released], [v1.3.9]
+- [SB-374]((https://ferdia.atlassian.net/browse/SB-374) : BE date format showing on sales editing passenger goal deadline need to be readable in Fe format
+- [SB-167]((https://ferdia.atlassian.net/browse/SB-167) : Improved "My Sharebuses" / "My trips" page
+- [SB-237]((https://ferdia.atlassian.net/browse/SB-237) : Going back from view and book ticket page filter button does not work.
+- [SB-338]((https://ferdia.atlassian.net/browse/SB-338) : Can not change role on ticket confirmation Page
+- [SB-342]((https://ferdia.atlassian.net/browse/SB-342) : Display time remaining for passenger goal deadline on trip booking page
+- [SB-378]((https://ferdia.atlassian.net/browse/SB-378) : Caching issue discovery and solution from FE+BE
+- [SB-389]((https://ferdia.atlassian.net/browse/SB-389) : Clicking cancel button on itinerary edit page take sales out of edit mode of trip
+- [SB-158]((https://ferdia.atlassian.net/browse/SB-158) : SB/Setup Sharebus: data of one user is showing for another user while setup the sharebus
+
+## [Released], [Codefixes], [v1.3.8]
+- [SB-326]((https://ferdia.atlassian.net/browse/SB-326) : pass the last trip updated time to BE at payment initiate api for checking validation for Vipps
+## [Released], [v1.3.6]
+- [SB-310]((https://ferdia.atlassian.net/browse/SB-310) : Ticket price in trip card.
+- [SB-326]((https://ferdia.atlassian.net/browse/SB-326) : pass the last trip updated time to BE at payment initiate api for checking validation for Vipps
+## [Released], [v1.3.5]
+- [SB-317]((https://ferdia.atlassian.net/browse/SB-317) : Joiner can buy ticket of an ongoing/not active trip trip with URL FE.
+## [Released], [v1.3.4]
+- [SB-325]((https://ferdia.atlassian.net/browse/SB-325) : My buses archive page there is a yellow bar for some trips.
+- [SB-315]((https://ferdia.atlassian.net/browse/SB-315) : Refreshing the page on 3rd step of setup sharebus set price to 0 and passenger goal shows error.
+- [SB-309]((https://ferdia.atlassian.net/browse/SB-309) : revisit use of local storage
+- [SB-303]((https://ferdia.atlassian.net/browse/SB-303) : Cancel sharebus api modification frontend
+- [SB-184]((https://ferdia.atlassian.net/browse/SB-184) : Changing trip attributes from sales console part3: Make itinerary edit group (UI and functionality )
+- [SB-164]((https://ferdia.atlassian.net/browse/SB-164) : Remaining menu/ navigation improvements 
+- [SB-88]((https://ferdia.atlassian.net/browse/SB-88) : SB/Create Share Bus/Step-3: Discounted value not updated while changing discount percent by scrolling 
+## [Released], [v1.3.3]
+- [SB-216]((https://ferdia.atlassian.net/browse/SB-216) : Changing trip attributes from sales console part2.
+  - [SB-256]((https://ferdia.atlassian.net/browse/SB-256) : Sync updated by name by BE API.
+  - [SB-184]((https://ferdia.atlassian.net/browse/SB-184) : Make itinerary edit group (UI and functionality).
+  - [SB-217]((https://ferdia.atlassian.net/browse/SB-217) : Filter sales trips by date range.
+  - [SB-240]((https://ferdia.atlassian.net/browse/SB-240) : sharelead consent on sales edit on bus.
 ## [Released], [v1.3.2]
 - [SB-280]((https://ferdia.atlassian.net/browse/SB-280) : when passenger goal chnging price is not updating
 ## [Released], [v1.3.1]
 - [SB-270]((https://ferdia.atlassian.net/browse/SB-270) : hotfix on booking page
 ## [Released], [v1.3.0]
+- [SB-164]((https://ferdia.atlassian.net/browse/SB-164) : Remaining menu/ navigation improvements.
 - [SB-37]((https://ferdia.atlassian.net/browse/SB-37) : Changing trip attributes from admin console.
   - [SB-242]((https://ferdia.atlassian.net/browse/SB-242) : publish/back option after unpublish.
   - [SB-238]((https://ferdia.atlassian.net/browse/SB-238) : Sync update history in editing mode if have.
